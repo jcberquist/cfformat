@@ -25,13 +25,16 @@ pub use oxc::Oxc;
 
 /// The stack of the thread [`Oxc`] formats on (and walks its output for
 /// [`literal_lines`] on, for [`Islands`]) and [`literal_lines`] and
-/// [`literal_texts`] walk on: 256 MB. The oxc parsers and formatters, and
+/// [`literal_texts`] walk on: 1 GB. The oxc parsers and formatters, and
 /// the walks over their trees, recurse once per level of nesting with no
 /// bound of their own, so their depth is bounded by the stack; this one is
-/// 32 times the CLI's 8 MB worker, whatever thread the caller is on. It is
+/// 128 times the CLI's 8 MB worker, whatever thread the caller is on. It is
 /// address space, not memory: a thread touches only as much of it as the
-/// island is deep.
-pub const ISLAND_STACK: usize = 256 << 20;
+/// island is deep. The size is set by the deepest parse the limits let
+/// through, an operator chain at [`SIZE_LIMIT`]: on Linux it needs over
+/// 64 MB in a release build and over 128 MB in a debug build, and Windows
+/// frames are larger still (256 MB overflowed there in debug).
+pub const ISLAND_STACK: usize = 1 << 30;
 
 /// The name of that thread. The CLI's panic hook is quiet for it, as for
 /// its workers: a panic there is reported as the island's warning.

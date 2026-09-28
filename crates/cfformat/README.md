@@ -241,7 +241,7 @@ cannot start) is a refusal, never a text with no literal lines. Within the
 limits, the three calls — `Oxc::format` (with that walk of its output, on
 the same thread, for `Islands`), `literal_lines`, `literal_texts` — each
 run on a thread of their own (`ISLAND_THREAD`) with an `ISLAND_STACK`
-(256 MB) stack,
+(1 GB) stack,
 whatever the caller's thread is: address space, not memory, touched only
 as deep as the island goes. What is bounded by construction: the
 formatter and both literal walks (they parse the formatter's output of a
