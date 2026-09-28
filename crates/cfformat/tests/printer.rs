@@ -786,7 +786,11 @@ fn deep_nesting_prints_as_written() {
     deep.join().unwrap();
     // The bound itself: `MAX_DEPTH` bodies are laid out, the next one starts
     // at their indent and keeps the source's own layout.
-    let out = format_source(&tags(n, "x"), Mode::Tags, &Options::default());
+    let lf = Options {
+        newline: cfformat::options::NewlineStyle::Lf,
+        ..Options::default()
+    };
+    let out = format_source(&tags(n, "x"), Mode::Tags, &lf);
     let indent = " ".repeat(4 * MAX_DEPTH as usize);
     assert!(
         out.contains(&format!("\n{indent}<cfif a>\n<cfif a>\n")),

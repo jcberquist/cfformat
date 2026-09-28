@@ -7,6 +7,17 @@ use std::path::{Path, PathBuf};
 
 use cfparse::{Element, Mode, Node, Token, Tree};
 
+/// The stack of the threads the depth tests parse on. The bound the parser
+/// and printer keep (`MAX_DEPTH`) is chosen so that no input overflows the
+/// 2 MB a default thread has, and release builds check exactly that. Debug
+/// frames are larger, and on Windows large enough that 2 MB overflows at the
+/// bound, so debug builds check with headroom instead.
+pub const SMALL_STACK: usize = if cfg!(debug_assertions) {
+    8 << 20
+} else {
+    2 << 20
+};
+
 /// `commandbox-cfformat` checkout next to the workspace, if present. Only
 /// the models corpus (coverage test, bench) is read from there; the fixture
 /// sources are vendored under `tests/fixtures`.

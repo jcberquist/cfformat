@@ -287,7 +287,7 @@ the same element, so a run of them takes no depth. The expression post-pass coll
 folds an assignment chain from the right, and leaves a run flat — a
 `TooDeep` region — rather than build a tree deeper than `MAX_TREE_DEPTH`
 (410: a level of the budget adds at most four elements, `switch (x) { case
-1:` or `a.b(`). So no input overflows a 2 MB stack in debug or release,
+1:` or `a.b(`). So no input overflows a 2 MB stack in release (debug frames are larger, on Windows past 2 MB at the bound, so the debug tests run with headroom),
 and every recursive walk of a tree — the passes, the printer, `Drop` —
 stays within `MAX_TREE_DEPTH` (tag pairing nests up to its own
 `MAX_TAG_DEPTH`, 1000). At the
@@ -333,7 +333,7 @@ counts the newlines before the offset on every call, a scan of the source
 that is fine at one call per warning and not meant for a loop over nodes.
 
 Two fuzz passes run over every fixture and every `.cfc` and `.cfm` of every
-corpus, on a 2 MB thread per corpus (`cfformat` is a dev-dependency for
+corpus, on a thread per corpus with a 2 MB stack in release (`cfformat` is a dev-dependency for
 this). The **fixed cases** run first (`tests/common/mod.rs` `generators`):
 every input shape that once overflowed the stack — `!` × 20,000, `x=` ×
 20,000, `if(x) ` × 20,000, 400,000 brackets in a `#…#`, `<cfquery>` ×

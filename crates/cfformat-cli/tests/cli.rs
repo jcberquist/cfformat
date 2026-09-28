@@ -1438,7 +1438,9 @@ fn settings_schema_describes_every_key() {
         &["settings", "--schema", "nowhere", "--config", "nope.json"],
     );
     assert_eq!(out.status.code(), Some(0), "{}", stderr(&out));
-    let schema: serde_json::Value = serde_json::from_str(&stdout(&out)).unwrap();
+    // The bytes, not `stdout()`: its separator normalisation would break the
+    // JSON's own escapes on Windows.
+    let schema: serde_json::Value = serde_json::from_slice(&out.stdout).unwrap();
     assert_eq!(schema["additionalProperties"], false);
     assert_eq!(
         schema["$schema"],

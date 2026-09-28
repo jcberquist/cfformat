@@ -24,10 +24,15 @@ fn tokens(src: &str, mode: Mode) -> Vec<String> {
         .collect()
 }
 
-/// Formats with the default settings; also checks the source tiles.
+/// Formats with the default settings, except that the newline is `"\n"`
+/// whatever the platform's; also checks the source tiles.
 fn fmt(src: &str, mode: Mode) -> String {
     parse(src, mode);
-    cfformat::format_source(src, mode, &Default::default())
+    let opts = cfformat::Options {
+        newline: cfformat::options::NewlineStyle::Lf,
+        ..Default::default()
+    };
+    cfformat::format_source(src, mode, &opts)
 }
 
 /// Asserts `src` formats to `want` (a trailing newline is added by the

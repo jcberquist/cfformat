@@ -50,8 +50,8 @@
 //! string at every level, and a `}` inside a CSS function's arguments at
 //! every level, at 600 and 6,000: refused by the lexical bracket count.
 //!
-//! Each corpus runs on its own 2 MB thread, the stack a test or a default
-//! thread has: the *caller's* stack (oxc has a thread of its own, so an
+//! Each corpus runs on its own `common::SMALL_STACK` thread (in release the
+//! 2 MB a test or a default thread has): the *caller's* stack (oxc has a thread of its own, so an
 //! island is bounded the same whatever this one is). A stack overflow is
 //! an abort, not a panic: it kills the
 //! process, no `catch_unwind` sees it and the run does not finish — so a
@@ -97,7 +97,7 @@ fn truncated_sources_neither_panic_nor_abort() {
         let watchdog = watchdog.clone();
         let counts = std::thread::Builder::new()
             .name(format!("fuzz {name}"))
-            .stack_size(2 << 20)
+            .stack_size(common::SMALL_STACK)
             .spawn(move || fuzz(&sources, &watchdog, trace))
             .unwrap()
             .join()
@@ -285,7 +285,7 @@ fn mutated_sources_tile_and_neither_panic_nor_abort() {
         let watchdog = watchdog.clone();
         let counts = std::thread::Builder::new()
             .name(format!("mutate {name}"))
-            .stack_size(2 << 20)
+            .stack_size(common::SMALL_STACK)
             .spawn(move || mutate(&sources, seed, mutations, &watchdog, trace))
             .unwrap()
             .join()

@@ -2708,11 +2708,13 @@ fn a_fragment_counts_against_its_callers_depth() {
     assert!(depth <= MAX_TREE_DEPTH, "{depth} deep");
 }
 
-/// Parse `src` on a thread with the 2 MB stack a test or a default thread
-/// has, so that an overflow fails here whatever `RUST_MIN_STACK` says.
+/// Parse `src` on a thread with the stack of `common::SMALL_STACK` (the 2 MB
+/// a default thread has, in release), so that an overflow fails here whatever
+/// `RUST_MIN_STACK` says.
 fn depth_on_a_small_stack(src: String, mode: Mode) -> usize {
     std::thread::Builder::new()
-        .stack_size(2 << 20)
+        .name("depth on a small stack".into())
+        .stack_size(common::SMALL_STACK)
         .spawn(move || element_depth(&parse(&src, mode).root))
         .unwrap()
         .join()
@@ -2802,7 +2804,7 @@ fn island_bodies_count_the_tags_they_open() {
 
 /// Every input shape that once overflowed the stack
 /// (`common::generators`, the fixed cases of `tests/fuzz.rs`) parses and
-/// formats on a 2 MB thread, in debug and release builds, into a tree no
+/// formats on a `common::SMALL_STACK` thread (2 MB in release), into a tree no
 /// deeper than `MAX_TREE_DEPTH` — except paired tags, which
 /// `postpass::tags::MAX_TAG_DEPTH` bounds on its own.
 #[test]
@@ -2811,7 +2813,8 @@ fn every_generator_parses_and_formats_on_a_small_stack() {
         for &n in g.sizes {
             let (src, mode) = ((g.source)(n), g.mode);
             let (depth, formatted) = std::thread::Builder::new()
-                .stack_size(2 << 20)
+                .name(format!("{} × {n}", g.name))
+                .stack_size(common::SMALL_STACK)
                 .spawn(move || {
                     let depth = element_depth(&parse(&src, mode).root);
                     let formatted = cfformat::format_source(&src, mode, &Default::default());
