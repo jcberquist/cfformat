@@ -113,7 +113,7 @@ pub(crate) fn is_bodyless(source: &str, open: &Element, name: &str) -> bool {
 /// islands (`<cfif>` inside `<cfquery>` SQL), `<cfscript>` statements, and the
 /// bodies created here. Pairs never cross an element boundary.
 pub fn pair_tags(el: &mut Element, source: &str) {
-    // The CFML walks one flat token list; here every `children` vec is its own
+    // CommandBox cfformat walks one flat token list; here every `children` vec is its own
     // list, visited bottom-up so a body is built from finished nodes.
     for node in el.children.iter_mut() {
         if let Node::Element(child) = node {
@@ -379,7 +379,7 @@ fn pair_nodes(nodes: Vec<Node>, source: &str, layer: Layer, start: usize) -> Vec
     loop {
         let Some(node) = input.pop() else {
             // A closing tag still pending at the start of the list is content
-            // (the CFML threw `Unbalanced closing tag found`). The innermost
+            // (CommandBox cfformat threw `Unbalanced closing tag found`). The innermost
             // one stays bare where it is, and its body — the nodes walked
             // since, in walk order — is walked again one level out, where an
             // opening tag in it may pair with an enclosing closing tag.

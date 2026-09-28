@@ -78,7 +78,7 @@ fn utf8_twins_format_like_their_ascii_twin() {
 }
 
 #[test]
-fn utf8_cases_from_the_review() {
+fn utf8_edge_cases() {
     assert_fmt(
         "<script>éé</script>",
         Mode::Tags,

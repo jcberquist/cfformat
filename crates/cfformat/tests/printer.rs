@@ -924,7 +924,7 @@ fn components_properties_and_script_tags() {
 }
 
 #[test]
-fn soak_regressions_3b() {
+fn soak_regressions_2() {
     // A line comment inside a template expression keeps its lines.
     assert_eq!(
         fmt("var test = \"#foo\n// c\n# true\";"),
@@ -1915,7 +1915,7 @@ fn a_code_fence_prints_its_tags_at_the_fence_indent() {
     );
 }
 
-// In-process island formatting: nothing to spawn, every platform
+// In-process island formatting (oxc), every platform
 // ---------------------------------------------------------------------------
 
 const OXC: &str = r#"{"newline": "\n", "islands.js": "oxc", "islands.css": "oxc", "islands.json": "oxc", "islands.config": "off"}"#;

@@ -3,13 +3,12 @@
 The port removed some CommandBox options whose behaviour is now fixed. A settings case whose
 expectation depends on a removed option being set to something other than the
 behaviour the formatter now fixes was deleted from `settings.json` and
-`formatted.txt` in the same commit that added this file. Indexes are the
+`formatted.txt`. Indexes are the
 0-based positions in the original CommandBox `settings.json` (ba56074).
 
 Of 115 fixtures and 173 settings cases, 17 cases were dropped (2 fixtures
-entirely), leaving 113 fixtures and 156 cases. The settings revisit restored
-10 of them and the return of the alignment options the 2 removed fixtures
-(below), so 5 cases stay dropped. Cases that set
+entirely), leaving 113 fixtures and 156 cases. Later changes restored 10 of them and
+the 2 removed fixtures (below), so 5 cases stay dropped. Cases that set
 a removed key to its fixed behaviour (`binary_operators.padding: true`,
 `wordOperators`' word operators that stay spaced anyway) stay, with the
 key removed. Every case is written in the current keys (the last row of
@@ -23,9 +22,9 @@ key removed. Every case is written in the current keys (the last row of
 | `functionSpacingToGroup` | 2 | `function_anonymous.spacing_to_group: true` | always `function(` |
 | `keywords` | 1 | `keywords.*` spacing keys (Allman, no space before groups) | always `if (x) {` / `} else {` |
 
-## Restored with the settings revisit
+## Restored options
 
-The settings revisit brought back `brackets.padding`,
+A later change brought back `brackets.padding`,
 `struct.empty_padding`, `array.empty_padding` and leading commas
 (`multiline.comma`: `"leading"` / `"leading_tight"`), so these cases are back
 with CommandBox's expectations; the restored leading-comma cases' settings
@@ -47,7 +46,7 @@ what the migration makes of them.
 ## Restored with the alignment options
 
 `alignment.consecutive.params` and `alignment.consecutive.properties` are
-options again (user decision 2026-09-23: users relied on them), so the two
+options again because users relied on them, so the two
 fixtures are back byte for byte from CommandBox (`source.cfc`,
 `settings.json`, `formatted.txt`), with no edit to the expectation.
 `alignAttributeRuns` pins the rest of the rule.
@@ -70,7 +69,7 @@ depends on something the formatter no longer does.
 | `tagWordOperators` | 0 | expectation regenerated: `<cfif a` newline `AND b></cfif>` → `<cfif a AND b></cfif>` | the source newline sits inside the `Binary` of the `<cfif>` condition; source whitespace is trivia and the binary printer joins operands, exactly as `binaryOperatorsMultiline` pinned for script mode |
 | `cfqueryIndent` | 0 | expectation regenerated: `SELECT` 8 → 12, `FROM` 4 → 8, `WHERE` 0 → 4 | an island keeps its shape: the least-indented line after the first (`WHERE`, column 0) is shifted to the tag's indent (4) and every other line moves by the same amount, replacing an earlier per-line clamp, which flattened relative indentation; the island printer and the script hand-off dedent make the same measurement (the least leading indent of the non-empty lines) |
 | `functionCall` | 2 | `parentheses.padding: true` removed from `settings.json` | as case 1: the case expects unpadded calls, which CommandBox printed because `parentheses.padding` did not reach calls |
-| `structOrdered` | 0 | expectation edited: `var t = [:];` → `var t = [ : ];` | the case sets `struct.empty_padding: true`; `[:]` is the empty state of an ordered struct and pads like `{ }` (user decision 2026-09-18). CommandBox's `Structs.cfc` printed the `:` as the struct's one item, so `[:]` never reached the empty branch that pads (64–66); the one restored case where the fixture does not win |
+| `structOrdered` | 0 | expectation edited: `var t = [:];` → `var t = [ : ];` | the case sets `struct.empty_padding: true`; `[:]` is the empty state of an ordered struct and pads like `{ }`. CommandBox's `Structs.cfc` printed the `:` as the struct's one item, so `[:]` never reached the empty branch that pads (its lines 64–66); the one restored case where the fixture does not win |
 | `arrayTrailingComma` | 0, 1, 2 | `settings.json`: `array.multiline.comma_dangle: true` / `false` → `multiline.comma: "dangling"` / `"trailing"` | mechanical: the per-construct key is replaced by `multiline.comma`; no expectation moves (the migration itself is pinned by `options` unit tests) |
 | `functionCallCommentsLeadingComma` | 1, statements 3–4 | expectation edited: `, from` ⏎ `, // comment a` ⏎ `// comment b` ⏎ `body` → `, from` ⏎ `// comment a` ⏎ `// comment b` ⏎ `, body`, and `, from // comment a` ⏎ `, // comment b` ⏎ `body` → `, from // comment a` ⏎ `// comment b` ⏎ `, body` | an item's own-line leading comments print before its leading comma. CommandBox's layout is not idempotent here: re-parsed, a comment that follows a `,` on its line belongs to the previous item (the after-comma rule), so the second pass moved it (statement 3 → statement 4's shape → statement 2's). The edited expectations are statements 1–2's layout, which is stable |
 | `blocks` | 0 | expectation edited: the two blank lines before `b = 2;` → one | a run of blank lines prints as one; CommandBox kept every blank line between statements |

@@ -250,8 +250,8 @@ formatter takes, before its parser sees it. What is measured, under the
 size limit: a script's parse, which runs before the tree can be counted,
 and the depth walk after it (recursive, a frame per level, at most about a
 level per byte: a frame smaller than the parser's that built the tree) —
-and the parse of a JSON text holding a `/`. At the limit, on this machine
-with these oxc crates, parse and walk together peak at about 110 MB in
+and the parse of a JSON text holding a `/`. At the limit, on a Linux x86_64
+development machine with these oxc crates, parse and walk together peak at about 110 MB in
 release for the deepest (`x=` and `a=>` chains), 71 MB for brackets the
 pre-scan could not see (a closer hidden in a string at every level, should
 its reading of a script be fooled), about 60 MB or less for every other

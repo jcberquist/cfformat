@@ -166,7 +166,7 @@ impl Parser<'_> {
                 return true;
             }
             // The word `java` before a `{` (whitespace between allowed)
-            // starts a `{ … }` of Java text (no corpus file has one).
+            // starts a `{ … }` of Java text (none in the test corpora).
             if self.at_word("java") {
                 let after = skip_spaces(self.src, at + 4);
                 if matches!(self.src[after..].chars().next(), Some('\n' | '{')) {
@@ -1465,7 +1465,7 @@ impl Parser<'_> {
     }
 
     /// A destructuring pattern (`[a, b]`, `{a, b: c}`): flat tokens, no
-    /// element around them. No corpus file has one.
+    /// element around them. None in the test corpora.
     pub(super) fn binding_pattern(&mut self, out: &mut Vec<Node>) {
         if self.too_deep(out) {
             return;

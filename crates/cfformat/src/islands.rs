@@ -51,7 +51,7 @@ pub const ISLAND_THREAD: &str = "cfformat-island";
 /// parse, before the formatter. A
 /// deeper island is refused with a warning (`nested N levels deep, over
 /// the limit of 500`, `N` the count that tripped) and prints as written.
-/// The deepest real island measured nests 15 brackets; on the CLI's 8 MB
+/// The deepest island in the test corpora nests 15 brackets; on the CLI's 8 MB
 /// worker alone the first overflow of a bracket shape was at 577 (CSS
 /// `@media{`), and the [`ISLAND_STACK`] thread has 32 times that room.
 pub const NESTING_LIMIT: usize = 500;
@@ -61,7 +61,7 @@ pub const NESTING_LIMIT: usize = 500;
 /// written. It bounds what runs before [`NESTING_LIMIT`] can count the
 /// tree — the parse of a chain of operators, which nests without a bracket
 /// — and the formatter's output, which for deep nesting grows faster than
-/// the input. The largest real island measured is 26 KB.
+/// the input. The largest island in the test corpora is 26 KB.
 pub const SIZE_LIMIT: usize = 256 << 10;
 
 /// The deepest nesting of `(`, `[` and `{` in `text`, an island of `lang`:

@@ -12,8 +12,8 @@
 //! them in HTML and a `<cfoutput>` opened in a `<style>` ends there. And
 //! `output`: a `<cffunction output="true">` body is read as if
 //! it were in `<cfoutput>`, and so is a function without `output` in a
-//! `<cfcomponent output="true">` (checked on Lucee 6 and Adobe 2021,
-//! 2026-09-25). An included template does not inherit either, so each file
+//! `<cfcomponent output="true">` (checked on Lucee 6 and Adobe 2021). An
+//! included template does not inherit either, so each file
 //! stands alone.
 
 use std::ops::Range;

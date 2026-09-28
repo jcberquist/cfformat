@@ -1,7 +1,7 @@
 <cfscript>
 x = 1;
 
-// 3. `import` with a quoted path.
+// `import` with a quoted path.
 import "java.lang.String";
 import java.lang.Integer;
 

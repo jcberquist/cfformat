@@ -814,7 +814,7 @@ impl Scanner<'_> {
         }
     }
 
-    /// `main`'s `<cfcomponent>` / `<cfinterface>` path.
+    /// The `<cfcomponent>` / `<cfinterface>` path of `Scanner::document`.
     pub(super) fn cf_class(&mut self, out: &mut Vec<Node>) {
         let start = self.pos;
         let interface = word_ci(self.rest(), "<cfinterface");

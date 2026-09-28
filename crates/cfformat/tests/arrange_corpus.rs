@@ -18,7 +18,7 @@
 //! reason. `CFFORMAT_ARRANGE_LIST=1` also prints every changed file, for
 //! reading the diffs (`cfformat arrange --diff FILE`). A broken invariant
 //! or a panic fails the run. A commutation failure is printed with the file
-//! and counted: each one read so far is a formatter behaviour that changes
+//! and counted: each known cause is a formatter behaviour that changes
 //! what attaches to a member (the causes `tests/arrange.rs` lists in
 //! `EXPECT_COMMUTE_FAIL`), so it fails the run only with
 //! `CFFORMAT_ARRANGE_STRICT=1`. The per-file watchdog is the corpus test's

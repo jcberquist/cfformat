@@ -136,7 +136,7 @@ const PAGE: &str = "<div>\n<script>\nvar a;\n</script>\n</div>\n";
 
 #[test]
 fn a_removed_islands_value_is_a_settings_error() {
-    // The removed island values are invalid like any other:
+    // The island values of earlier versions (`"prettier"`) are invalid like any other:
     // one error per settings file, every file under it failed, nothing
     // formatted.
     let s = Scratch::new("removed-values");

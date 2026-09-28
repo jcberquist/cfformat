@@ -1169,8 +1169,7 @@ fn acf_script_tags_allow_a_space_before_the_parenthesis() {
 #[test]
 fn tag_in_script_statements_end_where_they_should() {
     // A bare tag name ending the line is only a tag when the next line does
-    // not start with `.`: `query\n    .where(…)` is a member chain (branch
-    // point `tag-in-script-bare`).
+    // not start with `.`: `query\n    .where(…)` is a member chain.
     let tree = parse("query\n    .where(1)\n    .where(2);\nx = 1;", Mode::Script);
     let stmts = statements(&tree.root);
     assert_eq!(stmts.len(), 2, "{:?}", root_shapes(&tree));
@@ -2115,7 +2114,7 @@ fn comment_tails(tree: &Tree) -> Vec<String> {
 
 #[test]
 fn function_modifiers_come_in_any_order() {
-    // Lucee's reading (6.2, probed): one access word and each storage word
+    // Lucee 6.2 accepts one access word and each storage word
     // at most once, in any order; one return type, before, between or
     // after them; a second access word or a repeated storage word is the
     // return type.
