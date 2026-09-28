@@ -1790,7 +1790,9 @@ mod tests {
             ("c", r#"{"max_colums": 1}"#, "max_colums"),
             ("d", r#"{"struct.separator": "->"}"#, "struct.separator"),
         ] {
-            let path = t.write(&format!("{dir}/.cfformat.json"), json);
+            t.write(&format!("{dir}/.cfformat.json"), json);
+            // The path as discovery joins it (a backslash on Windows).
+            let path = t.0.join(dir).join(SETTINGS_FILE);
             let err = Discovery::new(None, None)
                 .discover(&t.0.join(dir).join("File.cfc"))
                 .unwrap_err();

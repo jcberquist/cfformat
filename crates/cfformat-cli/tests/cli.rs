@@ -19,7 +19,7 @@ impl Scratch {
         std::fs::create_dir_all(dir.join(".git")).unwrap();
         std::fs::create_dir_all(dir.join("home")).unwrap();
         std::fs::write(dir.join("home/.cfformat.json"), r#"{"newline": "\n"}"#).unwrap();
-        Scratch(dir)
+        Scratch(resolved(&dir))
     }
 
     fn write(&self, name: &str, text: impl AsRef<[u8]>) -> PathBuf {
@@ -72,6 +72,19 @@ impl Drop for Scratch {
 }
 
 /// A stream as text, with Windows' path separators as `/`.
+/// `dir` as a child process running in it reports it: `current_dir` resolves
+/// symlinks (macOS's temp directory is under `/var`, a link to `/private/var`),
+/// and the paths cfformat prints are built on it, so the scratch root is
+/// resolved the same way or the `<tmp>` substitution misses. Windows's
+/// canonical form carries a `\\?\` prefix that nothing prints; drop it.
+fn resolved(dir: &Path) -> PathBuf {
+    let real = std::fs::canonicalize(dir).unwrap();
+    match real.to_str().and_then(|s| s.strip_prefix(r"\\?\")) {
+        Some(plain) if cfg!(windows) => PathBuf::from(plain),
+        _ => real,
+    }
+}
+
 fn text(bytes: &[u8]) -> String {
     let s = String::from_utf8_lossy(bytes).into_owned();
     if cfg!(windows) {

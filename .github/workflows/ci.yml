@@ -22,7 +22,7 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Test
-        run: cargo test --workspace --locked
+        run: cargo test --workspace --locked --no-fail-fast
       # Every fixture cut at each eighth: parse and format, no panic, no
       # abort (crates/cfparse/tests/fuzz.rs).
       - name: Truncation fuzz over the fixtures
@@ -47,7 +47,7 @@ jobs:
         run: rustup show active-toolchain || rustup toolchain install
       - uses: Swatinem/rust-cache@v2
       - name: Test
-        run: cargo test --workspace --locked
+        run: cargo test --workspace --locked --no-fail-fast
 
   test-windows:
     runs-on: windows-latest
@@ -60,4 +60,4 @@ jobs:
         run: rustup show active-toolchain || rustup toolchain install
       - uses: Swatinem/rust-cache@v2
       - name: Test
-        run: cargo test --workspace --locked
+        run: cargo test --workspace --locked --no-fail-fast
