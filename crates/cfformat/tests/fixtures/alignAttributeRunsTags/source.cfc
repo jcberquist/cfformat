@@ -1,0 +1,10 @@
+<cfscript>
+param name="first" default="";
+param name="secondParameter" default="";
+</cfscript>
+<cfif true>
+    <cfscript>
+    param name="first" default="";
+    param name="secondParameter" default="";
+    </cfscript>
+</cfif>

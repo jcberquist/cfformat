@@ -1,0 +1,16 @@
+//
+component {
+
+    /**
+     * True when `name` is a single token, which rules out
+     * values such as `"><img src=x onerror=alert(1)`.
+     * @name The name to check.
+     */
+    public boolean function isToken(required string name) {
+        return reFindNoCase("^[a-z_:]+$", arguments.name) == 1;
+    }
+
+    /** An open <b tag and a <!-- comment that never close */
+    function f() {}
+
+}

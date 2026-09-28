@@ -1,0 +1,115 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.scope", "t": "variables" },
+              {
+                "kind": "segment",
+                "segment": "property",
+                "safe": true,
+                "children": [
+                  { "k": "punct.safe-accessor", "t": "?." },
+                  { "k": "ident.property-name", "t": "foo" }
+                ]
+              },
+              {
+                "kind": "segment",
+                "segment": "property",
+                "safe": true,
+                "children": [
+                  { "k": "punct.safe-accessor", "t": "?." },
+                  { "k": "ident.property-name", "t": "bar" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              {
+                "kind": "call-expr",
+                "children": [
+                  { "k": "ident.call", "t": "getFoo" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "safe": true,
+                "children": [
+                  { "k": "punct.safe-accessor", "t": "?." },
+                  { "k": "ident.call", "t": "getBar" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "safe": true,
+                "children": [
+                  { "k": "punct.safe-accessor", "t": "?." },
+                  { "k": "ident.call", "t": "getBaz" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "test" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "chain",
+                "children": [
+                  { "k": "ident.variable", "t": "optional" },
+                  {
+                    "kind": "segment",
+                    "segment": "method",
+                    "safe": true,
+                    "children": [
+                      { "k": "punct.safe-accessor", "t": "?." },
+                      { "k": "ident.call", "t": "t" },
+                      { "kind": "call", "open": "(", "close": ")" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

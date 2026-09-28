@@ -1,0 +1,4 @@
+cases/branch.cfc:5:53: missing-var: `w` is written where its `var` may not have run in function `c`; on Lucee the write lands in the variables scope
+cases/branch.cfc:9:5: missing-var: `y` is written where its `var` may not have run in function `c`; on Lucee the write lands in the variables scope
+cases/branch.cfc:10:5: missing-var: `z` is written where its `var` may not have run in function `c`; on Lucee the write lands in the variables scope
+cases/branch.cfc:11:5: missing-var: `e` is written where its `var` may not have run in function `c`; on Lucee the write lands in the variables scope

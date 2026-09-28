@@ -1,0 +1,122 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              {
+                "kind": "segment",
+                "segment": "property",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.property-name", "t": "b" }
+                ]
+              },
+              {
+                "kind": "segment",
+                "segment": "property",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.property-name", "t": "c" }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": " a comment" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "segment",
+                "segment": "property",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.property-name", "t": "d" }
+                ]
+              },
+              {
+                "kind": "segment",
+                "segment": "property",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.property-name", "t": "e" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              {
+                "kind": "segment",
+                "segment": "property",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.property-name", "t": "b" }
+                ]
+              },
+              {
+                "kind": "segment",
+                "segment": "property",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.property-name", "t": "c" }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": " a comment" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "d" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              {
+                "kind": "segment",
+                "segment": "property",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.property-name", "t": "e" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

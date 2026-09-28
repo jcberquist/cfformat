@@ -1,0 +1,66 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "op.assign", "t": "=" },
+              {
+                "kind": "binary",
+                "prec": "additive",
+                "children": [
+                  { "k": "ident.variable", "t": "b" },
+                  { "k": "op.additive", "t": "+" },
+                  {
+                    "kind": "binary",
+                    "prec": "multiplicative",
+                    "children": [
+                      { "k": "lit.number", "t": "2" },
+                      { "k": "op.multiplicative", "t": "*" },
+                      { "k": "lit.number", "t": "3" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "op.assign", "t": "=" },
+              {
+                "kind": "binary",
+                "prec": "comparison",
+                "children": [
+                  { "k": "ident.variable", "t": "b" },
+                  { "k": "op.comparison", "t": "<>" },
+                  { "k": "lit.number", "t": "2" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

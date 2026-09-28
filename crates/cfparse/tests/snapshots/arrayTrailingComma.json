@@ -1,0 +1,64 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "array",
+            "open": "[",
+            "close": "]",
+            "items": [
+              {
+                "children": [
+                  { "k": "lit.number", "t": "1" }
+                ],
+                "sep": ","
+              },
+              { "children": [], "sep": "," },
+              {
+                "children": [
+                  { "k": "lit.number", "t": "2" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "array",
+            "open": "[",
+            "close": "]",
+            "items": [
+              {
+                "children": [
+                  { "k": "lit.number", "t": "3" }
+                ],
+                "sep": ","
+              },
+              {
+                "children": [
+                  { "k": "lit.number", "t": "4" }
+                ],
+                "sep": ","
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

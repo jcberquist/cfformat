@@ -1,0 +1,113 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "children": [
+          { "k": "kw.var", "t": "var" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "test" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "struct",
+                "open": "{",
+                "close": "}",
+                "items": [
+                  {
+                    "leading": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment 1" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "children": [
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.struct-key", "t": "a" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "ws", "t": " " },
+                          { "k": "lit.number", "t": "1" }
+                        ]
+                      }
+                    ],
+                    "trailing": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment 2" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "leading": [
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment 3" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "children": [
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.struct-key", "t": "b" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "ws", "t": " " },
+                          { "k": "lit.number", "t": "2" }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [],
+                    "trailing": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " c: 3" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "class",
+        "children": [
+          {
+            "kind": "class",
+            "children": [
+              {
+                "kind": "class-decl",
+                "children": [
+                  { "k": "kw.component", "t": "component" },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              {
+                "kind": "block",
+                "block": "class",
+                "open": "{",
+                "close": "}",
+                "children": [
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "doc-comment",
+                    "open": "/**",
+                    "close": "*/",
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "comment", "t": "      * " },
+                      { "k": "doc-tag", "t": "@hint" },
+                      { "k": "comment", "t": " hint goes here\n" },
+                      { "k": "ws", "t": "    " }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "statement",
+                    "stmt": "function",
+                    "children": [
+                      {
+                        "kind": "function",
+                        "children": [
+                          {
+                            "kind": "function-decl",
+                            "children": [
+                              { "k": "kw.function", "t": "function" },
+                              { "k": "ws", "t": " " },
+                              { "k": "ident.function-name", "t": "test" },
+                              { "kind": "parameters", "open": "(", "close": ")" },
+                              { "k": "ws", "t": " " }
+                            ]
+                          },
+                          { "kind": "block", "block": "function", "open": "{", "close": "}" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

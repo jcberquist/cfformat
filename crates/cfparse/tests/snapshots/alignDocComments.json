@@ -1,0 +1,194 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "class",
+        "children": [
+          {
+            "kind": "class",
+            "children": [
+              {
+                "kind": "class-decl",
+                "children": [
+                  { "k": "kw.component", "t": "component" },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              {
+                "kind": "block",
+                "block": "class",
+                "open": "{",
+                "close": "}",
+                "children": [
+                  { "k": "nl", "t": "\n" },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "doc-comment",
+                    "open": "/**",
+                    "close": "*/",
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "comment", "t": "     * <pre>\n" },
+                      { "k": "comment", "t": "     * Try's to get a jwt token from the authorization header or the custom header\n" },
+                      { "k": "comment", "t": "     * defined in the configuration or passed in by you.\n" },
+                      { "k": "comment", "t": "     *\n" },
+                      { "k": "comment", "t": "     * if (true) {\n" },
+                      { "k": "comment", "t": "     *   doSomething();\n" },
+                      { "k": "comment", "t": "     * }\n" },
+                      { "k": "comment", "t": "     * </pre>\n" },
+                      { "k": "comment", "t": "     *\n" },
+                      { "k": "comment", "t": "     * " },
+                      { "k": "doc-tag", "t": "@token" },
+                      { "k": "comment", "t": " The token to parse and validate, if not passed we call the discoverToken() method for you.\n" },
+                      { "k": "comment", "t": "     * " },
+                      { "k": "doc-tag", "t": "@storeInContext" },
+                      { "k": "comment", "t": " By default, the token will be stored in the request context\n" },
+                      { "k": "comment", "t": "     * " },
+                      { "k": "doc-tag", "t": "@authenticate" },
+                      { "k": "comment", "t": " By default, the token will be authenticated, you can disable it and do manual authentication.\n" },
+                      { "k": "comment", "t": "     * " },
+                      { "k": "doc-tag", "t": "@x-param" },
+                      { "k": "comment", "t": " Metadata param\n" },
+                      { "k": "comment", "t": "     * " },
+                      { "k": "doc-tag", "t": "@mxunit:expectedException" },
+                      { "k": "comment", "t": " InvalidException\n" },
+                      { "k": "comment", "t": "     *\n" },
+                      { "k": "comment", "t": "     * " },
+                      { "k": "doc-tag", "t": "@throws" },
+                      { "k": "comment", "t": " TokenExpiredException If the token has expired or no longer in the storage (invalidated)\n" },
+                      { "k": "comment", "t": "     * " },
+                      { "k": "doc-tag", "t": "@throws" },
+                      { "k": "comment", "t": " TokenInvalidException If the token doesn't verify decoding\n" },
+                      { "k": "comment", "t": "     * " },
+                      { "k": "doc-tag", "t": "@throws" },
+                      { "k": "comment", "t": " TokenNotFoundException If the token cannot be found in the headers\n" },
+                      { "k": "comment", "t": "     *\n" },
+                      { "k": "comment", "t": "     * " },
+                      { "k": "doc-tag", "t": "@returns" },
+                      { "k": "comment", "t": " The payload for convenience\n" },
+                      { "k": "ws", "t": "     " }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "statement",
+                    "stmt": "function",
+                    "children": [
+                      {
+                        "kind": "function",
+                        "children": [
+                          {
+                            "kind": "function-decl",
+                            "children": [
+                              { "k": "storage.type", "t": "struct" },
+                              { "k": "ws", "t": " " },
+                              { "k": "kw.function", "t": "function" },
+                              { "k": "ws", "t": " " },
+                              { "k": "ident.function-name", "t": "parseToken" },
+                              {
+                                "kind": "parameters",
+                                "open": "(",
+                                "close": ")",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "nl", "t": "\n" },
+                                      { "k": "ws", "t": "        " },
+                                      { "k": "storage.type", "t": "string" },
+                                      { "k": "ws", "t": " " },
+                                      {
+                                        "kind": "key-value",
+                                        "children": [
+                                          { "k": "ident.parameter", "t": "token" },
+                                          { "k": "ws", "t": " " },
+                                          { "k": "punct.key-value", "t": "=" },
+                                          { "k": "ws", "t": " " },
+                                          {
+                                            "kind": "call-expr",
+                                            "children": [
+                                              { "k": "ident.call", "t": "discoverToken" },
+                                              { "kind": "call", "open": "(", "close": ")" }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ],
+                                    "sep": ","
+                                  },
+                                  {
+                                    "children": [
+                                      { "k": "nl", "t": "\n" },
+                                      { "k": "ws", "t": "        " },
+                                      { "k": "storage.type", "t": "boolean" },
+                                      { "k": "ws", "t": " " },
+                                      {
+                                        "kind": "key-value",
+                                        "children": [
+                                          { "k": "ident.parameter", "t": "storeInContext" },
+                                          { "k": "ws", "t": " " },
+                                          { "k": "punct.key-value", "t": "=" },
+                                          { "k": "ws", "t": " " },
+                                          { "k": "lit.bool", "t": "true" }
+                                        ]
+                                      }
+                                    ],
+                                    "sep": ","
+                                  },
+                                  {
+                                    "children": [
+                                      { "k": "nl", "t": "\n" },
+                                      { "k": "ws", "t": "        " },
+                                      { "k": "storage.type", "t": "boolean" },
+                                      { "k": "ws", "t": " " },
+                                      {
+                                        "kind": "key-value",
+                                        "children": [
+                                          { "k": "ident.parameter", "t": "authenticate" },
+                                          { "k": "ws", "t": " " },
+                                          { "k": "punct.key-value", "t": "=" },
+                                          { "k": "ws", "t": " " },
+                                          { "k": "lit.bool", "t": "true" }
+                                        ]
+                                      },
+                                      { "k": "nl", "t": "\n" },
+                                      { "k": "ws", "t": "    " }
+                                    ]
+                                  }
+                                ]
+                              },
+                              { "k": "ws", "t": " " }
+                            ]
+                          },
+                          {
+                            "kind": "block",
+                            "block": "function",
+                            "open": "{",
+                            "close": "}",
+                            "children": [
+                              { "k": "nl", "t": "\n" },
+                              { "k": "ws", "t": "    " }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "nl", "t": "\n" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

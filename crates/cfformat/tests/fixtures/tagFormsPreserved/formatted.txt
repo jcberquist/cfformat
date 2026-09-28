@@ -1,0 +1,15 @@
+<cfoutput>
+    <br/>
+    <br>
+    <br></br>
+    <cfabort/>
+    <cfabort>
+    <cfabort></cfabort>
+    <cftransaction/>
+    <cftransaction></cftransaction>
+    <cftransaction>
+        <cfset x = 1>
+    </cftransaction>
+    <div/>
+    <div></div>
+</cfoutput>

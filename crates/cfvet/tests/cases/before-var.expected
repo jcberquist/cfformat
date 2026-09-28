@@ -1,0 +1,1 @@
+cases/before-var.cfc:4:5: missing-var: `x` is written where its `var` may not have run in function `a`; on Lucee the write lands in the variables scope

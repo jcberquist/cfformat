@@ -1,0 +1,1 @@
+cases/lucee-var-member.cfc:6:9: missing-var: `other` is written without `var` or a scope in function `f`; it lands in the variables scope

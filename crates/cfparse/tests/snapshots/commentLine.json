@@ -1,0 +1,84 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "block",
+            "block": "plain",
+            "open": "{",
+            "close": "}",
+            "children": [
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": "this is a comment" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "statement",
+                "stmt": "assignment",
+                "terminator": ";",
+                "children": [
+                  {
+                    "kind": "assignment",
+                    "children": [
+                      { "k": "ident.variable", "t": "a" },
+                      { "k": "ws", "t": " " },
+                      { "k": "op.assign", "t": "=" },
+                      { "k": "ws", "t": " " },
+                      { "k": "lit.number", "t": "1" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": " this comment is on a line with code" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "statement",
+                "stmt": "assignment",
+                "children": [
+                  {
+                    "kind": "assignment",
+                    "children": [
+                      { "k": "ident.variable", "t": "b" },
+                      { "k": "ws", "t": " " },
+                      { "k": "op.assign", "t": "=" },
+                      { "k": "ws", "t": " " },
+                      { "k": "lit.number", "t": "2" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": " this comment needs a space" }
+                ]
+              },
+              { "k": "nl", "t": "\n" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

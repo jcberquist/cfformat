@@ -1,0 +1,43 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.builtin", "t": "ARRAYAPPEND" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "myarray" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "lit.number", "t": "1" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

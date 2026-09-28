@@ -1,0 +1,37 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "string",
+                "quote": "double",
+                "in_tag": false,
+                "open": "\"",
+                "close": "\"",
+                "children": [
+                  { "k": "lit.string", "t": "'" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

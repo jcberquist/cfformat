@@ -1,0 +1,69 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "interface",
+        "children": [
+          {
+            "kind": "interface",
+            "children": [
+              {
+                "kind": "interface-decl",
+                "children": [
+                  { "k": "kw.interface", "t": "interface" }
+                ]
+              },
+              {
+                "kind": "block",
+                "block": "interface",
+                "open": "{",
+                "close": "}",
+                "children": [
+                  {
+                    "kind": "statement",
+                    "stmt": "function",
+                    "terminator": ";",
+                    "children": [
+                      {
+                        "kind": "function-decl",
+                        "children": [
+                          { "k": "kw.function", "t": "function" },
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.function-name", "t": "init" },
+                          {
+                            "kind": "parameters",
+                            "open": "(",
+                            "close": ")",
+                            "items": [
+                              {
+                                "children": [
+                                  { "k": "ident.parameter", "t": "a" }
+                                ],
+                                "sep": ","
+                              },
+                              {
+                                "children": [
+                                  { "k": "ident.parameter", "t": "b" }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

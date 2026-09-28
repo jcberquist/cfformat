@@ -1,0 +1,26 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "unary",
+            "children": [
+              { "k": "op.sign", "t": "+" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "index" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

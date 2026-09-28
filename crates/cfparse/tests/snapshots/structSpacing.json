@@ -1,0 +1,57 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "op.assign", "t": "=" },
+              {
+                "kind": "struct",
+                "open": "{",
+                "close": "}",
+                "items": [
+                  {
+                    "children": [
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.struct-key", "t": "a" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "lit.number", "t": "1" }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.struct-key", "t": "b" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "lit.number", "t": "2" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

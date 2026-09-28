@@ -1,0 +1,3 @@
+// script
+x = 1;
+y = foo(a, function() { return [1, 2

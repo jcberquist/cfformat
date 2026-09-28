@@ -1,0 +1,14 @@
+[package]
+name = "cfvet"
+version.workspace = true
+description = "Two CFML checks (missing-var, unevaluated-call) built on cfparse"
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+cfparse = { path = "../cfparse" }
+cfcli = { path = "../cfcli" }
+clap = { version = "4.6.7", features = ["derive"] }

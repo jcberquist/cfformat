@@ -1,0 +1,9 @@
+<cfcomponent <!--- after the name --->>
+<cffunction name="f" <!--- after an attribute --->>
+<cfif a>
+<p <!--- after the name --->>one</p <!--- in a closing tag --->>
+<cfelse <!--- after the name --->>
+<br <!--- in a void tag ---> />
+</cfif>
+</cffunction>
+</cfcomponent>

@@ -1,0 +1,55 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "function",
+        "children": [
+          {
+            "kind": "function",
+            "children": [
+              {
+                "kind": "function-decl",
+                "children": [
+                  { "k": "kw.function", "t": "function" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.function-name", "t": "test" },
+                  { "k": "ws", "t": " " },
+                  { "kind": "parameters", "open": "(", "close": ")" },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              { "kind": "block", "block": "function", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "function",
+        "children": [
+          {
+            "kind": "function",
+            "children": [
+              {
+                "kind": "function-decl",
+                "children": [
+                  { "k": "kw.function", "t": "function" },
+                  { "kind": "parameters", "open": "(", "close": ")" },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              { "kind": "block", "block": "function", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

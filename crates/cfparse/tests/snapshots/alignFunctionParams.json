@@ -1,0 +1,104 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "function",
+        "children": [
+          {
+            "kind": "function",
+            "children": [
+              {
+                "kind": "function-decl",
+                "children": [
+                  { "k": "kw.function", "t": "function" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.function-name", "t": "renderIt" },
+                  {
+                    "kind": "parameters",
+                    "open": "(",
+                    "close": ")",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "nl", "t": "\n" },
+                          { "k": "ws", "t": "    " },
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.parameter", "t": "max" },
+                              { "k": "ws", "t": " " },
+                              { "k": "punct.key-value", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              { "k": "lit.number", "t": "3" }
+                            ]
+                          }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "nl", "t": "\n" },
+                          { "k": "ws", "t": "    " },
+                          { "k": "storage.type", "t": "string" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.parameter", "t": "category" },
+                              { "k": "ws", "t": " " },
+                              { "k": "punct.key-value", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              { "kind": "string", "quote": "single", "in_tag": false, "open": "'", "close": "'" }
+                            ]
+                          }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "nl", "t": "\n" },
+                          { "k": "ws", "t": "    " },
+                          { "k": "kw.required", "t": "required" },
+                          { "k": "ws", "t": " " },
+                          { "k": "storage.type", "t": "string" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.parameter", "t": "carouselId" },
+                              { "k": "ws", "t": " " },
+                              { "k": "punct.key-value", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              { "kind": "string", "quote": "single", "in_tag": false, "open": "'", "close": "'" }
+                            ]
+                          },
+                          { "k": "nl", "t": "\n" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              {
+                "kind": "block",
+                "block": "function",
+                "open": "{",
+                "close": "}",
+                "children": [
+                  { "k": "nl", "t": "\n" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

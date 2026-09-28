@@ -1,0 +1,81 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "CFIF",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "expression",
+            "name": "CFIF",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "CFIF" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "binary",
+                "prec": "comparison",
+                "children": [
+                  { "k": "ident.variable", "t": "a" },
+                  { "k": "ws", "t": " " },
+                  { "k": "op.comparison", "t": "eq" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.variable", "t": "b" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "tag-body",
+            "cf": false,
+            "name": "DIV",
+            "children": [
+              {
+                "kind": "html-tag",
+                "shape": "open",
+                "name": "DIV",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "DIV" }
+                ]
+              },
+              {
+                "kind": "html-tag",
+                "shape": "close",
+                "name": "DIV",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "DIV" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "expression",
+            "name": "CFIF",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "CFIF" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

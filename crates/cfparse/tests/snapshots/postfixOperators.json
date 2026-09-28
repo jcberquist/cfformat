@@ -1,0 +1,27 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "unary",
+            "postfix": true,
+            "children": [
+              { "k": "ident.variable", "t": "index" },
+              { "k": "ws", "t": " " },
+              { "k": "op.postfix", "t": "++" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

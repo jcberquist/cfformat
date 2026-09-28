@@ -1,0 +1,17 @@
+//
+testIt((x) => {
+    // pass
+}, {});
+existing = recordStore.findAllMatching('ExampleTableWithALongNames', {ExampleForeignKeyWithALongID: id}).reduce((map, row) => {
+    map[row.ExampleTableWithALongNameID] = row;
+    return map;
+}, {});
+names = collect(function(item) {
+    return item.name;
+}, []);
+single = doIt({});
+two = doIt({}, {});
+withComment = doIt(function() {
+    return 1;
+}, {/* none */});
+q = queryExecute('SELECT dept, COUNT(*) AS n, SUM(salary) AS total FROM emp GROUP BY dept ORDER BY dept', {}, {dbtype: 'query'});

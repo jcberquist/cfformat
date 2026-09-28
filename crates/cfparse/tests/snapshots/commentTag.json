@@ -1,0 +1,60 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "block-comment",
+        "open": "<!---",
+        "close": "--->",
+        "children": [
+          { "k": "comment", "t": " this is a test comment " }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "block-comment",
+        "open": "<!---",
+        "close": "--->",
+        "children": [
+          { "k": "comment", "t": "------ HEADER ------" }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "block-comment",
+        "open": "<!---",
+        "close": "--->",
+        "children": [
+          { "k": "comment", "t": "------------------------------------------------------------------\n" },
+          { "k": "comment", "t": "An informative comment\n" },
+          { "k": "comment", "t": "-------------------------------------------------------------------" }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "block-comment",
+        "open": "<!---",
+        "close": "--->",
+        "children": [
+          { "k": "ws", "t": " " },
+          {
+            "kind": "block-comment",
+            "open": "<!---",
+            "close": "--->",
+            "children": [
+              { "k": "comment", "t": " nested " }
+            ]
+          },
+          { "k": "ws", "t": " " }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+[
+    {
+        "alignment.consecutive.assignments": true,
+        "function_declaration.multiline.element_count": 1,
+        "multiline.comma": "trailing"
+    },
+    {
+        "alignment.consecutive.assignments": true,
+        "function_declaration.multiline.element_count": 1,
+        "multiline.comma": "leading"
+    },
+    {
+        "alignment.consecutive.assignments": true,
+        "function_declaration.multiline.element_count": 1,
+        "multiline.comma": "leading_tight"
+    }
+]

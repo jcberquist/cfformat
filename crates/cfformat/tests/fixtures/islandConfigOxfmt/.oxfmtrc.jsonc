@@ -1,0 +1,6 @@
+// oxfmt's own file: read before the .prettierrc beside it
+{
+    /* JSONC: comments and a trailing comma */
+    "singleQuote": true,
+    "experimentalOperatorPosition": "start", // operators start the line
+}

@@ -1,0 +1,14 @@
+[
+    {
+        "parentheses.padding": true
+    },
+    {
+        "function_call.multiline.element_count": 4,
+        "function_call.multiline.min_item_length": 0
+    },
+    {
+        "multiline.comma": "leading_tight",
+        "function_call.multiline.element_count": 4,
+        "function_call.multiline.min_item_length": 0
+    }
+]

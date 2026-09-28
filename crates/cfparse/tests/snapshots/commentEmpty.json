@@ -1,0 +1,28 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "line-comment",
+        "open": "//",
+        "children": [
+          { "k": "comment", "t": "test" }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "kind": "line-comment", "open": "//" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "line-comment",
+        "open": "//",
+        "children": [
+          { "k": "comment", "t": "test" }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

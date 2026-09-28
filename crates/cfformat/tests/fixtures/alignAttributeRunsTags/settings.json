@@ -1,0 +1,9 @@
+[
+    {
+        "alignment.consecutive.params": true,
+        "max_columns": 42
+    },
+    {
+        "alignment.consecutive.params": true
+    }
+]

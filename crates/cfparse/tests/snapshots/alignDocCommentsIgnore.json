@@ -1,0 +1,43 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "doc-comment",
+        "open": "/**",
+        "close": "*/",
+        "children": [
+          { "k": "nl", "t": "\n" },
+          { "k": "comment", "t": "*********************************************************************************\n" },
+          { "k": "comment", "t": "Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp\n" },
+          { "k": "comment", "t": "www.ortussolutions.com\n" },
+          { "k": "comment", "t": "*********************************************************************************\n" }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "class",
+        "children": [
+          {
+            "kind": "class",
+            "children": [
+              {
+                "kind": "class-decl",
+                "children": [
+                  { "k": "kw.component", "t": "component" },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              { "kind": "block", "block": "class", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

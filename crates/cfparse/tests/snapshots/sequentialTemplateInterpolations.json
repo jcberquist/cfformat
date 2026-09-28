@@ -1,0 +1,71 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cfoutput",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "output",
+            "name": "cfoutput",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfoutput" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "template-expression",
+            "open": "#",
+            "close": "#",
+            "children": [
+              {
+                "kind": "call-expr",
+                "children": [
+                  { "k": "ident.builtin", "t": "now" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          },
+          { "k": "ws", "t": "  " },
+          {
+            "kind": "template-expression",
+            "open": "#",
+            "close": "#",
+            "children": [
+              {
+                "kind": "call-expr",
+                "children": [
+                  { "k": "ident.builtin", "t": "now" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "output",
+            "name": "cfoutput",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfoutput" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

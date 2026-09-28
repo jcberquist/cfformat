@@ -1,0 +1,208 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "function",
+        "children": [
+          {
+            "kind": "function",
+            "children": [
+              {
+                "kind": "function-decl",
+                "children": [
+                  { "k": "kw.function", "t": "function" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.function-name", "t": "run" },
+                  {
+                    "kind": "parameters",
+                    "open": "(",
+                    "close": ")",
+                    "items": [
+                      {
+                        "leading": [
+                          { "k": "nl", "t": "\n" },
+                          { "k": "ws", "t": "    " },
+                          {
+                            "kind": "line-comment",
+                            "open": "//",
+                            "children": [
+                              { "k": "comment", "t": " my comment" }
+                            ]
+                          },
+                          { "k": "nl", "t": "\n" },
+                          { "k": "ws", "t": "    " }
+                        ],
+                        "children": [
+                          { "k": "storage.type", "t": "string" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.parameter", "t": "arg1" },
+                              { "k": "ws", "t": " " },
+                              { "k": "punct.key-value", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              {
+                                "kind": "string",
+                                "quote": "single",
+                                "in_tag": false,
+                                "open": "'",
+                                "close": "'",
+                                "children": [
+                                  { "k": "lit.string", "t": "hello" }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "trailing": [
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "line-comment",
+                            "open": "//",
+                            "children": [
+                              { "k": "comment", "t": " another comment" }
+                            ]
+                          },
+                          { "k": "nl", "t": "\n" }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [],
+                        "trailing": [
+                          { "k": "ws", "t": "    " },
+                          {
+                            "kind": "line-comment",
+                            "open": "//",
+                            "children": [
+                              { "k": "comment", "t": " test comment" }
+                            ]
+                          },
+                          { "k": "nl", "t": "\n" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              {
+                "kind": "block",
+                "block": "function",
+                "open": "{",
+                "close": "}",
+                "children": [
+                  { "k": "nl", "t": "\n" },
+                  { "k": "nl", "t": "\n" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "function",
+        "children": [
+          {
+            "kind": "function",
+            "children": [
+              {
+                "kind": "function-decl",
+                "children": [
+                  { "k": "kw.function", "t": "function" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.function-name", "t": "run" },
+                  {
+                    "kind": "parameters",
+                    "open": "(",
+                    "close": ")",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "nl", "t": "\n" },
+                          { "k": "ws", "t": "    " },
+                          { "k": "storage.type", "t": "string" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.parameter", "t": "arg1" },
+                              { "k": "ws", "t": " " },
+                              { "k": "punct.key-value", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              {
+                                "kind": "string",
+                                "quote": "single",
+                                "in_tag": false,
+                                "open": "'",
+                                "close": "'",
+                                "children": [
+                                  { "k": "lit.string", "t": "hello" }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "trailing": [
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "line-comment",
+                            "open": "//",
+                            "children": [
+                              { "k": "comment", "t": " another comment" }
+                            ]
+                          },
+                          { "k": "nl", "t": "\n" }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ws", "t": "    " },
+                          { "k": "storage.type", "t": "numeric" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.parameter", "t": "arg2" },
+                              { "k": "ws", "t": " " },
+                              { "k": "punct.key-value", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              { "k": "lit.number", "t": "1" }
+                            ]
+                          },
+                          { "k": "nl", "t": "\n" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              {
+                "kind": "block",
+                "block": "function",
+                "open": "{",
+                "close": "}",
+                "children": [
+                  { "k": "nl", "t": "\n" },
+                  { "k": "nl", "t": "\n" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

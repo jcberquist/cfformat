@@ -1,0 +1,102 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "script-tag",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "script-tag",
+            "acf": true,
+            "children": [
+              { "k": "ident.tag-name", "t": "cfldap" },
+              {
+                "kind": "script-tag-attributes",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "server" },
+                          { "k": "punct.key-value", "t": "=" },
+                          { "k": "ident.variable", "t": "ldapHostAddress" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "timeout" },
+                          { "k": "punct.key-value", "t": "=" },
+                          { "k": "lit.number", "t": "3" }
+                        ]
+                      }
+                    ],
+                    "trailing": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " timeout is not respected on Lucee" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "username" },
+                          { "k": "punct.key-value", "t": "=" },
+                          {
+                            "kind": "chain",
+                            "children": [
+                              { "k": "ident.scope", "t": "variables" },
+                              {
+                                "kind": "segment",
+                                "segment": "property",
+                                "children": [
+                                  { "k": "punct.accessor", "t": "." },
+                                  { "k": "ident.property-name", "t": "ldapUsername" }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

@@ -1,0 +1,232 @@
+name: release
+# A release is a tag: push `v<version>` (the version in the workspace
+# Cargo.toml, `[workspace.package]`, shared by every crate) at the commit
+# to release. It builds and publishes both binaries, cfformat and cfvet,
+# for every platform. A manual run is a dry run by default: everything is
+# checked and built, the assets are uploaded as the run's artifacts, and no
+# release is made. The first release (v0.1.0) is bootstrapped the same way:
+# push master, run this workflow by hand as a dry run, then tag that commit
+# and push the tag.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and upload the assets without creating a release
+        type: boolean
+        default: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.inspect.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Read the version
+        id: inspect
+        run: |-
+          set -euo pipefail
+          # The first `version = "…"` line of the workspace manifest is
+          # [workspace.package]'s; the dependency tables write `version`
+          # inline after the crate's name, so they do not match.
+          version=$(sed -n 's/^\s*version\s*=\s*"\([^"]*\)".*$/\1/p' Cargo.toml | head -n 1)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "cfformat and cfvet $version at $GITHUB_SHA ($GITHUB_EVENT_NAME, $GITHUB_REF_NAME)" >> "$GITHUB_STEP_SUMMARY"
+          # A tag must name the version it releases.
+          if [ "$GITHUB_EVENT_NAME" = push ] && [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match the workspace version $version"
+            exit 1
+          fi
+
+  # The whole CI (Linux fmt, clippy, tests and fuzz; macOS; Windows) passes
+  # at this commit before an asset is built.
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  # One job per platform builds both binaries; `dir` is where cargo puts
+  # them, `suffix` names the assets (`cfformat_<suffix>`, `cfvet_<suffix>`).
+  build:
+    name: 'build: ${{ matrix.suffix }}'
+    runs-on: ${{ matrix.platform }}
+    needs:
+      - preflight
+      - ci
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-latest
+            dir: target/release
+            suffix: linux_x86_64
+          - platform: ubuntu-latest
+            dir: target/x86_64-unknown-linux-musl/release
+            suffix: linux_x86_64_musl
+            rust_target: x86_64-unknown-linux-musl
+          - platform: ubuntu-24.04-arm
+            dir: target/release
+            suffix: linux_arm64
+          - platform: ubuntu-24.04-arm
+            dir: target/aarch64-unknown-linux-musl/release
+            suffix: linux_arm64_musl
+            rust_target: aarch64-unknown-linux-musl
+          - platform: windows-latest
+            dir: target/release
+            suffix: windows_x86_64
+            ext: .exe
+          - platform: macos-latest
+            dir: target/release
+            suffix: macos_arm64
+          - platform: macos-latest
+            dir: target/x86_64-apple-darwin/release
+            suffix: macos_x86_64
+            rust_target: x86_64-apple-darwin
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install Rust
+        run: rustup show active-toolchain || rustup toolchain install
+
+      - name: Add target ${{ matrix.rust_target }}
+        if: ${{ matrix.rust_target }}
+        run: rustup target add ${{ matrix.rust_target }}
+
+      # Pure Rust on every target — no C toolchain, so musl needs no
+      # musl-gcc — including the oxc formatter crates (git, pure Rust, no
+      # build scripts beyond codegen; fetched from GitHub at the rev in
+      # Cargo.lock); .cargo/config.toml sets the macOS x86_64 deployment
+      # target of the binaries themselves. The `cfformat` binary is the
+      # `cfformat-cli` package's (the `cfformat` package is the library).
+      - name: Build cfformat and cfvet
+        shell: bash
+        run: cargo build --locked --release -p cfformat-cli -p cfvet ${{ matrix.rust_target && format('--target {0}', matrix.rust_target) || '' }}
+
+      - name: Version
+        if: ${{ matrix.suffix != 'macos_x86_64' }}
+        shell: bash
+        run: |-
+          ${{ matrix.dir }}/cfformat${{ matrix.ext }} --version
+          ${{ matrix.dir }}/cfvet${{ matrix.ext }} --version
+
+      # Two files from one directory: the artifact holds them at its root.
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ matrix.suffix }}
+          path: |
+            ${{ matrix.dir }}/cfformat${{ matrix.ext }}
+            ${{ matrix.dir }}/cfvet${{ matrix.ext }}
+          if-no-files-found: error
+
+  macos-universal-binary:
+    runs-on: macos-latest
+    needs:
+      - preflight
+      - build
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: macos_*
+          path: artifacts
+
+      - name: Create the macOS universal binaries
+        run: |-
+          set -euo pipefail
+          mkdir macos
+          for tool in cfformat cfvet; do
+            lipo -create -output "macos/${tool}_macos" \
+              "artifacts/macos_arm64/$tool" \
+              "artifacts/macos_x86_64/$tool"
+            chmod +x "macos/${tool}_macos"
+            lipo -info "macos/${tool}_macos"
+          done
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: macos
+          path: macos/*
+          if-no-files-found: error
+
+  # Assembles the assets — six per binary and the two licences — on every
+  # run; a dry run uploads them as one artifact and stops, a tag run (or a
+  # manual run with dry_run off) creates the release from them.
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - preflight
+      - build
+      - macos-universal-binary
+    env:
+      VERSION: ${{ needs.preflight.outputs.version }}
+      PUBLISH: ${{ github.event_name == 'push' || inputs.dry_run == false }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          # Every tag, to check where `v<version>` points.
+          fetch-depth: 0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: artifacts
+
+      - name: Assemble the assets
+        run: |-
+          set -euo pipefail
+          mkdir assets
+          for tool in cfformat cfvet; do
+            for suffix in linux_x86_64 linux_x86_64_musl linux_arm64 linux_arm64_musl; do
+              mv "artifacts/$suffix/$tool" "assets/${tool}_$suffix"
+            done
+            mv "artifacts/windows_x86_64/$tool.exe" "assets/${tool}_windows_x86_64.exe"
+            mv "artifacts/macos/${tool}_macos" "assets/${tool}_macos"
+          done
+          cp LICENSE assets/LICENSE
+          cp crates/cfdoc/LICENSE-PRETTIER assets/LICENSE-PRETTIER
+          ls -l assets
+
+      - name: Upload the assets (dry run)
+        if: ${{ env.PUBLISH != 'true' }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: release-assets-v${{ env.VERSION }}
+          path: assets/*
+          if-no-files-found: error
+
+      - name: Create release
+        if: ${{ env.PUBLISH == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |-
+          set -euo pipefail
+          tag="v$VERSION"
+          # The tag must exist and name the commit these assets were built
+          # from; a release that already exists is never replaced.
+          tagged=$(git rev-parse --verify --quiet "refs/tags/$tag^{commit}" || true)
+          if [ "$tagged" != "$GITHUB_SHA" ]; then
+            echo "::error::tag $tag is at '${tagged:-nothing}', the assets were built from $GITHUB_SHA"
+            exit 1
+          fi
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "::error::release $tag already exists"
+            exit 1
+          fi
+          gh release create "$tag" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$tag" \
+            --target "$GITHUB_SHA" \
+            --verify-tag \
+            --notes "cfformat and cfvet $VERSION: see CHANGELOG.md." \
+            assets/*

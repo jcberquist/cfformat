@@ -1,0 +1,19 @@
+<script type="text/template">
+<b>x</b>
+</script>
+<script>
+var a;
+<cfif x>b();</cfif>
+</script>
+<cfoutput>
+<script>
+var a = "#x#";
+</script>
+</cfoutput>
+<div>
+<cfquery name="q">
+SELECT 1
+</cfquery>
+</div>
+<a onclick="go( 1 )">x</a>
+<script></script>

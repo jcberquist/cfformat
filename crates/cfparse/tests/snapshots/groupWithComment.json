@@ -1,0 +1,45 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "children": [
+          {
+            "kind": "group",
+            "open": "(",
+            "close": ")",
+            "children": [
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "binary",
+                "prec": "and",
+                "children": [
+                  { "k": "ident.variable", "t": "a" },
+                  { "k": "ws", "t": " " },
+                  { "k": "op.and", "t": "&&" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.variable", "t": "b" }
+                ]
+              },
+              { "k": "ws", "t": "  " },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": "test" }
+                ]
+              },
+              { "k": "nl", "t": "\n" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+cases/unevaluated-call.cfm:2:10: unevaluated-call: `#getName()#` is not inside `<cfoutput>`: it is output as written and the call never runs
+cases/unevaluated-call.cfm:3:10: unevaluated-call: `#buildLink(…)#` is not inside `<cfoutput>`: it is output as written and the call never runs
+cases/unevaluated-call.cfm:3:39: unevaluated-call: `#showDetail(…)#` is not inside `<cfoutput>`: it is output as written and the call never runs
+cases/unevaluated-call.cfm:3:72: unevaluated-call: `#w()#` is not inside `<cfoutput>`: it is output as written and the call never runs
+cases/unevaluated-call.cfm:4:18: unevaluated-call: `#serializeJSON(…)#` is not inside `<cfoutput>`: it is output as written and the call never runs
+cases/unevaluated-call.cfm:5:4: unevaluated-call: `#rc.user.getName()#` is not inside `<cfoutput>`: it is output as written and the call never runs
+cases/unevaluated-call.cfm:5:24: unevaluated-call: `#a.b(…).c[ 2 ]()#` is not inside `<cfoutput>`: it is output as written and the call never runs
+cases/unevaluated-call.cfm:6:32: unevaluated-call: `#saved()#` is not inside `<cfoutput>`: it is output as written and the call never runs
+cases/unevaluated-call.cfm:7:15: unevaluated-call: `#inIf()#` is not inside `<cfoutput>`: it is output as written and the call never runs
+cases/unevaluated-call.cfm:24:42: unevaluated-call: `#off()#` is not inside `<cfoutput>`: it is output as written and the call never runs
+cases/unevaluated-call.cfm:25:30: unevaluated-call: `#absent()#` is not inside `<cfoutput>`: it is output as written and the call never runs

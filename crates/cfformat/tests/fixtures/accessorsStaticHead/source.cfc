@@ -1,0 +1,4 @@
+// script
+return ExampleClassFactory::create("test", "test").getClass().getName();
+x = Foo::bar;
+y = foo.bar().baz().qux::quux();

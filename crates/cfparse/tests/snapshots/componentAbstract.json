@@ -1,0 +1,40 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "class",
+        "children": [
+          {
+            "kind": "class",
+            "children": [
+              {
+                "kind": "class-decl",
+                "children": [
+                  { "k": "storage.modifier", "t": "abstract" },
+                  { "k": "ws", "t": " " },
+                  { "k": "kw.component", "t": "component" },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              {
+                "kind": "block",
+                "block": "class",
+                "open": "{",
+                "close": "}",
+                "children": [
+                  { "k": "ws", "t": " " }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

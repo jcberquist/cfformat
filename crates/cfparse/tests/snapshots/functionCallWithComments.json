@@ -1,0 +1,121 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.call", "t": "test" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "leading": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " put your arg here" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "children": [
+                      { "k": "ident.variable", "t": "arg1" }
+                    ],
+                    "trailing": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " there it is" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [],
+                    "trailing": [
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " actually this is invalid syntax" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.call", "t": "test" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "trailing": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": "comment" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": "    " },
+                      { "k": "ident.variable", "t": "b" },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

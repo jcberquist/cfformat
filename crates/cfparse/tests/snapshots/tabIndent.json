@@ -1,0 +1,35 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "block",
+            "block": "plain",
+            "open": "{",
+            "close": "}",
+            "children": [
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "statement",
+                "stmt": "expression",
+                "children": [
+                  { "k": "ident.variable", "t": "a" }
+                ]
+              },
+              { "k": "nl", "t": "\n" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

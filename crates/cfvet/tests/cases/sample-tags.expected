@@ -1,0 +1,8 @@
+cases/sample-tags.cfm:5:12: missing-var: `y` is written without `var` or a scope in function `f`; it lands in the variables scope
+cases/sample-tags.cfm:7:20: missing-var: `q` is written without `var` or a scope in function `f`; it lands in the variables scope
+cases/sample-tags.cfm:8:20: missing-var: `i` is written without `var` or a scope in function `f`; it lands in the variables scope
+cases/sample-tags.cfm:9:19: missing-var: `it` is written without `var` or a scope in function `f`; it lands in the variables scope
+cases/sample-tags.cfm:11:30: missing-var: `sc` is written without `var` or a scope in function `f`; it lands in the variables scope
+cases/sample-tags.cfm:12:20: missing-var: `pp` is written without `var` or a scope in function `f`; it lands in the variables scope
+cases/sample-tags.cfm:13:29: missing-var: `r` is written without `var` or a scope in function `f`; it lands in the variables scope
+cases/sample-tags.cfm:14:23: missing-var: `w` is written without `var` or a scope in function `f`; it lands in the variables scope

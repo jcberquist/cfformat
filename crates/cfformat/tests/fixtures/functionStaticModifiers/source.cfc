@@ -1,0 +1,10 @@
+// script
+component {
+	static function one(arg1){ return arg1; }
+	static public struct function two(arg1){
+		return arguments;
+	}
+	public static struct function three(arg1){
+		return arguments;
+	}
+}

@@ -1,0 +1,12 @@
+// script
+application action="update" mappings=getApplicationSettings().mappings.append({"/x": expandPath("./")}) other=a.b[1];
+setting requesttimeout=arguments.timeout * 2 enablecfoutputonly=false;
+lock name=application.name & "x" timeout=10 {
+    x = 1;
+}
+loop times=height-3 {
+    thread name=name&"x" sleeptime=i-1 {
+    }
+}
+query cachedwithin=CreateTimeSpan(0, 0, 1, 0) name="q" {
+}

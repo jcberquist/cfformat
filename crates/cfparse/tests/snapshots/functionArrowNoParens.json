@@ -1,0 +1,62 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "test" },
+              { "k": "op.assign", "t": "=" },
+              {
+                "kind": "function",
+                "arrow": true,
+                "children": [
+                  {
+                    "kind": "arrow-function",
+                    "children": [
+                      {
+                        "kind": "parameters",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "ident.parameter", "t": "a" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "kw.arrow", "t": "=>" },
+                  {
+                    "kind": "block",
+                    "block": "function",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "prec": "multiplicative",
+                        "children": [
+                          { "k": "ident.variable", "t": "a" },
+                          { "k": "op.multiplicative", "t": "*" },
+                          { "k": "lit.number", "t": "2" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

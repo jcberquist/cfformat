@@ -1,0 +1,385 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cfcomponent",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "class",
+            "name": "cfcomponent",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfcomponent" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "output" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": true,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      { "k": "lit.string", "t": "false" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "accessors" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": true,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      { "k": "lit.string", "t": "true" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "extends" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": true,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      { "k": "lit.string", "t": "does.not.exist" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "tag-body",
+            "cf": true,
+            "name": "cffunction",
+            "children": [
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "function",
+                "name": "cffunction",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cffunction" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "name" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "test" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "generic",
+                "name": "cfargument",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfargument" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "name" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "test" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "expression",
+                "name": "cfset",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfset" },
+                  { "k": "ws", "t": " " },
+                  { "k": "storage.type", "t": "var" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "assignment",
+                    "children": [
+                      { "k": "ident.variable", "t": "mydata" },
+                      { "k": "ws", "t": " " },
+                      { "k": "op.assign", "t": "=" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "array",
+                        "open": "[",
+                        "close": "]",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "1" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "2" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              {
+                                "kind": "string",
+                                "quote": "double",
+                                "in_tag": false,
+                                "open": "\"",
+                                "close": "\"",
+                                "children": [
+                                  { "k": "lit.string", "t": "a string of text goes here" }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "expression",
+                "name": "cfset",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfset" },
+                  { "k": "ws", "t": " " },
+                  { "k": "storage.type", "t": "var" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "assignment",
+                    "children": [
+                      { "k": "ident.variable", "t": "result" },
+                      { "k": "ws", "t": " " },
+                      { "k": "op.assign", "t": "=" },
+                      { "k": "ws", "t": " " },
+                      { "kind": "string", "quote": "double", "in_tag": false, "open": "\"", "close": "\"" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "tag-body",
+                "cf": true,
+                "name": "cfif",
+                "children": [
+                  {
+                    "kind": "cf-tag",
+                    "shape": "open",
+                    "cf_kind": "expression",
+                    "name": "cfif",
+                    "open": "<",
+                    "close": ">",
+                    "children": [
+                      { "k": "ident.tag-name", "t": "cfif" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "unary",
+                        "children": [
+                          { "k": "op.not", "t": "not" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "call-expr",
+                            "children": [
+                              { "k": "ident.builtin", "t": "arrayLen" },
+                              {
+                                "kind": "call",
+                                "open": "(",
+                                "close": ")",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "ws", "t": " " },
+                                      { "k": "ident.variable", "t": "mydata" },
+                                      { "k": "ws", "t": " " }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  {
+                    "kind": "cf-tag",
+                    "shape": "open",
+                    "cf_kind": "generic",
+                    "name": "cfhttp",
+                    "open": "<",
+                    "close": ">",
+                    "children": [
+                      { "k": "ident.tag-name", "t": "cfhttp" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "url" },
+                          { "k": "punct.key-value", "t": "=" },
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": true,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "www.google.com?data=" },
+                              {
+                                "kind": "template-expression",
+                                "open": "#",
+                                "close": "#",
+                                "children": [
+                                  { "k": "ident.variable", "t": "mydata" }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "result" },
+                          { "k": "punct.key-value", "t": "=" },
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": true,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "result" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  {
+                    "kind": "cf-tag",
+                    "shape": "close",
+                    "cf_kind": "expression",
+                    "name": "cfif",
+                    "open": "</",
+                    "close": ">",
+                    "children": [
+                      { "k": "ident.tag-name", "t": "cfif" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "expression",
+                "name": "cfreturn",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfreturn" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.variable", "t": "result" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "cf-tag",
+                "shape": "close",
+                "cf_kind": "function",
+                "name": "cffunction",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cffunction" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "class",
+            "name": "cfcomponent",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfcomponent" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+    "singleQuote": true,
+    "semi": false,
+    "trailingComma": "none",
+    "arrowParens": "avoid",
+    "quoteProps": "consistent",
+    "bracketSpacing": false,
+    "printWidth": 40,
+    "tabWidth": 2,
+    "useTabs": true,
+    "plugins": [],
+    "overrides": [
+        { "files": "*.css", "options": { "singleQuote": false } },
+        { "files": ["sub/**/*.js"], "options": { "semi": true } }
+    ],
+    // cfformat strips this comment; prettier's YAML loader reads it as an unknown key
+}

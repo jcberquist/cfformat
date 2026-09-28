@@ -1,0 +1,45 @@
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+
+[workspace.package]
+# One version for the workspace: the two binaries — `cfformat` (the
+# `cfformat-cli` package; the `cfformat` package is the library) and
+# `cfvet` — release together from one tag, and both print it.
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["John Berquist <jcberquist@gmail.com>"]
+repository = "https://github.com/jcberquist/cfformat"
+# The pinned oxc's minimum (its Cargo.toml at oxfmt_v0.70.0); the workspace
+# needs nothing newer.
+rust-version = "1.96"
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+# The oxc formatter crates, which format the `<script>` and `<style>` islands in
+# process: unpublished, so a git dependency pinned to one release tag's commit,
+# oxfmt_v0.70.0. Bump the one rev, every entry below and in [patch.crates-io]
+# together.
+oxc_allocator      = { git = "https://github.com/oxc-project/oxc", rev = "288d8cc77984b0a3851c58c423ffe9e6edc79f2e" }
+oxc_span           = { git = "https://github.com/oxc-project/oxc", rev = "288d8cc77984b0a3851c58c423ffe9e6edc79f2e" }
+# oxc_ast and oxc_ast_visit: the walk that finds the literal lines of oxc's
+# output (islands::literal_lines).
+oxc_ast            = { git = "https://github.com/oxc-project/oxc", rev = "288d8cc77984b0a3851c58c423ffe9e6edc79f2e" }
+oxc_ast_visit      = { git = "https://github.com/oxc-project/oxc", rev = "288d8cc77984b0a3851c58c423ffe9e6edc79f2e" }
+oxc_formatter      = { git = "https://github.com/oxc-project/oxc", rev = "288d8cc77984b0a3851c58c423ffe9e6edc79f2e" }
+oxc_formatter_core = { git = "https://github.com/oxc-project/oxc", rev = "288d8cc77984b0a3851c58c423ffe9e6edc79f2e" }
+oxc_formatter_css  = { git = "https://github.com/oxc-project/oxc", rev = "288d8cc77984b0a3851c58c423ffe9e6edc79f2e" }
+oxc_formatter_json = { git = "https://github.com/oxc-project/oxc", rev = "288d8cc77984b0a3851c58c423ffe9e6edc79f2e" }
+
+# The published oxc-css-parser that oxc_formatter_css parses with depends on the
+# published oxc_allocator, its only oxc dependency; redirect it to the same git
+# rev so the two allocators are one crate and the types unify. It is the only
+# entry the graph needs: `cargo tree -i oxc_allocator` shows one crate.
+[patch.crates-io]
+oxc_allocator       = { git = "https://github.com/oxc-project/oxc", rev = "288d8cc77984b0a3851c58c423ffe9e6edc79f2e" }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

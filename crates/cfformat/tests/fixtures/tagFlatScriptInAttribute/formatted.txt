@@ -1,0 +1,5 @@
+<input value="<cfif f(function(a = 1){return a;})>x</cfif>">
+<input value="<cfset g=function(required string b = 2,c = 3){return b;}>">
+<input class=<cfif h(function(d = 4){return d;})>y</cfif>>
+<input value="<cfif k(e=5,f:6,{g=7,h:8})>z</cfif>">
+<input value="<cfoutput>#m(i = 9)#</cfoutput>">

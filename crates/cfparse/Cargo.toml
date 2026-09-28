@@ -1,0 +1,22 @@
+[package]
+name = "cfparse"
+version.workspace = true
+description = "CFML parse tree: hand-written CFScript and CFML tag front ends"
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+serde_json = { workspace = true }
+
+[dev-dependencies]
+# tests/fuzz.rs formats what it parses (a dev-dependency cycle, allowed for
+# tests).
+cfformat = { path = "../cfformat" }
+criterion = { version = "0.5", default-features = false, features = ["cargo_bench_support"] }
+
+[[bench]]
+name = "parse"
+harness = false

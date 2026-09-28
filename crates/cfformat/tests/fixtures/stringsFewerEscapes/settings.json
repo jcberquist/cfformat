@@ -1,0 +1,10 @@
+[
+    {},
+    {
+        "strings.quote": "double",
+        "strings.attributes.quote": "single"
+    },
+    {
+        "strings.quote": "ignored"
+    }
+]

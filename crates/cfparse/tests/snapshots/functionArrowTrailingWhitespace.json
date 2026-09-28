@@ -1,0 +1,92 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "block",
+            "block": "plain",
+            "open": "{",
+            "close": "}",
+            "children": [
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "statement",
+                "stmt": "keyword",
+                "children": [
+                  {
+                    "kind": "block",
+                    "block": "plain",
+                    "open": "{",
+                    "close": "}",
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "        " },
+                      {
+                        "kind": "statement",
+                        "stmt": "assignment",
+                        "children": [
+                          {
+                            "kind": "assignment",
+                            "children": [
+                              { "k": "ident.variable", "t": "f" },
+                              { "k": "ws", "t": " " },
+                              { "k": "op.assign", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              {
+                                "kind": "function",
+                                "arrow": true,
+                                "children": [
+                                  {
+                                    "kind": "arrow-function",
+                                    "children": [
+                                      { "kind": "parameters", "open": "(", "close": ")" }
+                                    ]
+                                  },
+                                  { "k": "ws", "t": " " },
+                                  { "k": "kw.arrow", "t": "=>" },
+                                  { "k": "ws", "t": " " },
+                                  {
+                                    "kind": "block",
+                                    "block": "function",
+                                    "children": [
+                                      { "k": "lit.number", "t": "1" },
+                                      { "k": "nl", "t": "\n" },
+                                      { "k": "ws", "t": "        " }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "statement",
+                        "stmt": "expression",
+                        "children": [
+                          { "k": "ident.variable", "t": "b" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

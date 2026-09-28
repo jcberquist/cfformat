@@ -1,0 +1,14 @@
+[
+    {
+        "alignment.consecutive.properties": true,
+        "max_columns": 66
+    },
+    {
+        "alignment.consecutive.properties": true,
+        "max_columns": 57
+    },
+    {
+        "alignment.consecutive.properties": false,
+        "max_columns": 66
+    }
+]

@@ -1,0 +1,9 @@
+[
+    {},
+    {
+        "max_columns": 30
+    },
+    {
+        "attributes.key_value.padding": true
+    }
+]

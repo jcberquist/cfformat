@@ -1,0 +1,19 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "block-comment",
+        "open": "/*",
+        "close": "*/",
+        "children": [
+          { "k": "comment", "t": "********SOME HEADER********" }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

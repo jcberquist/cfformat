@@ -1,0 +1,42 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "op.assign", "t": "=" },
+              {
+                "kind": "binary",
+                "prec": "comparison",
+                "children": [
+                  { "k": "lit.number", "t": "1" },
+                  { "k": "op.comparison", "t": "<" },
+                  { "k": "nl", "t": "\n" },
+                  {
+                    "kind": "line-comment",
+                    "open": "//",
+                    "children": [
+                      { "k": "comment", "t": " test" }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "lit.number", "t": "2" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

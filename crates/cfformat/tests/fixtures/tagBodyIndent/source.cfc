@@ -1,0 +1,67 @@
+<cfif x>
+<div>a</div>
+<cfelse>
+<div>b</div>
+</cfif>
+<cfif onlyFirst>
+<p>first</p>
+<cfelseif other>
+<cfset y = 2>
+<cfelse>
+<cfset y = 3>
+</cfif>
+<cfif firstIsCfml>
+<cfset z = 1>
+<cfelse>
+<p>html</p>
+</cfif>
+<cfif z>
+<cfset a = 1>
+<div>x</div>
+</cfif>
+<div>
+<cfif y>
+<b>y</b>
+</cfif>
+</div>
+<section>
+<cfif outer>
+<cfif inner>
+<span>deep</span>
+</cfif>
+</cfif>
+</section>
+<cfswitch expression="#x#">
+<cfcase value="1">
+<div>one</div>
+</cfcase>
+<cfdefaultcase>
+<cfset d = 1>
+</cfdefaultcase>
+</cfswitch>
+<cfoutput>
+Hello #name#,
+welcome back.
+</cfoutput>
+<cfloop array="#items#" item="item">
+#item.name#<br>
+</cfloop>
+<cfif commented>
+<!--- a note --->
+<li>listed</li>
+</cfif>
+<cfoutput>
+<!--- set first --->
+<cfset n = 1>
+<p>#n#</p>
+</cfoutput>
+<cfif x><b>y</b></cfif>
+<cfif x>yes</cfif>
+<cfif withScript>
+<script>
+var result = someFunction(argumentNumberOne, argumentNumberTwo, argumentNumberThree, argumentNumberFourAndFive1234567);
+</script>
+</cfif>
+<ul>
+<li>one</li>
+</ul>

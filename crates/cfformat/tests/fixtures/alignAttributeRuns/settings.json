@@ -1,0 +1,34 @@
+[
+    {
+        "alignment.consecutive.params": true,
+        "alignment.consecutive.properties": true,
+        "property.multiline.element_count": 4,
+        "property.multiline.min_item_length": 10
+    },
+    {
+        "alignment.consecutive.assignments": true,
+        "alignment.consecutive.params": true,
+        "alignment.consecutive.properties": true,
+        "property.multiline.element_count": 4,
+        "property.multiline.min_item_length": 10
+    },
+    {
+        "alignment.consecutive.params": true,
+        "alignment.consecutive.properties": true,
+        "attributes.key_value.padding": true,
+        "property.multiline.element_count": 4,
+        "property.multiline.min_item_length": 10
+    },
+    {
+        "alignment.consecutive.params": true,
+        "alignment.consecutive.properties": true,
+        "max_columns": 60,
+        "property.multiline.element_count": 4,
+        "property.multiline.min_item_length": 10
+    },
+    {
+        "alignment.consecutive.properties": true,
+        "property.multiline.element_count": 4,
+        "property.multiline.min_item_length": 10
+    }
+]

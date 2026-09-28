@@ -1,0 +1,12 @@
+<script type="application/json">
+{"a": 1,
+  "b": [1, 2]}
+</script>
+<div>
+<script type="importmap">
+{"imports": {"a": "./a.js"}}
+</script>
+<script type="speculationrules">
+{"prerender": [{"source": "list"}]}
+</script>
+</div>

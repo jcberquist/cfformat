@@ -1,0 +1,21 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "doctype",
+        "open": "<!",
+        "close": ">",
+        "children": [
+          { "k": "ident.tag-name", "t": "DOCTYPE" },
+          { "k": "ws", "t": " " },
+          { "k": "text", "t": "html" }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

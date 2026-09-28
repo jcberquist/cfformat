@@ -1,0 +1,8 @@
+[
+    {
+        "strings.convert_nested_quotes": "always"
+    },
+    {
+        "strings.convert_nested_quotes": "never"
+    }
+]

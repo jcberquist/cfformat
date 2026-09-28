@@ -1,0 +1,2 @@
+cases/suppression.cfm:5:12: missing-var: `c` is written without `var` or a scope in function `f`; it lands in the variables scope
+cases/suppression.cfm:16:9: missing-var: `i` is written without `var` or a scope in function `f`; it lands in the variables scope

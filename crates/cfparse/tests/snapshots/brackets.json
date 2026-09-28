@@ -1,0 +1,89 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "chain",
+                "children": [
+                  { "k": "ident.variable", "t": "a" },
+                  {
+                    "kind": "segment",
+                    "segment": "index",
+                    "children": [
+                      {
+                        "kind": "brackets",
+                        "open": "[",
+                        "close": "]",
+                        "children": [
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": false,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "key" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "op.assign", "t": "=" },
+              { "k": "lit.number", "t": "10" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "chain",
+                "children": [
+                  { "k": "ident.variable", "t": "b" },
+                  {
+                    "kind": "segment",
+                    "segment": "index",
+                    "children": [
+                      {
+                        "kind": "brackets",
+                        "open": "[",
+                        "close": "]",
+                        "children": [
+                          { "k": "ident.variable", "t": "c" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "op.assign", "t": "=" },
+              { "k": "lit.bool", "t": "true" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

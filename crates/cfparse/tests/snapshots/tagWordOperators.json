@@ -1,0 +1,52 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cfif",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "expression",
+            "name": "cfif",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfif" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "binary",
+                "prec": "and",
+                "children": [
+                  { "k": "ident.variable", "t": "a" },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "op.and", "t": "AND" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.variable", "t": "b" }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "expression",
+            "name": "cfif",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfif" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

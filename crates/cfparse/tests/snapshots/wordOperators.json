@@ -1,0 +1,78 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "if",
+            "children": [
+              { "k": "kw.if", "t": "if" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "prec": "and",
+                    "children": [
+                      { "k": "ident.variable", "t": "a" },
+                      { "k": "ws", "t": " " },
+                      { "k": "op.and", "t": "and" },
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "b" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "if",
+            "children": [
+              { "k": "kw.if", "t": "if" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "prec": "comparison",
+                    "children": [
+                      { "k": "ident.variable", "t": "a" },
+                      { "k": "ws", "t": " " },
+                      { "k": "op.comparison", "t": "eq" },
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "b" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

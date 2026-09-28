@@ -1,0 +1,82 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "call-expr",
+                "children": [
+                  { "k": "ident.call", "t": "DoSomething" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "b" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "call-expr",
+                "children": [
+                  { "k": "ident.call", "t": "doSomething" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "c" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "call-expr",
+                "children": [
+                  { "k": "ident.call", "t": "DOSomething" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

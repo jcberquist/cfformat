@@ -1,0 +1,78 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.class-name", "t": "Service" },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "static": true,
+                "children": [
+                  { "k": "punct.static-accessor", "t": "::" },
+                  { "k": "ident.call", "t": "get" },
+                  {
+                    "kind": "call",
+                    "open": "(",
+                    "close": ")",
+                    "items": [
+                      {
+                        "children": [
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": false,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "SampleService" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.class-name", "t": "API" },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "static": true,
+                "children": [
+                  { "k": "punct.static-accessor", "t": "::" },
+                  { "k": "ident.call", "t": "assertUserLoggedIn" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

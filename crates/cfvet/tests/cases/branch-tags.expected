@@ -1,0 +1,3 @@
+cases/branch-tags.cfm:3:20: missing-var: `y` is written where its `var` may not have run in function `f`; on Lucee the write lands in the variables scope
+cases/branch-tags.cfm:4:16: missing-var: `y` is written where its `var` may not have run in function `f`; on Lucee the write lands in the variables scope
+cases/branch-tags.cfm:8:8: missing-var: `y` is written where its `var` may not have run in function `f`; on Lucee the write lands in the variables scope

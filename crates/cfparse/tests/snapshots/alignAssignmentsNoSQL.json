@@ -1,0 +1,144 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-island",
+        "open": "```",
+        "close": "```",
+        "children": [
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "tag-body",
+            "cf": true,
+            "name": "cfquery",
+            "children": [
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "name" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "test" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "island",
+                "lang": "sql",
+                "site": "cfquery",
+                "pure": false,
+                "children": [
+                  { "k": "text", "t": "\nSELECT count(*) AS fghfghfgh\nFROM fghfghfgh C WITH (NOLOCK)\nINNER JOIN fghfghfghfgh CS WITH (NOLOCK)\n    ON C.fghfghfgh = CS.fghfghfghfg AND\n    CS.fghfghfghfgh = " },
+                  {
+                    "kind": "cf-tag",
+                    "shape": "open",
+                    "cf_kind": "generic",
+                    "name": "cfqueryparam",
+                    "open": "<",
+                    "close": ">",
+                    "children": [
+                      { "k": "ident.tag-name", "t": "cfqueryparam" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "cfsqltype" },
+                          { "k": "punct.key-value", "t": "=" },
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": true,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "cf_sql_integer" }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "value" },
+                          { "k": "punct.key-value", "t": "=" },
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": true,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              {
+                                "kind": "template-expression",
+                                "open": "#",
+                                "close": "#",
+                                "children": [
+                                  {
+                                    "kind": "chain",
+                                    "children": [
+                                      { "k": "ident.scope", "t": "arguments" },
+                                      {
+                                        "kind": "segment",
+                                        "segment": "property",
+                                        "children": [
+                                          { "k": "punct.accessor", "t": "." },
+                                          { "k": "ident.property-name", "t": "fghfghfghfgh" }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "text", "t": "\n" }
+                ]
+              },
+              {
+                "kind": "cf-tag",
+                "shape": "close",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

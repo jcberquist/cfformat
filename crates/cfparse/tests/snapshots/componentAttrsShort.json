@@ -1,0 +1,102 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "class",
+        "children": [
+          {
+            "kind": "class",
+            "children": [
+              {
+                "kind": "class-decl",
+                "children": [
+                  { "k": "kw.component", "t": "component" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "a" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "1" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "b" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "2" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "c" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "3" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "d" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "4" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              { "kind": "block", "block": "class", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

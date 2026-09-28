@@ -1,0 +1,34 @@
+found =
+    arrayFind(keysToSearch, function(item) {
+        return arrayFind(data.items ?: [], item);
+    }) > 0;
+message =
+    probe(function() {
+        return cast(x, 'numeric');
+    }) contains 'Expected a number.';
+ok =
+    arrayFind(keysToSearch, function(item) {
+        return arrayFind(data.items ?: [], item);
+    }) && enabled;
+total =
+    arrayFind(keysToSearch, function(item) {
+        return arrayFind(data.items ?: [], item);
+    }) +
+    offset * 2;
+if (
+    arrayFind(keysToSearch, function(item) {
+        return arrayFind(data.items ?: [], item);
+    }) > 0
+) {
+    x = 1;
+}
+if (
+    arrayFind(keysToSearch, function(item) {
+        return arrayFind(data.items ?: [], item);
+    }) &&
+    enabled
+) {
+    x = 1;
+}
+y = a + b;
+z = a && b;

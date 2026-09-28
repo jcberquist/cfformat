@@ -1,0 +1,108 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "class",
+        "children": [
+          {
+            "kind": "class",
+            "children": [
+              {
+                "kind": "class-decl",
+                "children": [
+                  { "k": "kw.component", "t": "component" },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              {
+                "kind": "block",
+                "block": "class",
+                "open": "{",
+                "close": "}",
+                "children": [
+                  { "k": "nl", "t": "\n" },
+                  {
+                    "kind": "statement",
+                    "stmt": "function",
+                    "children": [
+                      {
+                        "kind": "function",
+                        "children": [
+                          {
+                            "kind": "function-decl",
+                            "children": [
+                              { "k": "storage.modifier", "t": "public" },
+                              { "k": "ws", "t": " " },
+                              { "k": "storage.type", "t": "any" },
+                              { "k": "ws", "t": " " },
+                              { "k": "kw.function", "t": "function" },
+                              { "k": "ws", "t": " " },
+                              { "k": "ident.function-name", "t": "test" },
+                              {
+                                "kind": "parameters",
+                                "open": "(",
+                                "close": ")",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "kw.required", "t": "required" },
+                                      { "k": "ws", "t": " " },
+                                      { "k": "storage.type", "t": "string" },
+                                      { "k": "ws", "t": " " },
+                                      { "k": "ident.parameter", "t": "testString" },
+                                      { "k": "ws", "t": " " },
+                                      {
+                                        "kind": "key-value",
+                                        "children": [
+                                          { "k": "ident.attribute-name", "t": "key" },
+                                          { "k": "punct.key-value", "t": "=" },
+                                          { "k": "lit.unquoted", "t": "true" }
+                                        ]
+                                      },
+                                      { "k": "ws", "t": " " }
+                                    ]
+                                  }
+                                ]
+                              },
+                              { "k": "ws", "t": " " }
+                            ]
+                          },
+                          {
+                            "kind": "block",
+                            "block": "function",
+                            "open": "{",
+                            "close": "}",
+                            "children": [
+                              { "k": "nl", "t": "\n" },
+                              {
+                                "kind": "statement",
+                                "stmt": "flow",
+                                "terminator": ";",
+                                "children": [
+                                  { "k": "kw.return", "t": "return" },
+                                  { "k": "ws", "t": " " },
+                                  { "k": "ident.variable", "t": "testString" }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

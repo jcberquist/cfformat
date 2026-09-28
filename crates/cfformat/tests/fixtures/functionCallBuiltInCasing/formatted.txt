@@ -1,0 +1,11 @@
+arrayAppend(myarray, 1);
+isNull(x);
+isNull /* c */(x);
+~
+ArrayAppend(myarray, 1);
+IsNull(x);
+IsNull /* c */(x);
+~
+ARRAYAPPEND(myarray, 1);
+ISNULL(x);
+ISNULL /* c */(x);

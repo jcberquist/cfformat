@@ -1,0 +1,6 @@
+<div>
+<script type="module">
+import { a } from "./a.js";
+a();
+</script>
+</div>

@@ -1,0 +1,2 @@
+cases/dynamic.cfm:7:20: missing-var: `q` is written without `var` or a scope in function `f`; it lands in the variables scope
+cases/dynamic.cfm:8:20: missing-var: `i` is written without `var` or a scope in function `f`; it lands in the variables scope

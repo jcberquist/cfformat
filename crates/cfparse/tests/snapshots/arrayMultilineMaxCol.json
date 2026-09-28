@@ -1,0 +1,61 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "op.assign", "t": "=" },
+              {
+                "kind": "array",
+                "open": "[",
+                "close": "]",
+                "items": [
+                  {
+                    "children": [
+                      {
+                        "kind": "string",
+                        "quote": "single",
+                        "in_tag": false,
+                        "open": "'",
+                        "close": "'",
+                        "children": [
+                          { "k": "lit.string", "t": "this" }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      {
+                        "kind": "string",
+                        "quote": "single",
+                        "in_tag": false,
+                        "open": "'",
+                        "close": "'",
+                        "children": [
+                          { "k": "lit.string", "t": "is a long string to pass forty cols" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

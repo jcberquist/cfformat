@@ -1,0 +1,205 @@
+param name="title"     type="string"  default="";
+param name="pageSize"  type="numeric" default=10;
+param name="sortOrder" type="string"  default="asc";
+param string mode = 'list';
+param numeric offset = 0;
+param name="format"   type="string";
+param name="callback" type="string";
+param Name="q"        TYPE="string";
+
+component accessors="true" {
+
+    property name="title" type="string"  required;
+    property name="count" type="numeric" required;
+    property name="items"       type="array";
+    property name="labels"      type="array"; // trailing
+    // a comment between two members does not end the run
+    property name="description" type="string";
+    property name="summary" /* note */ type="string";
+    property name="notes"   type="string";
+    property name="tagline" type="string";
+
+    property name="id" type="any" default="" required;
+    property
+        name="createdDate"
+        type="any"
+        default=""
+        required;
+
+    property name="shortName"       inject="id";
+    property name="settingsService" inject="coldbox:setting:someRatherLongSettingName";
+    property name="log"             inject="logbox:logger:{this}";
+
+    function init() {
+        param name="arguments.a"   default="";
+        param name="arguments.bcd" default="x";
+        return this;
+    }
+
+}
+~
+param name="title"     type="string"  default="";
+param name="pageSize"  type="numeric" default=10;
+param name="sortOrder" type="string"  default="asc";
+param string mode    = 'list';
+param numeric offset = 0;
+param name="format"   type="string";
+param name="callback" type="string";
+param Name="q"        TYPE="string";
+
+component accessors="true" {
+
+    property name="title" type="string"  required;
+    property name="count" type="numeric" required;
+    property name="items"       type="array";
+    property name="labels"      type="array"; // trailing
+    // a comment between two members does not end the run
+    property name="description" type="string";
+    property name="summary" /* note */ type="string";
+    property name="notes"   type="string";
+    property name="tagline" type="string";
+
+    property name="id" type="any" default="" required;
+    property
+        name   ="createdDate"
+        type   ="any"
+        default=""
+        required;
+
+    property name="shortName"       inject="id";
+    property name="settingsService" inject="coldbox:setting:someRatherLongSettingName";
+    property name="log"             inject="logbox:logger:{this}";
+
+    function init() {
+        param name="arguments.a"   default="";
+        param name="arguments.bcd" default="x";
+        return this;
+    }
+
+}
+~
+param name = "title"     type = "string"  default = "";
+param name = "pageSize"  type = "numeric" default = 10;
+param name = "sortOrder" type = "string"  default = "asc";
+param string mode = 'list';
+param numeric offset = 0;
+param name = "format"   type = "string";
+param name = "callback" type = "string";
+param Name = "q"        TYPE = "string";
+
+component accessors = "true" {
+
+    property name = "title" type = "string"  required;
+    property name = "count" type = "numeric" required;
+    property name = "items"       type = "array";
+    property name = "labels"      type = "array"; // trailing
+    // a comment between two members does not end the run
+    property name = "description" type = "string";
+    property name = "summary" /* note */ type = "string";
+    property name = "notes"   type = "string";
+    property name = "tagline" type = "string";
+
+    property
+        name = "id"
+        type = "any"
+        default = ""
+        required;
+    property
+        name = "createdDate"
+        type = "any"
+        default = ""
+        required;
+
+    property name = "shortName"       inject = "id";
+    property name = "settingsService" inject = "coldbox:setting:someRatherLongSettingName";
+    property name = "log"             inject = "logbox:logger:{this}";
+
+    function init() {
+        param name = "arguments.a"   default = "";
+        param name = "arguments.bcd" default = "x";
+        return this;
+    }
+
+}
+~
+param name="title"     type="string"  default="";
+param name="pageSize"  type="numeric" default=10;
+param name="sortOrder" type="string"  default="asc";
+param string mode = 'list';
+param numeric offset = 0;
+param name="format"   type="string";
+param name="callback" type="string";
+param Name="q"        TYPE="string";
+
+component accessors="true" {
+
+    property name="title" type="string"  required;
+    property name="count" type="numeric" required;
+    property name="items"       type="array";
+    property name="labels"      type="array"; // trailing
+    // a comment between two members does not end the run
+    property name="description" type="string";
+    property name="summary" /* note */ type="string";
+    property name="notes"   type="string";
+    property name="tagline" type="string";
+
+    property name="id" type="any" default="" required;
+    property
+        name="createdDate"
+        type="any"
+        default=""
+        required;
+
+    property name="shortName" inject="id";
+    property
+        name="settingsService"
+        inject="coldbox:setting:someRatherLongSettingName";
+    property name="log"       inject="logbox:logger:{this}";
+
+    function init() {
+        param name="arguments.a"   default="";
+        param name="arguments.bcd" default="x";
+        return this;
+    }
+
+}
+~
+param name="title" type="string" default="";
+param name="pageSize" type="numeric" default=10;
+param name="sortOrder" type="string" default="asc";
+param string mode = 'list';
+param numeric offset = 0;
+param name="format" type="string";
+param name="callback" type="string";
+param Name="q" TYPE="string";
+
+component accessors="true" {
+
+    property name="title" type="string"  required;
+    property name="count" type="numeric" required;
+    property name="items"       type="array";
+    property name="labels"      type="array"; // trailing
+    // a comment between two members does not end the run
+    property name="description" type="string";
+    property name="summary" /* note */ type="string";
+    property name="notes"   type="string";
+    property name="tagline" type="string";
+
+    property name="id" type="any" default="" required;
+    property
+        name="createdDate"
+        type="any"
+        default=""
+        required;
+
+    property name="shortName"       inject="id";
+    property name="settingsService" inject="coldbox:setting:someRatherLongSettingName";
+    property name="log"             inject="logbox:logger:{this}";
+
+    function init() {
+        param name="arguments.a" default="";
+        param name="arguments.bcd" default="x";
+        return this;
+    }
+
+}

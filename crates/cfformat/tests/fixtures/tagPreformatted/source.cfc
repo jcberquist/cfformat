@@ -1,0 +1,27 @@
+<div>
+<pre>  hello  </pre>
+<textarea>  hello  </textarea>
+<PRE CLASS = "code">
+    line one
+	tab indented   
+
+  <CFIF x>  two  </CFIF>
+
+
+last</PRE>
+<form>
+<textarea name="notes" rows="3">
+  a
+
+
+   b  
+</textarea>
+<TextArea name="empty"></TextArea>
+<textarea name="cf"><cfoutput>#  notes  #</cfoutput></textarea>
+</form>
+</div>
+<pre>
+<cfloop from="1" to="3" index="i">
+    #i#
+</cfloop>
+</pre>

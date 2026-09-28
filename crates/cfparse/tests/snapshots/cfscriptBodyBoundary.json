@@ -1,0 +1,149 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cfscript",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "script",
+            "name": "cfscript",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfscript" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "line-comment",
+            "open": "//",
+            "children": [
+              { "k": "comment", "t": " a comment before the first statement" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "statement",
+            "stmt": "assignment",
+            "terminator": ";",
+            "children": [
+              {
+                "kind": "assignment",
+                "children": [
+                  { "k": "ident.variable", "t": "close" },
+                  { "k": "ws", "t": " " },
+                  { "k": "op.assign", "t": "=" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": false,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      { "k": "lit.string", "t": "</cfscript>" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "block-comment",
+            "open": "/*",
+            "close": "*/",
+            "children": [
+              { "k": "comment", "t": " </cfscript> " }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "statement",
+            "stmt": "assignment",
+            "terminator": ";",
+            "children": [
+              {
+                "kind": "assignment",
+                "children": [
+                  { "k": "ident.scope", "t": "url" },
+                  { "k": "ws", "t": " " },
+                  { "k": "op.assign", "t": "=" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "string",
+                    "quote": "single",
+                    "in_tag": false,
+                    "open": "'",
+                    "close": "'",
+                    "children": [
+                      { "k": "lit.string", "t": "http://example.com" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "line-comment",
+            "open": "//",
+            "children": [
+              { "k": "comment", "t": " not a comment start inside the string" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "script",
+            "name": "cfscript",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfscript" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "p",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "p",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          },
+          { "k": "text", "t": "after" },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "p",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

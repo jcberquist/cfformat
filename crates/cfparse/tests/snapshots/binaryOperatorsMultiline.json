@@ -1,0 +1,106 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              {
+                "kind": "call-expr",
+                "children": [
+                  {
+                    "kind": "group",
+                    "open": "(",
+                    "close": ")",
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "binary",
+                        "prec": "and",
+                        "children": [
+                          { "k": "ident.variable", "t": "ab" },
+                          { "k": "op.and", "t": "&&" },
+                          { "k": "nl", "t": "\n" },
+                          { "k": "ws", "t": "    " },
+                          { "k": "ident.variable", "t": "cd" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  {
+                    "kind": "call",
+                    "open": "(",
+                    "close": ")",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "nl", "t": "\n" },
+                          {
+                            "kind": "binary",
+                            "prec": "concat",
+                            "children": [
+                              { "k": "ident.variable", "t": "a" },
+                              { "k": "nl", "t": "\n" },
+                              { "k": "op.concat", "t": "&" },
+                              { "k": "ident.variable", "t": "b" }
+                            ]
+                          },
+                          { "k": "nl", "t": "\n" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      {
+                        "kind": "binary",
+                        "prec": "and",
+                        "children": [
+                          { "k": "ident.variable", "t": "a" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "line-comment",
+                            "open": "//",
+                            "children": [
+                              { "k": "comment", "t": " test comment" }
+                            ]
+                          },
+                          { "k": "nl", "t": "\n" },
+                          { "k": "ws", "t": "    " },
+                          { "k": "op.and", "t": "&&" },
+                          { "k": "nl", "t": "\n" },
+                          { "k": "ident.variable", "t": "b" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+[
+    {
+        "strings.convert_nested_quotes": "always"
+    },
+    {
+        "strings.quote": "double",
+        "strings.convert_nested_quotes": "always"
+    },
+    {
+        "strings.quote": "ignored"
+    }
+]

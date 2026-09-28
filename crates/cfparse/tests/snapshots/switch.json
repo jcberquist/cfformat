@@ -1,0 +1,174 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "switch",
+            "children": [
+              { "k": "kw.switch", "t": "switch" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "children": [
+                  { "k": "ident.variable", "t": "a" }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "block",
+                "block": "plain",
+                "open": "{",
+                "close": "}",
+                "children": [
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "case",
+                    "children": [
+                      { "k": "kw.case", "t": "case" },
+                      { "k": "ws", "t": " " },
+                      { "k": "lit.number", "t": "1" },
+                      { "k": "punct.colon", "t": ":" },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "        " },
+                      {
+                        "kind": "statement",
+                        "stmt": "flow",
+                        "terminator": ";",
+                        "children": [
+                          { "k": "kw.return", "t": "return" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": false,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "1" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "case",
+                    "children": [
+                      { "k": "kw.case", "t": "case" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "string",
+                        "quote": "single",
+                        "in_tag": false,
+                        "open": "'",
+                        "close": "'",
+                        "children": [
+                          { "k": "lit.string", "t": "2" }
+                        ]
+                      },
+                      { "k": "punct.colon", "t": ":" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "statement",
+                        "stmt": "keyword",
+                        "children": [
+                          {
+                            "kind": "block",
+                            "block": "plain",
+                            "open": "{",
+                            "close": "}",
+                            "children": [
+                              { "k": "nl", "t": "\n" },
+                              { "k": "ws", "t": "        " },
+                              {
+                                "kind": "statement",
+                                "stmt": "flow",
+                                "terminator": ";",
+                                "children": [
+                                  { "k": "kw.return", "t": "return" },
+                                  { "k": "ws", "t": " " },
+                                  { "k": "lit.number", "t": "2" }
+                                ]
+                              },
+                              { "k": "nl", "t": "\n" },
+                              { "k": "ws", "t": "    " }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "case",
+                    "children": [
+                      { "k": "kw.case", "t": "case" },
+                      { "k": "ws", "t": " " },
+                      { "k": "lit.number", "t": "3" },
+                      { "k": "punct.colon", "t": ":" }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "case",
+                    "children": [
+                      { "k": "kw.case", "t": "case" },
+                      { "k": "ws", "t": " " },
+                      { "k": "lit.number", "t": "4" },
+                      { "k": "punct.colon", "t": ":" },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "        " },
+                      {
+                        "kind": "statement",
+                        "stmt": "flow",
+                        "terminator": ";",
+                        "children": [
+                          { "k": "kw.return", "t": "return" },
+                          { "k": "ws", "t": " " },
+                          { "k": "lit.bool", "t": "false" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "case",
+                    "children": [
+                      { "k": "kw.default", "t": "default" },
+                      { "k": "punct.colon", "t": ":" },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "        " },
+                      {
+                        "kind": "statement",
+                        "stmt": "flow",
+                        "children": [
+                          { "k": "kw.return", "t": "return" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

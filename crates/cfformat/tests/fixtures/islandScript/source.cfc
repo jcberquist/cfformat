@@ -1,0 +1,19 @@
+<script>
+var a = 1;
+if (a) {
+  b();
+}
+</script>
+<div>
+<script type="text/javascript">
+var a = 1;
+</script>
+<div>
+<script type="application/javascript">
+    var a = 1;
+    if (a) {
+      b();
+    }
+</script>
+</div>
+</div>

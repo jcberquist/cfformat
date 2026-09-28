@@ -1,0 +1,18 @@
+<cfhttp
+url="example.com">
+<!--- @formatter:off --->
+<cfhttp
+url="example.com">
+<!--- @formatter:on --->
+<cfscript>
+// @formatter:off
+k = {a:1,   b:2};
+// @formatter:on
+j = {a:1,   b:2};
+</cfscript>
+<!--- CFFORMAT-IGNORE-START --->
+<cfif   x><td>#a#</td></cfif>
+<!--- Cfformat-Ignore-End --->
+<!--- @FORMATTER:OFF --->
+<cfif   y><td>#b#</td></cfif>
+<!--- @Formatter:On --->

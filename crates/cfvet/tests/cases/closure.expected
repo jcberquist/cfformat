@@ -1,0 +1,3 @@
+cases/closure.cfc:7:13: missing-var: `seen` is written without `var` or a scope in function `(closure)`; it lands in the variables scope
+cases/closure.cfc:10:9: missing-var: `inner` is written without `var` or a scope in function `sum`; it lands in the variables scope
+cases/closure.cfc:12:13: missing-var: `doubled` is written without `var` or a scope in function `(closure)`; it lands in the variables scope

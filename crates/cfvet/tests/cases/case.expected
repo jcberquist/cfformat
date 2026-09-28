@@ -1,0 +1,2 @@
+cases/case.cfc:8:9: missing-var: `Baz` is written without `var` or a scope in function `f`; it lands in the variables scope
+cases/case.cfc:9:9: missing-var: `baz` is written without `var` or a scope in function `f`; it lands in the variables scope

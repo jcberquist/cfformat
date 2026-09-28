@@ -1,0 +1,181 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cfcomponent",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "class",
+            "name": "cfcomponent",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfcomponent" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "ws", "t": "\t" },
+          {
+            "kind": "tag-body",
+            "cf": true,
+            "name": "cffunction",
+            "children": [
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "function",
+                "name": "cffunction",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cffunction" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "name" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "init" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "\t\t" },
+              {
+                "kind": "tag-body",
+                "cf": true,
+                "name": "cfif",
+                "children": [
+                  {
+                    "kind": "cf-tag",
+                    "shape": "open",
+                    "cf_kind": "expression",
+                    "name": "cfif",
+                    "open": "<",
+                    "close": ">",
+                    "children": [
+                      { "k": "ident.tag-name", "t": "cfif" },
+                      { "k": "ws", "t": " " },
+                      { "k": "lit.number", "t": "1" }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "\t\t\t" },
+                  {
+                    "kind": "cf-tag",
+                    "shape": "open",
+                    "cf_kind": "expression",
+                    "name": "cfset",
+                    "open": "<",
+                    "close": ">",
+                    "children": [
+                      { "k": "ident.tag-name", "t": "cfset" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "call-expr",
+                        "children": [
+                          { "k": "ident.call", "t": "foo" },
+                          { "kind": "call", "open": "(", "close": ")" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "\t\t" },
+                  {
+                    "kind": "cf-tag",
+                    "shape": "open",
+                    "cf_kind": "else",
+                    "name": "cfelse",
+                    "open": "<",
+                    "close": ">",
+                    "children": [
+                      { "k": "ident.tag-name", "t": "cfelse" }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "\t\t\t" },
+                  {
+                    "kind": "cf-tag",
+                    "shape": "open",
+                    "cf_kind": "expression",
+                    "name": "cfset",
+                    "open": "<",
+                    "close": ">",
+                    "children": [
+                      { "k": "ident.tag-name", "t": "cfset" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "call-expr",
+                        "children": [
+                          { "k": "ident.call", "t": "bar" },
+                          { "kind": "call", "open": "(", "close": ")" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "\t\t" },
+                  {
+                    "kind": "cf-tag",
+                    "shape": "close",
+                    "cf_kind": "expression",
+                    "name": "cfif",
+                    "open": "</",
+                    "close": ">",
+                    "children": [
+                      { "k": "ident.tag-name", "t": "cfif" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "\t" },
+              {
+                "kind": "cf-tag",
+                "shape": "close",
+                "cf_kind": "function",
+                "name": "cffunction",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cffunction" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "class",
+            "name": "cfcomponent",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfcomponent" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

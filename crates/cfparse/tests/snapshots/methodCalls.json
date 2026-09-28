@@ -1,0 +1,141 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.variable", "t": "testObj" },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "methodOne" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "methodTwo" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "methodThree" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.variable", "t": "t" },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "methodOne" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "methodTwo" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "methodThree" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.variable", "t": "testObj" },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "methodOne" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "methodTwo" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "methodThree" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

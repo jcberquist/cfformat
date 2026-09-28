@@ -1,0 +1,15 @@
+[
+    {
+        "multiline.comma": "dangling",
+        "array.multiline.element_count": 2,
+        "array.multiline.min_item_length": 0
+    },
+    {
+        "multiline.comma": "trailing",
+        "array.multiline.element_count": 2,
+        "array.multiline.min_item_length": 0
+    },
+    {
+        "multiline.comma": "dangling"
+    }
+]

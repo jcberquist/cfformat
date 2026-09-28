@@ -1,0 +1,2 @@
+cases/tag-function-script.cfm:7:13: missing-var: `count` is written without `var` or a scope in function `report`; it lands in the variables scope
+cases/tag-function-script.cfm:12:12: missing-var: `out` is written without `var` or a scope in function `report`; it lands in the variables scope

@@ -1,0 +1,30 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "flow",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.throw", "t": "throw" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "string",
+            "quote": "single",
+            "in_tag": false,
+            "open": "'",
+            "close": "'",
+            "children": [
+              { "k": "lit.string", "t": "test error" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

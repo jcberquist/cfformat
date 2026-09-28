@@ -1,0 +1,12 @@
+[
+    {},
+    {
+        "attributes.key_value.padding": true
+    },
+    {
+        "metadata.multiline.element_count": 2
+    },
+    {
+        "max_columns": 30
+    }
+]

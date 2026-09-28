@@ -1,0 +1,5 @@
+<cffunction name="tearDown" returntype="void" access="public"><!--- A comment long enough that the body no longer fits on one line ---></cffunction>
+<cffunction name="setUp"><!--- short ---></cffunction>
+<table>
+<tr><td>A cell with some text in it <!--- and a comment explaining why the text is there ---></td></tr>
+</table>

@@ -1,0 +1,13 @@
+<head>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "url": "https://example.com",
+  "logo": "https://example.com/logo.png"
+}
+</script>
+<script type="text/babel">
+const App = () => <div>x</div>;
+</script>
+</head>

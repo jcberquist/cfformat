@@ -1,0 +1,208 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "param",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "param",
+            "children": [
+              { "k": "ident.tag-name", "t": "param" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "name" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "single",
+                    "in_tag": true,
+                    "open": "'",
+                    "close": "'",
+                    "children": [
+                      { "k": "lit.string", "t": "val" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "param",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "param",
+            "children": [
+              { "k": "ident.tag-name", "t": "param" },
+              { "k": "ws", "t": " " },
+              { "k": "lit.unquoted", "t": "rc.test" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "attr" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": true,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      { "k": "lit.string", "t": "val" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "param",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "param",
+            "children": [
+              { "k": "ident.tag-name", "t": "param" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "assignment",
+                "children": [
+                  { "k": "lit.unquoted", "t": "rc.test" },
+                  { "k": "op.assign", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "single",
+                    "in_tag": false,
+                    "open": "'",
+                    "close": "'",
+                    "children": [
+                      { "k": "lit.string", "t": "default" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "attr" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "single",
+                    "in_tag": true,
+                    "open": "'",
+                    "close": "'",
+                    "children": [
+                      { "k": "lit.string", "t": "val" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "param",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "param",
+            "children": [
+              { "k": "ident.tag-name", "t": "param" },
+              { "k": "ws", "t": " " },
+              { "k": "storage.type", "t": "numeric" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "assignment",
+                "children": [
+                  { "k": "lit.unquoted", "t": "rc.test" },
+                  { "k": "op.assign", "t": "=" },
+                  { "k": "lit.number", "t": "23" }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "attr" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "single",
+                    "in_tag": true,
+                    "open": "'",
+                    "close": "'",
+                    "children": [
+                      { "k": "lit.string", "t": "val" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "param",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "param",
+            "children": [
+              { "k": "ident.tag-name", "t": "param" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "assignment",
+                "children": [
+                  { "k": "lit.unquoted", "t": "arguments.ownerKey" },
+                  { "k": "ws", "t": " " },
+                  { "k": "op.assign", "t": "=" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "chain",
+                    "children": [
+                      { "k": "ident.variable", "t": "related" },
+                      {
+                        "kind": "segment",
+                        "segment": "method",
+                        "children": [
+                          { "k": "punct.accessor", "t": "." },
+                          { "k": "ident.call", "t": "getKey" },
+                          { "kind": "call", "open": "(", "close": ")" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

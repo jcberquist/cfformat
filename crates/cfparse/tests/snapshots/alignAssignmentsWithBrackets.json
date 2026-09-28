@@ -1,0 +1,240 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "chain",
+                "children": [
+                  { "k": "ident.variable", "t": "slide" },
+                  {
+                    "kind": "segment",
+                    "segment": "index",
+                    "children": [
+                      {
+                        "kind": "brackets",
+                        "open": "[",
+                        "close": "]",
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "string",
+                            "quote": "single",
+                            "in_tag": false,
+                            "open": "'",
+                            "close": "'",
+                            "children": [
+                              { "k": "lit.string", "t": "imageURL" }
+                            ]
+                          },
+                          { "k": "ws", "t": " " }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "chain",
+                "children": [
+                  { "k": "ident.variable", "t": "contentResults" },
+                  {
+                    "kind": "segment",
+                    "segment": "property",
+                    "children": [
+                      { "k": "punct.accessor", "t": "." },
+                      { "k": "ident.property-name", "t": "content" }
+                    ]
+                  },
+                  {
+                    "kind": "segment",
+                    "segment": "index",
+                    "children": [
+                      {
+                        "kind": "brackets",
+                        "open": "[",
+                        "close": "]",
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.variable", "t": "x" },
+                          { "k": "ws", "t": " " }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "segment",
+                    "segment": "method",
+                    "children": [
+                      { "k": "punct.accessor", "t": "." },
+                      { "k": "ident.call", "t": "getCustomField" },
+                      {
+                        "kind": "call",
+                        "open": "(",
+                        "close": ")",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "ws", "t": " " },
+                              {
+                                "kind": "string",
+                                "quote": "double",
+                                "in_tag": false,
+                                "open": "\"",
+                                "close": "\"",
+                                "children": [
+                                  { "k": "lit.string", "t": "imageURL" }
+                                ]
+                              }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "ws", "t": " " },
+                              { "kind": "string", "quote": "double", "in_tag": false, "open": "\"", "close": "\"" },
+                              { "k": "ws", "t": " " }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "chain",
+                "children": [
+                  { "k": "ident.variable", "t": "slide" },
+                  {
+                    "kind": "segment",
+                    "segment": "index",
+                    "children": [
+                      {
+                        "kind": "brackets",
+                        "open": "[",
+                        "close": "]",
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "string",
+                            "quote": "single",
+                            "in_tag": false,
+                            "open": "'",
+                            "close": "'",
+                            "children": [
+                              { "k": "lit.string", "t": "imagePosition" }
+                            ]
+                          },
+                          { "k": "ws", "t": " " }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "chain",
+                "children": [
+                  { "k": "ident.variable", "t": "contentResults" },
+                  {
+                    "kind": "segment",
+                    "segment": "property",
+                    "children": [
+                      { "k": "punct.accessor", "t": "." },
+                      { "k": "ident.property-name", "t": "content" }
+                    ]
+                  },
+                  {
+                    "kind": "segment",
+                    "segment": "index",
+                    "children": [
+                      {
+                        "kind": "brackets",
+                        "open": "[",
+                        "close": "]",
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.variable", "t": "x" },
+                          { "k": "ws", "t": " " }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "segment",
+                    "segment": "method",
+                    "children": [
+                      { "k": "punct.accessor", "t": "." },
+                      { "k": "ident.call", "t": "getCustomField" },
+                      {
+                        "kind": "call",
+                        "open": "(",
+                        "close": ")",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "ws", "t": " " },
+                              {
+                                "kind": "string",
+                                "quote": "double",
+                                "in_tag": false,
+                                "open": "\"",
+                                "close": "\"",
+                                "children": [
+                                  { "k": "lit.string", "t": "imagePosition" }
+                                ]
+                              }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "ws", "t": " " },
+                              { "kind": "string", "quote": "double", "in_tag": false, "open": "\"", "close": "\"" },
+                              { "k": "ws", "t": " " }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

@@ -1,0 +1,348 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "script-tag",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "script-tag",
+            "acf": true,
+            "children": [
+              { "k": "ident.tag-name", "t": "cfhttp" },
+              {
+                "kind": "script-tag-attributes",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "url" },
+                          { "k": "ws", "t": " " },
+                          { "k": "punct.key-value", "t": "=" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": false,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "www.google.com" }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "result" },
+                          { "k": "ws", "t": " " },
+                          { "k": "punct.key-value", "t": "=" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": false,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "res" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "script-tag",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "script-tag",
+            "acf": false,
+            "children": [
+              { "k": "ident.tag-name", "t": "http" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "url" },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": true,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      { "k": "lit.string", "t": "www.google.com" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "result" },
+                  { "k": "ws", "t": " " },
+                  { "k": "punct.key-value", "t": "=" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": true,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      { "k": "lit.string", "t": "res" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "script-tag",
+        "children": [
+          {
+            "kind": "script-tag",
+            "acf": true,
+            "children": [
+              { "k": "ident.tag-name", "t": "cfhttp" },
+              { "kind": "script-tag-attributes", "open": "(", "close": ")" }
+            ]
+          },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "block",
+            "block": "plain",
+            "open": "{",
+            "close": "}",
+            "children": [
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "statement",
+                "stmt": "script-tag",
+                "children": [
+                  {
+                    "kind": "script-tag",
+                    "acf": true,
+                    "children": [
+                      { "k": "ident.tag-name", "t": "cfhttpparam" },
+                      {
+                        "kind": "script-tag-attributes",
+                        "open": "(",
+                        "close": ")",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "ws", "t": " " },
+                              {
+                                "kind": "key-value",
+                                "children": [
+                                  { "k": "ident.attribute-name", "t": "type" },
+                                  { "k": "punct.key-value", "t": "=" },
+                                  {
+                                    "kind": "string",
+                                    "quote": "double",
+                                    "in_tag": false,
+                                    "open": "\"",
+                                    "close": "\"",
+                                    "children": [
+                                      { "k": "lit.string", "t": "formfield" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "ws", "t": " " },
+                              {
+                                "kind": "key-value",
+                                "children": [
+                                  { "k": "ident.attribute-name", "t": "name" },
+                                  { "k": "punct.key-value", "t": "=" },
+                                  {
+                                    "kind": "string",
+                                    "quote": "double",
+                                    "in_tag": false,
+                                    "open": "\"",
+                                    "close": "\"",
+                                    "children": [
+                                      { "k": "lit.string", "t": "test" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "ws", "t": " " },
+                              {
+                                "kind": "key-value",
+                                "children": [
+                                  { "k": "ident.attribute-name", "t": "value" },
+                                  { "k": "punct.key-value", "t": "=" },
+                                  {
+                                    "kind": "string",
+                                    "quote": "single",
+                                    "in_tag": false,
+                                    "open": "'",
+                                    "close": "'",
+                                    "children": [
+                                      { "k": "lit.string", "t": "value" }
+                                    ]
+                                  }
+                                ]
+                              },
+                              { "k": "ws", "t": " " }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "script-tag",
+        "children": [
+          {
+            "kind": "script-tag",
+            "acf": false,
+            "children": [
+              { "k": "ident.tag-name", "t": "http" },
+              { "k": "ws", "t": " " }
+            ]
+          },
+          {
+            "kind": "block",
+            "block": "plain",
+            "open": "{",
+            "close": "}",
+            "children": [
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "statement",
+                "stmt": "script-tag",
+                "terminator": ";",
+                "children": [
+                  {
+                    "kind": "script-tag",
+                    "acf": false,
+                    "children": [
+                      { "k": "ident.tag-name", "t": "httpparam" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "type" },
+                          { "k": "punct.key-value", "t": "=" },
+                          {
+                            "kind": "string",
+                            "quote": "single",
+                            "in_tag": true,
+                            "open": "'",
+                            "close": "'",
+                            "children": [
+                              { "k": "lit.string", "t": "formfield" }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "name" },
+                          { "k": "punct.key-value", "t": "=" },
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": true,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "test" }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "value" },
+                          { "k": "punct.key-value", "t": "=" },
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": true,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "value" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "block",
+            "block": "plain",
+            "open": "{",
+            "close": "}",
+            "children": [
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "statement",
+                "stmt": "keyword",
+                "children": [
+                  {
+                    "kind": "block",
+                    "block": "plain",
+                    "open": "{",
+                    "close": "}",
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "        " },
+                      {
+                        "kind": "statement",
+                        "stmt": "expression",
+                        "terminator": ";",
+                        "children": [
+                          {
+                            "kind": "chain",
+                            "children": [
+                              {
+                                "kind": "call-expr",
+                                "children": [
+                                  { "k": "ident.call", "t": "getInstance" },
+                                  {
+                                    "kind": "call",
+                                    "open": "(",
+                                    "close": ")",
+                                    "items": [
+                                      {
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "quote": "single",
+                                            "in_tag": false,
+                                            "open": "'",
+                                            "close": "'",
+                                            "children": [
+                                              { "k": "lit.string", "t": "entityService:Task" }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              { "k": "nl", "t": "\n" },
+                              { "k": "ws", "t": "            " },
+                              {
+                                "kind": "segment",
+                                "segment": "method",
+                                "children": [
+                                  { "k": "punct.accessor", "t": "." },
+                                  { "k": "ident.call", "t": "list" },
+                                  { "kind": "call", "open": "(", "close": ")" }
+                                ]
+                              },
+                              { "k": "nl", "t": "\n" },
+                              { "k": "ws", "t": "            " },
+                              {
+                                "kind": "segment",
+                                "segment": "method",
+                                "children": [
+                                  { "k": "punct.accessor", "t": "." },
+                                  { "k": "ident.call", "t": "reduce" },
+                                  {
+                                    "kind": "call",
+                                    "open": "(",
+                                    "close": ")",
+                                    "items": [
+                                      {
+                                        "children": [
+                                          {
+                                            "kind": "function",
+                                            "arrow": true,
+                                            "children": [
+                                              {
+                                                "kind": "arrow-function",
+                                                "children": [
+                                                  {
+                                                    "kind": "parameters",
+                                                    "open": "(",
+                                                    "close": ")",
+                                                    "items": [
+                                                      {
+                                                        "children": [
+                                                          { "k": "ident.parameter", "t": "result" }
+                                                        ],
+                                                        "sep": ","
+                                                      },
+                                                      {
+                                                        "children": [
+                                                          { "k": "ws", "t": " " },
+                                                          { "k": "ident.parameter", "t": "row" }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              { "k": "ws", "t": " " },
+                                              { "k": "kw.arrow", "t": "=>" },
+                                              { "k": "ws", "t": " " },
+                                              {
+                                                "kind": "block",
+                                                "block": "function",
+                                                "children": [
+                                                  {
+                                                    "kind": "chain",
+                                                    "children": [
+                                                      { "k": "ident.variable", "t": "result" },
+                                                      {
+                                                        "kind": "segment",
+                                                        "segment": "method",
+                                                        "children": [
+                                                          { "k": "punct.accessor", "t": "." },
+                                                          { "k": "ident.call", "t": "append" },
+                                                          {
+                                                            "kind": "call",
+                                                            "open": "(",
+                                                            "close": ")",
+                                                            "items": [
+                                                              {
+                                                                "children": [
+                                                                  { "k": "ident.variable", "t": "row" }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ],
+                                        "sep": ","
+                                      },
+                                      {
+                                        "children": [
+                                          { "k": "ws", "t": " " },
+                                          { "kind": "array", "open": "[", "close": "]" }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

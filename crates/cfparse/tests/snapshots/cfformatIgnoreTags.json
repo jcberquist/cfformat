@@ -1,0 +1,47 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "cf-tag",
+        "shape": "open",
+        "cf_kind": "generic",
+        "name": "cfhttp",
+        "open": "<",
+        "close": ">",
+        "children": [
+          { "k": "ident.tag-name", "t": "cfhttp" },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "key-value",
+            "children": [
+              { "k": "ident.attribute-name", "t": "url" },
+              { "k": "punct.key-value", "t": "=" },
+              {
+                "kind": "string",
+                "quote": "double",
+                "in_tag": true,
+                "open": "\"",
+                "close": "\"",
+                "children": [
+                  { "k": "lit.string", "t": "example.com" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "ignore",
+        "children": [
+          { "k": "ignore", "t": "<!--- cfformat-ignore-start --->\n<cfhttp\nurl=\"example.com\">\n<!--- cfformat-ignore-end --->" }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

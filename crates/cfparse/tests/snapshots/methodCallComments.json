@@ -1,0 +1,209 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.variable", "t": "testing" },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": " boo" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "boo" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "buzz" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": " buzz" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": " baz" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "baz" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "boo" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": " boo" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "buzz" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": " buzz" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "line-comment",
+                "open": "//",
+                "children": [
+                  { "k": "comment", "t": " baz" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "baz" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "ws", "t": " " },
+      {
+        "kind": "line-comment",
+        "open": "//",
+        "children": [
+          { "k": "comment", "t": " baz" }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "children": [
+          {
+            "kind": "group",
+            "open": "(",
+            "close": ")",
+            "children": [
+              {
+                "kind": "binary",
+                "prec": "or",
+                "children": [
+                  {
+                    "kind": "chain",
+                    "children": [
+                      { "k": "ident.variable", "t": "a" },
+                      {
+                        "kind": "segment",
+                        "segment": "method",
+                        "children": [
+                          { "k": "punct.accessor", "t": "." },
+                          { "k": "ident.call", "t": "test" },
+                          { "kind": "call", "open": "(", "close": ")" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "line-comment",
+                    "open": "//",
+                    "children": [
+                      { "k": "comment", "t": " comment" }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "op.or", "t": "||" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.variable", "t": "b" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

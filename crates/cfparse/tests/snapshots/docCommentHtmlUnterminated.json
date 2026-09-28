@@ -1,0 +1,211 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "class",
+        "children": [
+          {
+            "kind": "class",
+            "children": [
+              {
+                "kind": "class-decl",
+                "children": [
+                  { "k": "kw.component", "t": "component" },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              {
+                "kind": "block",
+                "block": "class",
+                "open": "{",
+                "close": "}",
+                "children": [
+                  { "k": "nl", "t": "\n" },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "doc-comment",
+                    "open": "/**",
+                    "close": "*/",
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "comment", "t": "     * True when `name` is a single token, which rules out\n" },
+                      { "k": "comment", "t": "     * values such as `\"><img src=x onerror=alert(1)`.\n" },
+                      { "k": "comment", "t": "     * " },
+                      { "k": "doc-tag", "t": "@name" },
+                      { "k": "comment", "t": " The name to check.\n" },
+                      { "k": "ws", "t": "     " }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "statement",
+                    "stmt": "function",
+                    "children": [
+                      {
+                        "kind": "function",
+                        "children": [
+                          {
+                            "kind": "function-decl",
+                            "children": [
+                              { "k": "storage.modifier", "t": "public" },
+                              { "k": "ws", "t": " " },
+                              { "k": "storage.type", "t": "boolean" },
+                              { "k": "ws", "t": " " },
+                              { "k": "kw.function", "t": "function" },
+                              { "k": "ws", "t": " " },
+                              { "k": "ident.function-name", "t": "isToken" },
+                              {
+                                "kind": "parameters",
+                                "open": "(",
+                                "close": ")",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "kw.required", "t": "required" },
+                                      { "k": "ws", "t": " " },
+                                      { "k": "storage.type", "t": "string" },
+                                      { "k": "ws", "t": " " },
+                                      { "k": "ident.parameter", "t": "name" }
+                                    ]
+                                  }
+                                ]
+                              },
+                              { "k": "ws", "t": " " }
+                            ]
+                          },
+                          {
+                            "kind": "block",
+                            "block": "function",
+                            "open": "{",
+                            "close": "}",
+                            "children": [
+                              { "k": "nl", "t": "\n" },
+                              { "k": "ws", "t": "        " },
+                              {
+                                "kind": "statement",
+                                "stmt": "flow",
+                                "terminator": ";",
+                                "children": [
+                                  { "k": "kw.return", "t": "return" },
+                                  { "k": "ws", "t": " " },
+                                  {
+                                    "kind": "binary",
+                                    "prec": "comparison",
+                                    "children": [
+                                      {
+                                        "kind": "call-expr",
+                                        "children": [
+                                          { "k": "ident.builtin", "t": "reFindNoCase" },
+                                          {
+                                            "kind": "call",
+                                            "open": "(",
+                                            "close": ")",
+                                            "items": [
+                                              {
+                                                "children": [
+                                                  {
+                                                    "kind": "string",
+                                                    "quote": "double",
+                                                    "in_tag": false,
+                                                    "open": "\"",
+                                                    "close": "\"",
+                                                    "children": [
+                                                      { "k": "lit.string", "t": "^[a-z_:]+$" }
+                                                    ]
+                                                  }
+                                                ],
+                                                "sep": ","
+                                              },
+                                              {
+                                                "children": [
+                                                  { "k": "ws", "t": " " },
+                                                  {
+                                                    "kind": "chain",
+                                                    "children": [
+                                                      { "k": "ident.scope", "t": "arguments" },
+                                                      {
+                                                        "kind": "segment",
+                                                        "segment": "property",
+                                                        "children": [
+                                                          { "k": "punct.accessor", "t": "." },
+                                                          { "k": "ident.property-name", "t": "name" }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      { "k": "ws", "t": " " },
+                                      { "k": "op.comparison", "t": "==" },
+                                      { "k": "ws", "t": " " },
+                                      { "k": "lit.number", "t": "1" }
+                                    ]
+                                  }
+                                ]
+                              },
+                              { "k": "nl", "t": "\n" },
+                              { "k": "ws", "t": "    " }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "doc-comment",
+                    "open": "/**",
+                    "close": "*/",
+                    "children": [
+                      { "k": "comment", "t": " An open <b tag and a <!-- comment that never close " }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "statement",
+                    "stmt": "function",
+                    "children": [
+                      {
+                        "kind": "function",
+                        "children": [
+                          {
+                            "kind": "function-decl",
+                            "children": [
+                              { "k": "kw.function", "t": "function" },
+                              { "k": "ws", "t": " " },
+                              { "k": "ident.function-name", "t": "f" },
+                              { "kind": "parameters", "open": "(", "close": ")" },
+                              { "k": "ws", "t": " " }
+                            ]
+                          },
+                          { "kind": "block", "block": "function", "open": "{", "close": "}" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "nl", "t": "\n" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

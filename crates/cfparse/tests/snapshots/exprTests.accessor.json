@@ -1,0 +1,53 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "\t" },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "b" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "\t" },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "c" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "children": [
+          { "k": "ident.variable", "t": "d" }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

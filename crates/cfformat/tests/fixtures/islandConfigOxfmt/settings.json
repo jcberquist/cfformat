@@ -1,0 +1,10 @@
+[
+    {
+        "max_columns": 80,
+        "islands.config": "auto"
+    },
+    {
+        "max_columns": 80,
+        "islands.config": "off"
+    }
+]

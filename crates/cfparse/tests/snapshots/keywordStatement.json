@@ -1,0 +1,125 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "if",
+            "children": [
+              { "k": "kw.if", "t": "if" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "prec": "comparison",
+                    "children": [
+                      { "k": "ident.variable", "t": "a" },
+                      { "k": "op.comparison", "t": "==" },
+                      { "k": "ident.variable", "t": "b" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "statement",
+                "stmt": "flow",
+                "terminator": ";",
+                "children": [
+                  { "k": "kw.return", "t": "return" },
+                  { "k": "ws", "t": " " },
+                  { "k": "lit.bool", "t": "true" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "if",
+            "children": [
+              { "k": "kw.if", "t": "if" },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "prec": "comparison",
+                    "children": [
+                      { "k": "ident.variable", "t": "b" },
+                      { "k": "op.comparison", "t": "==" },
+                      { "k": "ident.variable", "t": "c" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "statement",
+                "stmt": "flow",
+                "terminator": ";",
+                "children": [
+                  { "k": "kw.break", "t": "break" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "if",
+            "children": [
+              { "k": "kw.if", "t": "if" },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "prec": "comparison",
+                    "children": [
+                      { "k": "ident.variable", "t": "b" },
+                      { "k": "op.comparison", "t": "==" },
+                      { "k": "ident.variable", "t": "c" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "statement",
+                "stmt": "flow",
+                "terminator": ";",
+                "children": [
+                  { "k": "kw.continue", "t": "continue" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cfsavecontent",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "generic",
+            "name": "cfsavecontent",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfsavecontent" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "variable" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": true,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      { "k": "lit.string", "t": "whatver" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "text", "t": "This is some text.\n" },
+          { "k": "nl", "t": "\n" },
+          { "k": "text", "t": "And here is some more\n" },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "generic",
+            "name": "cfsavecontent",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfsavecontent" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "div",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "div",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "div" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "text", "t": "This is some text.\n" },
+          { "k": "nl", "t": "\n" },
+          { "k": "text", "t": "And here is some more\n" },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "div",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "div" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

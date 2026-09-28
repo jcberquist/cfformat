@@ -1,0 +1,158 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "if",
+            "children": [
+              { "k": "kw.if", "t": "if" },
+              { "k": "ws", "t": " " },
+              { "kind": "group", "open": "(", "close": ")" },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "if",
+            "children": [
+              { "k": "kw.if", "t": "if" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "children": [
+                  { "k": "lit.bool", "t": "true" }
+                ]
+              },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" },
+              {
+                "kind": "else",
+                "children": [
+                  { "k": "kw.else", "t": "else" },
+                  { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "if",
+            "children": [
+              { "k": "kw.if", "t": "if" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "children": [
+                  { "k": "lit.bool", "t": "true" }
+                ]
+              },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" },
+              {
+                "kind": "else-if",
+                "children": [
+                  { "k": "kw.else", "t": "else" },
+                  { "k": "ws", "t": " " },
+                  { "k": "kw.if", "t": "if" },
+                  {
+                    "kind": "group",
+                    "open": "(",
+                    "close": ")",
+                    "children": [
+                      { "k": "lit.bool", "t": "false" }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "try",
+            "children": [
+              { "k": "kw.try", "t": "try" },
+              { "k": "ws", "t": " " },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" },
+              {
+                "kind": "catch",
+                "children": [
+                  { "k": "kw.catch", "t": "catch" },
+                  { "kind": "group", "open": "(", "close": ")" },
+                  { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+                ]
+              },
+              {
+                "kind": "finally",
+                "children": [
+                  { "k": "kw.finally", "t": "finally" },
+                  { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "do-while",
+            "children": [
+              { "k": "kw.do", "t": "do" },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" },
+              { "k": "kw.while", "t": "while" },
+              { "kind": "group", "open": "(", "close": ")" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "while",
+            "children": [
+              { "k": "kw.while", "t": "while" },
+              { "kind": "group", "open": "(", "close": ")" },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+if (
+    !skipped &&
+    structKeyExists(input, 'key') && // The first line of a comment run,
+    // (the second line
+    // and the third).
+    compareKeys(input.key, expectedKey)
+) {
+    matched = true;
+}
+var x = a // why a
+    // and more
+    ? b // why b
+    /* block */
+    // last
+    : c;
+y = // one
+// two
+1;
+return first /* b1 */ + // l1
+    // l2
+    /* b2 */
+    second;
+t = a ? b : c; // after the colon
+u = a ? b : c; // after the question mark
+v = -a; // after a prefix operator
+w = a.b; // inside a member access
+if (a) x = 1; // before the semicolon
+items.each((item) => total += item); // before the operator
+local.f = arguments.cb(a, b)?.c; // inside the target
+x = 1; // before the operator
+s =
+    // before a value that breaks
+    {
+        a: 1,
+        f: function() {
+        }
+    };

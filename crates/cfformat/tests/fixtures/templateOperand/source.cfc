@@ -1,0 +1,7 @@
+// script
+x = #a# + 1;
+y = #a##b#;
+z = #a#+#b#*2;
+w = #a#
+v = 1;
+if (#a# GT 1 AND b) {}

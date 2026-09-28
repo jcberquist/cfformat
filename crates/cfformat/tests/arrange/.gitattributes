@@ -1,0 +1,3 @@
+# The sources and expectations are compared byte for byte: CRLF, lone CR
+# and BOM fixtures must reach the tests as committed.
+* -text

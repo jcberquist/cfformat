@@ -1,0 +1,14 @@
+cases/sample-script.cfc:5:9: missing-var: `c` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:6:9: missing-var: `d` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:7:9: missing-var: `f` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:8:9: missing-var: `g` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:9:9: missing-var: `h` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:10:21: missing-var: `p` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:11:22: missing-var: `q` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:12:14: missing-var: `i` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:14:14: missing-var: `k` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:17:21: missing-var: `qry` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:18:30: missing-var: `res` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:19:31: missing-var: `sc` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:20:33: missing-var: `res2` is written without `var` or a scope in function `init`; it lands in the variables scope
+cases/sample-script.cfc:21:38: missing-var: `y` is written without `var` or a scope in function `(closure)`; it lands in the variables scope

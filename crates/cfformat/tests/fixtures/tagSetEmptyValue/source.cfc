@@ -1,0 +1,4 @@
+<cfif a>
+<cfset x = >
+<cfset y =/>
+</cfif>

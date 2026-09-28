@@ -1,0 +1,12 @@
+[
+    {
+        "max_columns": 50,
+        "islands.js": "off"
+    },
+    {
+        "max_columns": 50
+    },
+    {
+        "max_columns": 44
+    }
+]

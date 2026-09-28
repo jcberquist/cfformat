@@ -1,0 +1,77 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "op.assign", "t": "=" },
+              {
+                "kind": "ternary",
+                "children": [
+                  { "k": "lit.bool", "t": "true" },
+                  { "k": "op.ternary-q", "t": "?" },
+                  {
+                    "kind": "string",
+                    "quote": "single",
+                    "in_tag": false,
+                    "open": "'",
+                    "close": "'",
+                    "children": [
+                      { "k": "lit.string", "t": "first option" }
+                    ]
+                  },
+                  { "k": "op.ternary-colon", "t": ":" },
+                  {
+                    "kind": "string",
+                    "quote": "single",
+                    "in_tag": false,
+                    "open": "'",
+                    "close": "'",
+                    "children": [
+                      { "k": "lit.string", "t": "second option" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "b" },
+              { "k": "op.assign", "t": "=" },
+              {
+                "kind": "binary",
+                "prec": "elvis",
+                "children": [
+                  { "k": "ident.variable", "t": "maybeExists" },
+                  { "k": "op.elvis", "t": "?:" },
+                  { "k": "ident.variable", "t": "fallback" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

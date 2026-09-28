@@ -1,0 +1,97 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "strong",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "strong",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "strong" }
+            ]
+          },
+          { "k": "text", "t": "test" },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "strong",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "strong" }
+            ]
+          }
+        ]
+      },
+      { "k": "text", "t": " test\n" },
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "div",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "div",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "div" }
+            ]
+          },
+          { "k": "text", "t": "test" },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "div",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "div" }
+            ]
+          }
+        ]
+      },
+      { "k": "text", "t": ".\n" },
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "strong",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "strong",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "strong" }
+            ]
+          },
+          { "k": "text", "t": "test" },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "strong",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "strong" }
+            ]
+          }
+        ]
+      },
+      { "k": "text", "t": ".\n" }
+    ]
+  }
+}

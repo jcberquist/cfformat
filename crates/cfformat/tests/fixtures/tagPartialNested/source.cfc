@@ -1,0 +1,9 @@
+<div class="wrapper">
+    <p>before</p>
+        </cfoutput>
+    <p>after</p>
+</div>
+<cfoutput>
+<ul>
+<li>#a#</li>
+  </cfoutput></ul>

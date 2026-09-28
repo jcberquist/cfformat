@@ -1,0 +1,68 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "flow",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.flow", "t": "include" },
+          { "k": "ws", "t": " " },
+          { "k": "ident.variable", "t": "template" }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "flow",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.flow", "t": "include" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "string",
+            "quote": "single",
+            "in_tag": false,
+            "open": "'",
+            "close": "'",
+            "children": [
+              { "k": "lit.string", "t": "/my/template.cfm" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "flow",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.flow", "t": "include" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "string",
+            "quote": "single",
+            "in_tag": false,
+            "open": "'",
+            "close": "'",
+            "children": [
+              {
+                "kind": "template-expression",
+                "open": "#",
+                "close": "#",
+                "children": [
+                  { "k": "ident.variable", "t": "template" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

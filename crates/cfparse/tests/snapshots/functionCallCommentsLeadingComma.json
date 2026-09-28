@@ -1,0 +1,277 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.call", "t": "send" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      { "k": "ident.variable", "t": "to" },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "from" }
+                    ],
+                    "trailing": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment a" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment b" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "body" },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.call", "t": "send" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      { "k": "ident.variable", "t": "to" },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "from" }
+                    ],
+                    "trailing": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment a" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment b" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "body" },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.call", "t": "send" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      { "k": "ident.variable", "t": "to" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      { "k": "ident.variable", "t": "from" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "leading": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment a" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment b" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "children": [
+                      { "k": "ident.variable", "t": "body" },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.call", "t": "send" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      { "k": "ident.variable", "t": "to" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      { "k": "ident.variable", "t": "from" }
+                    ],
+                    "trailing": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment a" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "leading": [
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment b" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "children": [
+                      { "k": "ident.variable", "t": "body" },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

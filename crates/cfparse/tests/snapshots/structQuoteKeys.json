@@ -1,0 +1,74 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "struct",
+                "open": "{",
+                "close": "}",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": false,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "b" }
+                            ]
+                          },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "ws", "t": " " },
+                          { "k": "lit.number", "t": "1" }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.struct-key", "t": "c" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "ws", "t": " " },
+                          { "k": "lit.number", "t": "2" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

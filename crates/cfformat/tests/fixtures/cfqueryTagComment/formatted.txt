@@ -1,0 +1,16 @@
+<div>
+    <cfquery name="q" datasource="#application.dsn#">
+    SELECT id
+    FROM   people
+    <cfset var filter = {
+        kind: arguments.kind, // the caller's kind
+        status: 'active'
+    }>
+    <cfset var ids = arguments.ids.map(function(id) {
+        return val(id);
+    })>
+    <cfif len(filter.kind) /* set */ and structKeyExists(arguments, 'statusCodeForThePersonRecord')>
+    WHERE  kind = <cfqueryparam value="#filter.kind#" cfsqltype="cf_sql_varchar" maxlength="50" null="#not len(filter.kind)#">
+    </cfif>
+    </cfquery>
+</div>

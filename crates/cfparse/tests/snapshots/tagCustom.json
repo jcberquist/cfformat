@@ -1,0 +1,140 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "cf-tag",
+        "shape": "self-closed",
+        "cf_kind": "generic",
+        "name": "pbn:link-returnto",
+        "open": "<",
+        "close": "/>",
+        "children": [
+          { "k": "ident.tag-name", "t": "pbn" },
+          { "k": "punct.prefix", "t": ":" },
+          { "k": "ident.tag-name", "t": "link-returnto" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "key-value",
+            "children": [
+              { "k": "ident.attribute-name", "t": "href" },
+              { "k": "punct.key-value", "t": "=" },
+              {
+                "kind": "string",
+                "quote": "double",
+                "in_tag": true,
+                "open": "\"",
+                "close": "\"",
+                "children": [
+                  { "k": "lit.string", "t": "xxx" }
+                ]
+              }
+            ]
+          },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "key-value",
+            "children": [
+              { "k": "ident.attribute-name", "t": "text" },
+              { "k": "punct.key-value", "t": "=" },
+              {
+                "kind": "string",
+                "quote": "double",
+                "in_tag": true,
+                "open": "\"",
+                "close": "\"",
+                "children": [
+                  { "k": "lit.string", "t": "xxx" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cf_mail",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "generic",
+            "name": "cf_mail",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cf_mail" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "to" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": true,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      {
+                        "kind": "template-expression",
+                        "open": "#",
+                        "close": "#",
+                        "children": [
+                          { "k": "ident.variable", "t": "toEmail" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "from" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": true,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      {
+                        "kind": "template-expression",
+                        "open": "#",
+                        "close": "#",
+                        "children": [
+                          { "k": "ident.variable", "t": "from" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "generic",
+            "name": "cf_mail",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cf_mail" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

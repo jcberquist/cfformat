@@ -1,0 +1,1 @@
+cases/threads.cfm:4:1: missing-var: `b` is written without `var` or a scope in function `f`; it lands in the variables scope

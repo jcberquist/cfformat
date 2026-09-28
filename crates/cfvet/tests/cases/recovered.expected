@@ -1,0 +1,2 @@
+cases/recovered.cfc:3:9: missing-var: `before` is written without `var` or a scope in function `f`; it lands in the variables scope
+cases/recovered.cfc:9:9: missing-var: `after` is written without `var` or a scope in function `g`; it lands in the variables scope

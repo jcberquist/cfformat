@@ -1,0 +1,100 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "block",
+            "block": "plain",
+            "open": "{",
+            "close": "}",
+            "children": [
+              {
+                "kind": "statement",
+                "stmt": "declaration",
+                "terminator": ";",
+                "children": [
+                  { "k": "kw.var", "t": "var" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "assignment",
+                    "children": [
+                      { "k": "ident.variable", "t": "i" },
+                      { "k": "ws", "t": " " },
+                      { "k": "op.assign", "t": "=" },
+                      { "k": "ws", "t": " " },
+                      { "k": "lit.number", "t": "0" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "statement",
+                "stmt": "expression",
+                "terminator": ";",
+                "children": [
+                  {
+                    "kind": "unary",
+                    "postfix": true,
+                    "children": [
+                      { "k": "ident.variable", "t": "i" },
+                      { "k": "op.postfix", "t": "++" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "statement",
+                "stmt": "expression",
+                "terminator": ";",
+                "children": [
+                  {
+                    "kind": "unary",
+                    "postfix": true,
+                    "children": [
+                      { "k": "ident.variable", "t": "i" },
+                      { "k": "op.postfix", "t": "--" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "x" },
+              { "k": "op.assign", "t": "=" },
+              { "k": "lit.number", "t": "1" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "line-comment",
+        "open": "//",
+        "children": [
+          { "k": "comment", "t": " keep me on my own line" }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

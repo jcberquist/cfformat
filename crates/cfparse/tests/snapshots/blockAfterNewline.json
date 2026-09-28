@@ -1,0 +1,44 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "if",
+            "children": [
+              { "k": "kw.if", "t": "if" },
+              { "k": "ws", "t": " " },
+              { "kind": "group", "open": "(", "close": ")" },
+              { "k": "nl", "t": "\n" },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "switch",
+            "children": [
+              { "k": "kw.switch", "t": "switch" },
+              { "k": "ws", "t": " " },
+              { "kind": "group", "open": "(", "close": ")" },
+              { "k": "nl", "t": "\n" },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cfcomponent",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "class",
+            "name": "cfcomponent",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfcomponent" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "ws", "t": "    " },
+          {
+            "kind": "tag-body",
+            "cf": true,
+            "name": "cffunction",
+            "children": [
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "function",
+                "name": "cffunction",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cffunction" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "name" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "foo" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "        " },
+              {
+                "kind": "ignore",
+                "children": [
+                  { "k": "ignore", "t": "<!--- cfformat-ignore-start --->\n        <cfif false>\n            </thead>\n        <cfelse>\n            </tbody>\n        </cfif>\n        <!--- cfformat-ignore-end --->" }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              {
+                "kind": "cf-tag",
+                "shape": "close",
+                "cf_kind": "function",
+                "name": "cffunction",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cffunction" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "class",
+            "name": "cfcomponent",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfcomponent" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

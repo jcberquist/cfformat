@@ -1,0 +1,103 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cfdocument",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "generic",
+            "name": "cfdocument",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfdocument" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "attributeCollection" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "template-expression",
+                    "open": "#",
+                    "close": "#",
+                    "children": [
+                      { "k": "ident.variable", "t": "pdfArgs" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "generic",
+            "name": "cfdocument",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfdocument" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cfhttp",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "generic",
+            "name": "cfhttp",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfhttp" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "url" },
+                  { "k": "punct.key-value", "t": "=" },
+                  { "k": "lit.unquoted", "t": "www." },
+                  {
+                    "kind": "template-expression",
+                    "open": "#",
+                    "close": "#",
+                    "children": [
+                      { "k": "ident.variable", "t": "pdfArgs" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "generic",
+            "name": "cfhttp",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfhttp" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

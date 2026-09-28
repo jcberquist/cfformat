@@ -1,0 +1,198 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.call", "t": "test" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "b" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "c" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "d" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.variable", "t": "test" },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "method" },
+                  {
+                    "kind": "call",
+                    "open": "(",
+                    "close": ")",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "ident.variable", "t": "a" }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ident.variable", "t": "b" }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ident.variable", "t": "c" }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ident.variable", "t": "d" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.builtin", "t": "ARRAYappend" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "arr" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "param" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "chain",
+            "children": [
+              { "k": "ident.variable", "t": "test" },
+              {
+                "kind": "segment",
+                "segment": "method",
+                "children": [
+                  { "k": "punct.accessor", "t": "." },
+                  { "k": "ident.call", "t": "append" },
+                  {
+                    "kind": "call",
+                    "open": "(",
+                    "close": ")",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "ident.variable", "t": "param" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.call", "t": "$$test" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

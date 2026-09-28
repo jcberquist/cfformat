@@ -1,0 +1,23 @@
+[package]
+name = "cfdoc"
+version.workspace = true
+description = "Prettier document printer port (no CFML knowledge)"
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+# A port of Prettier's printer: Prettier's MIT notice is LICENSE-PRETTIER,
+# which ships with the source (the crate is not published) and with every
+# release.
+
+[dependencies]
+unicode-width = "0.2"
+
+[dev-dependencies]
+serde_json = { workspace = true }
+criterion = { version = "0.5", default-features = false, features = ["cargo_bench_support"] }
+
+[[bench]]
+name = "print"
+harness = false

@@ -1,0 +1,48 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "op.assign", "t": "=" },
+              {
+                "kind": "binary",
+                "prec": "additive",
+                "children": [
+                  { "k": "lit.number", "t": "1" },
+                  { "k": "op.additive", "t": "+" },
+                  { "k": "nl", "t": "\n" },
+                  {
+                    "kind": "call-expr",
+                    "children": [
+                      { "k": "ident.call", "t": "two" },
+                      { "kind": "call", "open": "(", "close": ")" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "children": [
+          { "k": "lit.number", "t": "3" }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

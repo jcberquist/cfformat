@@ -1,0 +1,98 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "new",
+                "children": [
+                  { "k": "kw.new", "t": "new" },
+                  { "k": "ws", "t": "   " },
+                  { "k": "ident.class-name", "t": "path.myService" },
+                  { "kind": "call", "open": "(", "close": ")" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "b" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "new",
+                "children": [
+                  { "k": "kw.new", "t": "new" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "string",
+                    "quote": "single",
+                    "in_tag": false,
+                    "open": "'",
+                    "close": "'",
+                    "children": [
+                      {
+                        "kind": "template-expression",
+                        "open": "#",
+                        "close": "#",
+                        "children": [
+                          { "k": "ident.variable", "t": "dynamicPath" }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "open": "(",
+                    "close": ")",
+                    "items": [
+                      {
+                        "children": [
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.arg-name", "t": "a" },
+                              { "k": "ws", "t": " " },
+                              { "k": "punct.key-value", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              { "k": "ident.variable", "t": "b" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

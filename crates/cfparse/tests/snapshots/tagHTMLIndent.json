@@ -1,0 +1,247 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "p",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "p",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          },
+          { "k": "text", "t": "testing more code" },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "p",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "p",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "p",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          },
+          { "k": "text", "t": "testing more code\n" },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "p",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "p",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "p",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "text", "t": "testing\n" },
+          { "k": "text", "t": "more code\n" },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "p",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "p",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "p",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          },
+          { "k": "text", "t": "testing\n" },
+          { "k": "text", "t": "more code" },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "p",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "p",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "p",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "text", "t": "testing " },
+          {
+            "kind": "tag-body",
+            "cf": false,
+            "name": "span",
+            "children": [
+              {
+                "kind": "html-tag",
+                "shape": "open",
+                "name": "span",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "span" }
+                ]
+              },
+              { "k": "text", "t": "more code" },
+              {
+                "kind": "html-tag",
+                "shape": "close",
+                "name": "span",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "span" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "p",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "p",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "p",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "text", "t": "testing\n" },
+          {
+            "kind": "tag-body",
+            "cf": false,
+            "name": "span",
+            "children": [
+              {
+                "kind": "html-tag",
+                "shape": "open",
+                "name": "span",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "span" }
+                ]
+              },
+              { "k": "text", "t": "more code" },
+              {
+                "kind": "html-tag",
+                "shape": "close",
+                "name": "span",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "span" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "p",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "p" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

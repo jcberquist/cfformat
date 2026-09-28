@@ -1,0 +1,48 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": false,
+        "name": "script",
+        "children": [
+          {
+            "kind": "html-tag",
+            "shape": "open",
+            "name": "script",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "script" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "island",
+            "lang": "js",
+            "site": "script-tag",
+            "pure": true,
+            "children": [
+              { "k": "text", "t": "for (let i = 0; i < 4; i++) {\n  if (true) {\n    console.log('Hello World!');\n  }\n}\n" }
+            ]
+          },
+          {
+            "kind": "html-tag",
+            "shape": "close",
+            "name": "script",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "script" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

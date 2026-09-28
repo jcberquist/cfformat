@@ -1,0 +1,64 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "children": [
+          { "k": "kw.var", "t": "var" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "test" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "struct",
+                "open": "{",
+                "close": "}",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.struct-key", "t": "name" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "function",
+                            "children": [
+                              {
+                                "kind": "function-decl",
+                                "children": [
+                                  { "k": "kw.function", "t": "function" },
+                                  { "kind": "parameters", "open": "(", "close": ")" },
+                                  { "k": "ws", "t": " " }
+                                ]
+                              },
+                              { "kind": "block", "block": "function", "open": "{", "close": "}" }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

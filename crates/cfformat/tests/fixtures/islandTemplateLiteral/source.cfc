@@ -1,0 +1,15 @@
+<div>
+<div>
+<script>
+var t = `
+line one
+    line two
+`;
+function f() {
+  return `
+  a
+  `;
+}
+</script>
+</div>
+</div>

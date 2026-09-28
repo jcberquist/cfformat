@@ -1,0 +1,205 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cfcomponent",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "class",
+            "name": "cfcomponent",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfcomponent" }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "tag-body",
+            "cf": true,
+            "name": "cffunction",
+            "children": [
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "function",
+                "name": "cffunction",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cffunction" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "name" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "test" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "tag-body",
+                "cf": false,
+                "name": "div",
+                "children": [
+                  {
+                    "kind": "html-tag",
+                    "shape": "open",
+                    "name": "div",
+                    "open": "<",
+                    "close": ">",
+                    "children": [
+                      { "k": "ident.tag-name", "t": "div" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "tag-body",
+                        "cf": true,
+                        "name": "cfoutput",
+                        "children": [
+                          {
+                            "kind": "cf-tag",
+                            "shape": "open",
+                            "cf_kind": "output",
+                            "name": "cfoutput",
+                            "open": "<",
+                            "close": ">",
+                            "children": [
+                              { "k": "ident.tag-name", "t": "cfoutput" }
+                            ]
+                          },
+                          {
+                            "kind": "template-expression",
+                            "open": "#",
+                            "close": "#",
+                            "children": [
+                              { "k": "ident.variable", "t": "dynamicAttribute" }
+                            ]
+                          },
+                          {
+                            "kind": "cf-tag",
+                            "shape": "close",
+                            "cf_kind": "output",
+                            "name": "cfoutput",
+                            "open": "</",
+                            "close": ">",
+                            "children": [
+                              { "k": "ident.tag-name", "t": "cfoutput" }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.attribute-name", "t": "class" },
+                          { "k": "punct.key-value", "t": "=" },
+                          {
+                            "kind": "string",
+                            "quote": "double",
+                            "in_tag": true,
+                            "open": "\"",
+                            "close": "\"",
+                            "children": [
+                              { "k": "lit.string", "t": "test" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  { "k": "ws", "t": "    " },
+                  {
+                    "kind": "tag-body",
+                    "cf": false,
+                    "name": "p",
+                    "children": [
+                      {
+                        "kind": "html-tag",
+                        "shape": "open",
+                        "name": "p",
+                        "open": "<",
+                        "close": ">",
+                        "children": [
+                          { "k": "ident.tag-name", "t": "p" }
+                        ]
+                      },
+                      { "k": "text", "t": "text" },
+                      {
+                        "kind": "html-tag",
+                        "shape": "close",
+                        "name": "p",
+                        "open": "</",
+                        "close": ">",
+                        "children": [
+                          { "k": "ident.tag-name", "t": "p" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "nl", "t": "\n" },
+                  {
+                    "kind": "html-tag",
+                    "shape": "close",
+                    "name": "div",
+                    "open": "</",
+                    "close": ">",
+                    "children": [
+                      { "k": "ident.tag-name", "t": "div" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "nl", "t": "\n" },
+              {
+                "kind": "cf-tag",
+                "shape": "close",
+                "cf_kind": "function",
+                "name": "cffunction",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cffunction" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "class",
+            "name": "cfcomponent",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cfcomponent" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

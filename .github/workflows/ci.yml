@@ -1,0 +1,63 @@
+name: ci
+on:
+  push:
+    branches: [master]
+  pull_request:
+  # The release workflow runs this whole file before it builds an asset.
+  workflow_call:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Rust
+        run: rustup show active-toolchain || rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Test
+        run: cargo test --workspace --locked
+      # Every fixture cut at each eighth: parse and format, no panic, no
+      # abort (crates/cfparse/tests/fuzz.rs).
+      - name: Truncation fuzz over the fixtures
+        run: cargo test --release -p cfparse --locked --test fuzz -- --ignored
+      # Every operator chain, unbraced statement and masked bracket shape at
+      # the island size limit, parsed on the island thread or refused before
+      # it, no abort (crates/cfformat/tests/islands_deep.rs). The Test step
+      # runs the group on every platform; here again in release, its table
+      # printed: the parse's time and memory are what the group measures.
+      - name: Island shapes at the size limit are refused
+        run: cargo test --release -p cfformat --locked --test islands_deep -- every_chain_at_the_size_limit_is_refused --nocapture
+
+  # Every golden runs here too: islands are formatted in process ("oxc") or
+  # printed as written ("off"), so no case needs a tool, sh or anything on
+  # PATH. Swatinem/rust-cache caches ~/.cargo, git dependencies included, so
+  # the oxc checkout is fetched once per key.
+  test-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Rust
+        run: rustup show active-toolchain || rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - name: Test
+        run: cargo test --workspace --locked
+
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      # The fixtures are compared byte for byte: no CRLF conversion.
+      - name: Keep line endings
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v5
+      - name: Install Rust
+        run: rustup show active-toolchain || rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - name: Test
+        run: cargo test --workspace --locked

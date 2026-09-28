@@ -1,0 +1,8 @@
+[
+    {
+        "multiline.comma": "trailing"
+    },
+    {
+        "multiline.comma": "leading"
+    }
+]

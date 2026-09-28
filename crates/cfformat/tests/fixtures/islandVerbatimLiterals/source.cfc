@@ -1,0 +1,47 @@
+<cfif x>
+<cfquery name="q">
+select 'a
+  b' as x
+</cfquery>
+</cfif>
+<div>
+    <style>
+    .a{content:"x\
+    y"}
+    </style>
+</div>
+<cfoutput>
+<div>
+<script>
+const s = `#name#
+  says hi`;
+    go(s);
+</script>
+</div>
+</cfoutput>
+<cfif x>
+<cfquery name="q">
+select 1
+<cfif y>
+, 'a
+  b' as x
+</cfif>
+</cfquery>
+</cfif>
+<cfif x>
+<cfquery name="q">
+select 'a
+<cfif y>
+  b' as x
+</cfif>
+</cfquery>
+</cfif>
+<cfif x>
+<script>
+var a = 1;
+<cfif y>
+var s = `a
+  b`;
+</cfif>
+</script>
+</cfif>

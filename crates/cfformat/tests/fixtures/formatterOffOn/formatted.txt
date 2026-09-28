@@ -1,0 +1,13 @@
+var test = {a: 1, b: 2};
+// @formatter:off
+var test = {a:1,b:2};
+// @formatter:on
+var test = {a: 1, b: 2};
+/* @formatter:off */
+var test = {a:1,   b:2};
+/* @formatter:on */
+// @formatter:off
+var test = {a:1,   b:2};
+// cfformat-ignore-end
+// @formatter:offset
+var test = {a: 1, b: 2};

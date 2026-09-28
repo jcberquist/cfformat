@@ -1,0 +1,75 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "op.assign", "t": "=" },
+              {
+                "kind": "struct",
+                "open": "{",
+                "close": "}",
+                "items": [
+                  {
+                    "children": [
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.struct-key", "t": "a" },
+                          { "k": "punct.key-value", "t": ":" },
+                          {
+                            "kind": "string",
+                            "quote": "single",
+                            "in_tag": false,
+                            "open": "'",
+                            "close": "'",
+                            "children": [
+                              { "k": "lit.string", "t": "this struct" }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.struct-key", "t": "b" },
+                          { "k": "punct.key-value", "t": ":" },
+                          {
+                            "kind": "string",
+                            "quote": "single",
+                            "in_tag": false,
+                            "open": "'",
+                            "close": "'",
+                            "children": [
+                              { "k": "lit.string", "t": "is long enough to pass 40" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

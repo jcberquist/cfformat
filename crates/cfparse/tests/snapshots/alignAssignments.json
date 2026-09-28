@@ -1,0 +1,406 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.var", "t": "var" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "op.assign", "t": "=" },
+              { "k": "lit.number", "t": "1" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.var", "t": "var" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "ab" },
+              { "k": "op.assign", "t": "=" },
+              { "k": "lit.number", "t": "2" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "line-comment",
+        "open": "//",
+        "children": [
+          { "k": "comment", "t": " comment" }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.var", "t": "var" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "abc" },
+              { "k": "op.assign", "t": "=" },
+              { "k": "lit.number", "t": "3" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.var", "t": "var" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "abc_d" },
+              { "k": "op.assign", "t": "=" },
+              { "k": "lit.number", "t": "4" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.var", "t": "var" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "s" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "struct",
+                "open": "{",
+                "close": "}",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.struct-key", "t": "abc" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "lit.number", "t": "3" }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "leading": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "line-comment",
+                        "open": "//",
+                        "children": [
+                          { "k": "comment", "t": " comment" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " }
+                    ],
+                    "children": [
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.struct-key", "t": "ab" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "lit.number", "t": "2" }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          {
+                            "kind": "string",
+                            "quote": "single",
+                            "in_tag": false,
+                            "open": "'",
+                            "close": "'",
+                            "children": [
+                              { "k": "lit.string", "t": "a" }
+                            ]
+                          },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "lit.number", "t": "1" }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          {
+                            "kind": "string",
+                            "quote": "single",
+                            "in_tag": false,
+                            "open": "'",
+                            "close": "'",
+                            "children": [
+                              { "k": "lit.string", "t": "abcd" }
+                            ]
+                          },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "lit.number", "t": "4" }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.call", "t": "f" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.arg-name", "t": "a" },
+                          { "k": "punct.key-value", "t": "=" },
+                          { "k": "lit.number", "t": "1" }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.arg-name", "t": "ab" },
+                          { "k": "punct.key-value", "t": "=" },
+                          { "k": "lit.number", "t": "2" }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      {
+                        "kind": "key-value",
+                        "children": [
+                          { "k": "ident.arg-name", "t": "abc" },
+                          { "k": "punct.key-value", "t": "=" },
+                          { "k": "lit.number", "t": "3" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.var", "t": "var" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "value" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "chain",
+                "children": [
+                  { "k": "ident.scope", "t": "arguments" },
+                  {
+                    "kind": "segment",
+                    "segment": "property",
+                    "children": [
+                      { "k": "punct.accessor", "t": "." },
+                      { "k": "ident.property-name", "t": "dictionary" }
+                    ]
+                  },
+                  {
+                    "kind": "segment",
+                    "segment": "index",
+                    "children": [
+                      {
+                        "kind": "brackets",
+                        "open": "[",
+                        "close": "]",
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "chain",
+                            "children": [
+                              { "k": "ident.scope", "t": "arguments" },
+                              {
+                                "kind": "segment",
+                                "segment": "property",
+                                "children": [
+                                  { "k": "punct.accessor", "t": "." },
+                                  { "k": "ident.property-name", "t": "key" }
+                                ]
+                              }
+                            ]
+                          },
+                          { "k": "ws", "t": " " }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "flow",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.return", "t": "return" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "ternary",
+            "children": [
+              {
+                "kind": "binary",
+                "prec": "comparison",
+                "children": [
+                  {
+                    "kind": "chain",
+                    "children": [
+                      { "k": "ident.scope", "t": "arguments" },
+                      {
+                        "kind": "segment",
+                        "segment": "property",
+                        "children": [
+                          { "k": "punct.accessor", "t": "." },
+                          { "k": "ident.property-name", "t": "type" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  { "k": "op.comparison", "t": "==" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": false,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      { "k": "lit.string", "t": "one" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.ternary-q", "t": "?" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "chain",
+                "children": [
+                  { "k": "ident.variable", "t": "value" },
+                  {
+                    "kind": "segment",
+                    "segment": "index",
+                    "children": [
+                      {
+                        "kind": "brackets",
+                        "open": "[",
+                        "close": "]",
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          { "k": "lit.number", "t": "1" },
+                          { "k": "ws", "t": " " }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.ternary-colon", "t": ":" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "value" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

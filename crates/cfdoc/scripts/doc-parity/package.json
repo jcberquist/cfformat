@@ -1,0 +1,9 @@
+{
+  "name": "cfdoc-doc-parity",
+  "private": true,
+  "description": "Prints doc JSON from the cfdoc parity test with Prettier's printDocToString",
+  "type": "module",
+  "dependencies": {
+    "prettier": "3.9.6"
+  }
+}

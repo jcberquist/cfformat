@@ -1,0 +1,22 @@
+<div>
+    <div>
+        <script>
+        const page = `<p>
+            one   
+
+            two
+        </p>`;
+        const q = sql`select *
+          from t`;
+        const n = `outer ${items.map(i => `<li>
+            ${i}
+        </li>`).join("")} end`;
+        /* a plain
+           block comment */
+        /**
+           * a JSDoc one
+           */
+        go(page,q,n);
+        </script>
+    </div>
+</div>

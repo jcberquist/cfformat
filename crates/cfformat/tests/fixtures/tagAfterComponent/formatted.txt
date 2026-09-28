@@ -1,0 +1,11 @@
+<cfcomponent hint="x">
+    <cffunction name="a">
+        <cfargument name="b">
+    </cffunction>
+</cfcomponent>
+<!----
+
+<cffunction name="old">
+	<cfargument name="b">
+</cffunction>
+---->

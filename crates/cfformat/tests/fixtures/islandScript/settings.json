@@ -1,0 +1,13 @@
+[
+    {
+        "max_columns": 80,
+        "islands.js": "off"
+    },
+    {
+        "max_columns": 80
+    },
+    {
+        "max_columns": 80,
+        "tab_indent": true
+    }
+]

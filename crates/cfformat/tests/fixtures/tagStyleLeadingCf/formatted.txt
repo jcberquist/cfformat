@@ -1,0 +1,16 @@
+<cfcomponent>
+    <cffunction name="render" returntype="void">
+        <cfargument name="styles" type="struct" required="yes">
+        <style type="text/css">
+        <cfoutput>
+        .listing {color:#arguments.styles.color#;
+            font-size:<cfif arguments.styles.size EQ 'small'>smaller<cfelse>medium</cfif>;}
+        </style>
+        <table class="listing" bgcolor="#arguments.styles.bgcolor#">
+            <tr>
+                <td>x</td>
+            </tr>
+        </table>
+        </cfoutput>
+    </cffunction>
+</cfcomponent>

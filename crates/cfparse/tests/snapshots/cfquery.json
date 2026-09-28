@@ -1,0 +1,551 @@
+{
+  "mode": "tags",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "tag-body",
+        "cf": true,
+        "name": "cffunction",
+        "children": [
+          {
+            "kind": "cf-tag",
+            "shape": "open",
+            "cf_kind": "function",
+            "name": "cffunction",
+            "open": "<",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cffunction" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "key-value",
+                "children": [
+                  { "k": "ident.attribute-name", "t": "name" },
+                  { "k": "punct.key-value", "t": "=" },
+                  {
+                    "kind": "string",
+                    "quote": "double",
+                    "in_tag": true,
+                    "open": "\"",
+                    "close": "\"",
+                    "children": [
+                      { "k": "lit.string", "t": "get" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "tag-body",
+            "cf": true,
+            "name": "cfquery",
+            "children": [
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "name" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "myquery" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "island",
+                "lang": "sql",
+                "site": "cfquery",
+                "pure": true,
+                "children": [
+                  { "k": "text", "t": "SELECT col, col2 FROM tablename" }
+                ]
+              },
+              {
+                "kind": "cf-tag",
+                "shape": "close",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "tag-body",
+            "cf": true,
+            "name": "cfquery",
+            "children": [
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "name" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "myquery" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "island",
+                "lang": "sql",
+                "site": "cfquery",
+                "pure": true,
+                "children": [
+                  { "k": "text", "t": "SELECT col, col2 FROM tablename\n" }
+                ]
+              },
+              {
+                "kind": "cf-tag",
+                "shape": "close",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "tag-body",
+            "cf": true,
+            "name": "cfquery",
+            "children": [
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "name" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "myquery" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "island",
+                "lang": "sql",
+                "site": "cfquery",
+                "pure": true,
+                "children": [
+                  { "k": "text", "t": "\nSELECT col, col2\n\nFROM tablename\n" }
+                ]
+              },
+              {
+                "kind": "cf-tag",
+                "shape": "close",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "nl", "t": "\n" },
+          { "k": "ws", "t": "    " },
+          {
+            "kind": "tag-body",
+            "cf": true,
+            "name": "cfquery",
+            "children": [
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "name" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "myquery" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "island",
+                "lang": "sql",
+                "site": "cfquery",
+                "pure": false,
+                "children": [
+                  { "k": "text", "t": "\n    SELECT col,\n           col2\n    FROM tablename\n    WHERE 1=1\n    " },
+                  {
+                    "kind": "tag-body",
+                    "cf": true,
+                    "name": "cfif",
+                    "children": [
+                      {
+                        "kind": "cf-tag",
+                        "shape": "open",
+                        "cf_kind": "expression",
+                        "name": "cfif",
+                        "open": "<",
+                        "close": ">",
+                        "children": [
+                          { "k": "ident.tag-name", "t": "cfif" },
+                          { "k": "ws", "t": " " },
+                          { "k": "lit.bool", "t": "true" }
+                        ]
+                      },
+                      { "k": "text", "t": "\n    AND id = " },
+                      {
+                        "kind": "cf-tag",
+                        "shape": "open",
+                        "cf_kind": "generic",
+                        "name": "cfqueryparam",
+                        "open": "<",
+                        "close": ">",
+                        "children": [
+                          { "k": "ident.tag-name", "t": "cfqueryparam" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.attribute-name", "t": "value" },
+                              { "k": "punct.key-value", "t": "=" },
+                              {
+                                "kind": "string",
+                                "quote": "double",
+                                "in_tag": true,
+                                "open": "\"",
+                                "close": "\"",
+                                "children": [
+                                  {
+                                    "kind": "template-expression",
+                                    "open": "#",
+                                    "close": "#",
+                                    "children": [
+                                      { "k": "ident.variable", "t": "id" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.attribute-name", "t": "cfsqltype" },
+                              { "k": "punct.key-value", "t": "=" },
+                              {
+                                "kind": "string",
+                                "quote": "double",
+                                "in_tag": true,
+                                "open": "\"",
+                                "close": "\"",
+                                "children": [
+                                  { "k": "lit.string", "t": "cf_sql_integer" }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "text", "t": "\n    " },
+                      {
+                        "kind": "cf-tag",
+                        "shape": "open",
+                        "cf_kind": "else",
+                        "name": "cfelse",
+                        "open": "<",
+                        "close": ">",
+                        "children": [
+                          { "k": "ident.tag-name", "t": "cfelse" }
+                        ]
+                      },
+                      { "k": "text", "t": "\n    AND id = 0\n    " },
+                      {
+                        "kind": "cf-tag",
+                        "shape": "close",
+                        "cf_kind": "expression",
+                        "name": "cfif",
+                        "open": "</",
+                        "close": ">",
+                        "children": [
+                          { "k": "ident.tag-name", "t": "cfif" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "text", "t": "\n" }
+                ]
+              },
+              {
+                "kind": "cf-tag",
+                "shape": "close",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          { "k": "nl", "t": "\n" },
+          { "k": "ws", "t": "    " },
+          {
+            "kind": "tag-body",
+            "cf": true,
+            "name": "cfquery",
+            "children": [
+              {
+                "kind": "cf-tag",
+                "shape": "open",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "<",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "key-value",
+                    "children": [
+                      { "k": "ident.attribute-name", "t": "name" },
+                      { "k": "punct.key-value", "t": "=" },
+                      {
+                        "kind": "string",
+                        "quote": "double",
+                        "in_tag": true,
+                        "open": "\"",
+                        "close": "\"",
+                        "children": [
+                          { "k": "lit.string", "t": "myquery" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "island",
+                "lang": "sql",
+                "site": "cfquery",
+                "pure": false,
+                "children": [
+                  { "k": "text", "t": "\n        SELECT col,\n               col2\n        FROM tablename\n        WHERE 1=1\n        " },
+                  {
+                    "kind": "tag-body",
+                    "cf": true,
+                    "name": "cfif",
+                    "children": [
+                      {
+                        "kind": "cf-tag",
+                        "shape": "open",
+                        "cf_kind": "expression",
+                        "name": "cfif",
+                        "open": "<",
+                        "close": ">",
+                        "children": [
+                          { "k": "ident.tag-name", "t": "cfif" },
+                          { "k": "ws", "t": " " },
+                          { "k": "lit.bool", "t": "true" }
+                        ]
+                      },
+                      { "k": "text", "t": "\n        AND id = " },
+                      {
+                        "kind": "cf-tag",
+                        "shape": "open",
+                        "cf_kind": "generic",
+                        "name": "cfqueryparam",
+                        "open": "<",
+                        "close": ">",
+                        "children": [
+                          { "k": "ident.tag-name", "t": "cfqueryparam" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.attribute-name", "t": "value" },
+                              { "k": "punct.key-value", "t": "=" },
+                              {
+                                "kind": "string",
+                                "quote": "double",
+                                "in_tag": true,
+                                "open": "\"",
+                                "close": "\"",
+                                "children": [
+                                  {
+                                    "kind": "template-expression",
+                                    "open": "#",
+                                    "close": "#",
+                                    "children": [
+                                      { "k": "ident.variable", "t": "id" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.attribute-name", "t": "cfsqltype" },
+                              { "k": "punct.key-value", "t": "=" },
+                              {
+                                "kind": "string",
+                                "quote": "double",
+                                "in_tag": true,
+                                "open": "\"",
+                                "close": "\"",
+                                "children": [
+                                  { "k": "lit.string", "t": "cf_sql_integer" }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "text", "t": "\n        " },
+                      {
+                        "kind": "cf-tag",
+                        "shape": "open",
+                        "cf_kind": "else",
+                        "name": "cfelse",
+                        "open": "<",
+                        "close": ">",
+                        "children": [
+                          { "k": "ident.tag-name", "t": "cfelse" }
+                        ]
+                      },
+                      { "k": "text", "t": "\n            AND id = 0\n        " },
+                      {
+                        "kind": "cf-tag",
+                        "shape": "close",
+                        "cf_kind": "expression",
+                        "name": "cfif",
+                        "open": "</",
+                        "close": ">",
+                        "children": [
+                          { "k": "ident.tag-name", "t": "cfif" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "text", "t": "\n    " }
+                ]
+              },
+              {
+                "kind": "cf-tag",
+                "shape": "close",
+                "cf_kind": "query",
+                "name": "cfquery",
+                "open": "</",
+                "close": ">",
+                "children": [
+                  { "k": "ident.tag-name", "t": "cfquery" }
+                ]
+              }
+            ]
+          },
+          { "k": "nl", "t": "\n" },
+          {
+            "kind": "cf-tag",
+            "shape": "close",
+            "cf_kind": "function",
+            "name": "cffunction",
+            "open": "</",
+            "close": ">",
+            "children": [
+              { "k": "ident.tag-name", "t": "cffunction" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

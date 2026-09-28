@@ -1,0 +1,10 @@
+[
+    {
+        "multiline.comma": "leading",
+        "max_columns": 80
+    },
+    {
+        "multiline.comma": "leading_tight",
+        "max_columns": 80
+    }
+]

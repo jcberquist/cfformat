@@ -1,0 +1,69 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "function",
+        "children": [
+          {
+            "kind": "function",
+            "children": [
+              {
+                "kind": "function-decl",
+                "children": [
+                  { "k": "storage.modifier", "t": "public" },
+                  { "k": "ws", "t": " " },
+                  { "k": "storage.type", "t": "BaseGrammar" },
+                  { "k": "ws", "t": " " },
+                  { "k": "kw.function", "t": "function" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.function-name", "t": "init" },
+                  {
+                    "kind": "parameters",
+                    "open": "(",
+                    "close": ")",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          { "k": "storage.type", "t": "qb.models.Query.QueryUtils" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "key-value",
+                            "children": [
+                              { "k": "ident.parameter", "t": "utils" },
+                              { "k": "ws", "t": " " },
+                              { "k": "punct.key-value", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              {
+                                "kind": "new",
+                                "children": [
+                                  { "k": "kw.new", "t": "new" },
+                                  { "k": "ws", "t": " " },
+                                  { "k": "ident.class-name", "t": "qb.models.Query.QueryUtils" },
+                                  { "kind": "call", "open": "(", "close": ")" }
+                                ]
+                              }
+                            ]
+                          },
+                          { "k": "ws", "t": " " }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              { "kind": "block", "block": "function", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

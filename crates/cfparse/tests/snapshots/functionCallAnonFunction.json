@@ -1,0 +1,429 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.builtin", "t": "arrayMap" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      {
+                        "kind": "array",
+                        "open": "[",
+                        "close": "]",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "1" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "2" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "3" }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "function",
+                        "children": [
+                          {
+                            "kind": "function-decl",
+                            "children": [
+                              { "k": "kw.function", "t": "function" },
+                              {
+                                "kind": "parameters",
+                                "open": "(",
+                                "close": ")",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "ident.parameter", "t": "i" }
+                                    ]
+                                  }
+                                ]
+                              },
+                              { "k": "ws", "t": " " }
+                            ]
+                          },
+                          {
+                            "kind": "block",
+                            "block": "function",
+                            "open": "{",
+                            "close": "}",
+                            "children": [
+                              {
+                                "kind": "statement",
+                                "stmt": "flow",
+                                "children": [
+                                  { "k": "kw.return", "t": "return" },
+                                  { "k": "ws", "t": " " },
+                                  {
+                                    "kind": "binary",
+                                    "prec": "additive",
+                                    "children": [
+                                      { "k": "ident.variable", "t": "i" },
+                                      { "k": "op.additive", "t": "+" },
+                                      { "k": "lit.number", "t": "1" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.builtin", "t": "arrayMap" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      {
+                        "kind": "array",
+                        "open": "[",
+                        "close": "]",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "1" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "2" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "3" }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "function",
+                        "arrow": true,
+                        "children": [
+                          {
+                            "kind": "arrow-function",
+                            "children": [
+                              {
+                                "kind": "parameters",
+                                "open": "(",
+                                "close": ")",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "ident.parameter", "t": "i" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          { "k": "ws", "t": " " },
+                          { "k": "kw.arrow", "t": "=>" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "block",
+                            "block": "function",
+                            "open": "{",
+                            "close": "}",
+                            "children": [
+                              {
+                                "kind": "statement",
+                                "stmt": "flow",
+                                "children": [
+                                  { "k": "kw.return", "t": "return" },
+                                  { "k": "ws", "t": " " },
+                                  {
+                                    "kind": "binary",
+                                    "prec": "additive",
+                                    "children": [
+                                      { "k": "ident.variable", "t": "i" },
+                                      { "k": "op.additive", "t": "+" },
+                                      { "k": "lit.number", "t": "1" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.builtin", "t": "arrayMap" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      {
+                        "kind": "array",
+                        "open": "[",
+                        "close": "]",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "1" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "2" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "3" }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "function",
+                        "arrow": true,
+                        "children": [
+                          {
+                            "kind": "arrow-function",
+                            "children": [
+                              {
+                                "kind": "parameters",
+                                "open": "(",
+                                "close": ")",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "ident.parameter", "t": "i" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          { "k": "ws", "t": " " },
+                          { "k": "kw.arrow", "t": "=>" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "block",
+                            "block": "function",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "prec": "additive",
+                                "children": [
+                                  { "k": "ident.variable", "t": "i" },
+                                  { "k": "op.additive", "t": "+" },
+                                  { "k": "lit.number", "t": "1" }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "call-expr",
+            "children": [
+              { "k": "ident.builtin", "t": "arrayMap" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      {
+                        "kind": "array",
+                        "open": "[",
+                        "close": "]",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "1" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "2" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "lit.number", "t": "3" }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "function",
+                        "arrow": true,
+                        "children": [
+                          {
+                            "kind": "arrow-function",
+                            "children": [
+                              {
+                                "kind": "parameters",
+                                "open": "(",
+                                "close": ")",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "ident.parameter", "t": "i" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          { "k": "ws", "t": " " },
+                          { "k": "kw.arrow", "t": "=>" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "block",
+                            "block": "function",
+                            "children": [
+                              {
+                                "kind": "group",
+                                "open": "(",
+                                "close": ")",
+                                "children": [
+                                  {
+                                    "kind": "struct",
+                                    "open": "{",
+                                    "close": "}",
+                                    "items": [
+                                      {
+                                        "children": [
+                                          {
+                                            "kind": "key-value",
+                                            "children": [
+                                              { "k": "ident.struct-key", "t": "a" },
+                                              { "k": "punct.key-value", "t": ":" },
+                                              { "k": "lit.number", "t": "1" }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

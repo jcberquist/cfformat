@@ -1,0 +1,50 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "children": [
+          {
+            "kind": "ternary",
+            "children": [
+              {
+                "kind": "binary",
+                "prec": "comparison",
+                "children": [
+                  { "k": "ident.variable", "t": "a" },
+                  { "k": "ws", "t": " " },
+                  { "k": "op.comparison", "t": "<" },
+                  { "k": "ws", "t": " " },
+                  { "k": "lit.number", "t": "1" }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.ternary-q", "t": "?" },
+              { "k": "nl", "t": "\n" },
+              { "k": "lit.number", "t": "2" },
+              { "k": "ws", "t": " " },
+              { "k": "op.ternary-colon", "t": ":" },
+              { "k": "nl", "t": "\n" },
+              { "k": "ws", "t": "    " },
+              { "k": "lit.number", "t": "3" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "children": [
+          { "k": "lit.number", "t": "4" }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}
