@@ -201,10 +201,13 @@ it loads silently with the same options:
   `metadata.key_value.padding`, `param.key_value.padding` and
   `property.key_value.padding` are `attributes.key_value.padding`; each
   construct's `multiline.comma_dangle`, `multiline.leading_comma` and
-  `multiline.leading_comma.padding` are one
-  `multiline.comma` (`"trailing"`, `"dangling"`, `"leading"`,
-  `"leading_tight"`) for every list. Where the old keys disagree, the first
-  one in the file wins and a warning says so.
+  `multiline.leading_comma.padding` are one `multiline.comma`
+  (`"trailing"`, `"dangling"`, `"dangling_all"`, `"leading"`,
+  `"leading_tight"`): `"dangling"` puts a comma after the last item of
+  struct and array literals only, `"dangling_all"` of argument and parameter
+  lists too. Old keys that dangle literals and not argument or parameter
+  lists become `"dangling"`, keys that dangle all of them `"dangling_all"`;
+  any other disagreement warns, and the first key in the file wins.
 - **New values**: `strings.convert_nested_quotes` takes `"always"`,
   `"never"` or `"fewer_escapes"`; its old `true` and `false` load as
   `"always"` and `"never"` with a warning, and `--migrate` rewrites them.

@@ -132,7 +132,8 @@ or `cfdoc` directly, by the same path or git source.
   cfformat, the defaults are the ones `SETTINGS.md` lists;
   `Options::from_json` / `from_map` migrate removed and renamed keys and
   the old boolean values of `strings.convert_nested_quotes`
-  (`Options::migrate`, warnings), reject unknown ones and validate values
+  (`Options::migrate`, warnings; `Warning::chose_comma` marks the one
+  whose comma value the migration chose), reject unknown ones and validate values
   (`struct.separator`, `indent_size`, `max_columns`); `Options::validate`
   is the second half alone, for an object already migrated.
 - `options::Discovery` — settings discovery, first found wins:
@@ -173,7 +174,7 @@ one in this workspace's `Cargo.toml`; keep the two in step.
 |---|---|
 | `print/statements.rs` | script root, blocks, statement lists (a run of blank lines kept as one, semicolons preserved), every statement kind, `if` / `else` / `for` / `while` / `do` / `switch` / `case` / `try` / `catch` / `finally`, `Printer::sequence` for runs the tree leaves unstructured |
 | `print/expressions.rs` | groups, assignments (Prettier's `printAssignment` layouts: break after the operator, never, or fluid; shared with struct members; with one line comment before the value, on one line with the comment at its end while the value fits there, else the comment on its own line after the operator and the value under it, as always when the value holds a forced break), binary chains, ternaries, unary operators, `new` |
-| `print/delimited.rs` | structs, arrays, parameters and `cfhttp(…)` attributes: one threshold per list (`*.multiline.element_count` / `min_item_length`, padding, empty padding, `multiline.comma`: trailing, dangling or leading commas), item comments, `KeyValue` separators, index brackets (`brackets.padding`) |
+| `print/delimited.rs` | structs, arrays, parameters and `cfhttp(…)` attributes: one threshold per list (`*.multiline.element_count` / `min_item_length`, padding, empty padding, `multiline.comma`: trailing, dangling or leading commas, applied per kind of list by `CommaStyle::literal` / `list`), item comments, `KeyValue` separators, index brackets (`brackets.padding`) |
 | `print/accessors.rs` | member chains as Prettier's `printMemberChain`: groups (`.a.b()` runs), the merge of a short or factory-like head, one line while it fits with the last call's arguments free to break, else a group per line; `method_call.chain.multiline` above 0 forces the break; a chain with comments keeps the CommandBox line layout |
 | `print/calls.rs` | call callees and arguments, with Prettier's argument hugging (last / first function, struct or array; a single string that spans lines) |
 | `print/casing.rs` | `function_call.casing.builtin` (`data/functions.json`: the cfdocs spelling of every builtin `cfparse`' `data/support_functions.json` lists — `tests/data.rs` keeps the two sets equal) and `.userdefined` |
@@ -567,13 +568,17 @@ file. `--config FILE` is merged over whichever file was found, key by key.
 `cfformat settings PATH` lists the files used (`sources:`). There are 47
 keys (`cfformat settings --schema`, `SETTINGS.md`); CommandBox's 77-key
 files load as they are. `multiline.comma` (`"trailing"`, `"dangling"`,
-`"leading"`, `"leading_tight"`) is one comma style for every delimited
-list; it replaces the per-construct `*.multiline.comma_dangle`,
-`*.multiline.leading_comma` and `*.multiline.leading_comma.padding` keys,
-which still load: each construct's keys resolve to one style, constructs
-that agree merge silently, a disagreement warns once and the first
-construct in the file wins, and `multiline.comma` itself wins over all of
-them. The list thresholds stay per construct: a list with at least
+`"dangling_all"`, `"leading"`, `"leading_tight"`) is one comma setting for
+every delimited list, where `"dangling"` dangles struct and array literals
+only and `"dangling_all"` argument and parameter lists too; it replaces the
+per-construct `*.multiline.comma_dangle`, `*.multiline.leading_comma` and
+`*.multiline.leading_comma.padding` keys, which still load: each
+construct's keys resolve to one style, and the styles merge silently when
+one value gives them (literals dangling with argument and parameter lists
+trailing is `"dangling"`, all dangling `"dangling_all"`); any other
+disagreement warns once and the first construct in the file decides
+(`settings --migrate` then names the value it wrote), and
+`multiline.comma` itself wins over all of them. The list thresholds stay per construct: a list with at least
 `*.multiline.element_count` items whose items average more than
 `*.multiline.min_item_length` columns flat prints one item per line; an
 `element_count` of 0, every construct's default, turns the threshold off, so
@@ -672,7 +677,9 @@ keys to stdout; `--defaults` prints the defaults and reads nothing;
 `./.cfformat.json`) with its removed and renamed keys and old values
 migrated, so that it loads without a warning to the same options: each
 migration warning prints as a run prints it (`warning: FILE: key: message`),
-then `FILE: N keys migrated`. A file with nothing to migrate is not written
+then `FILE: N keys migrated`, followed by `; multiline.comma: "VALUE" chosen,
+see the warning` when old comma keys disagreed, since the rewrite silences
+that warning. A file with nothing to migrate is not written
 (`FILE: nothing to migrate`); one that does not load (unreadable, not a JSON
 object, a key that is no setting, a wrong value) is the settings error it
 always is, exit 2, and stays as it was. The object is pretty-printed, the

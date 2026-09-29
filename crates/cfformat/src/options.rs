@@ -310,15 +310,23 @@ pub enum NestedQuotes {
 
 /// `multiline.comma`: the commas of a delimited list printed one item per
 /// line (structs, arrays, arguments, parameters, script-tag attributes). A
-/// list printed on one line is `a, b` under every style.
+/// list printed on one line is `a, b` under every style. The two dangling
+/// values differ by list: [`CommaStyle::literal`] and [`CommaStyle::list`]
+/// give the style each kind of list prints with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CommaStyle {
     /// `a,` newline `b`: no comma after the last item.
     #[default]
     Trailing,
-    /// `a,` newline `b,`: a comma after the last item too.
+    /// `a,` newline `b,`: a comma after the last item too, in struct and
+    /// array literals only; argument and parameter lists print
+    /// [`CommaStyle::Trailing`]. Lucee rejects a comma after the last
+    /// argument of a call.
     Dangling,
+    /// A comma after the last item in every list: struct and array
+    /// literals, arguments and parameters.
+    DanglingAll,
     /// `a` newline `, b`, the first item spaced by two so the items align.
     Leading,
     /// `a` newline `,b`, the first item spaced by one.
@@ -331,8 +339,31 @@ impl CommaStyle {
         match self {
             CommaStyle::Trailing => "trailing",
             CommaStyle::Dangling => "dangling",
+            CommaStyle::DanglingAll => "dangling_all",
             CommaStyle::Leading => "leading",
             CommaStyle::LeadingTight => "leading_tight",
+        }
+    }
+
+    /// The style a struct literal (`{…}`, `[a: 1]`) or an array literal
+    /// prints with: both dangling values dangle. Never
+    /// [`CommaStyle::DanglingAll`].
+    pub fn literal(self) -> CommaStyle {
+        match self {
+            CommaStyle::DanglingAll => CommaStyle::Dangling,
+            style => style,
+        }
+    }
+
+    /// The style an argument list (calls, `new`, script-tag calls) or a
+    /// parameter list (named, anonymous and arrow functions) prints with:
+    /// only [`CommaStyle::DanglingAll`] dangles. Never
+    /// [`CommaStyle::DanglingAll`].
+    pub fn list(self) -> CommaStyle {
+        match self {
+            CommaStyle::Dangling => CommaStyle::Trailing,
+            CommaStyle::DanglingAll => CommaStyle::Dangling,
+            style => style,
         }
     }
 }
@@ -438,6 +469,16 @@ pub struct Warning {
     pub key: String,
     /// What happened to it.
     pub message: String,
+}
+
+impl Warning {
+    /// Whether this is the warning of per-construct comma keys that no
+    /// `multiline.comma` value reproduces, where the migration chose one:
+    /// rewriting the file silences it, so `cfformat settings --migrate`
+    /// names the value chosen.
+    pub fn chose_comma(&self) -> bool {
+        self.message.starts_with(COMMA_CHOICE)
+    }
 }
 
 impl fmt::Display for Warning {
@@ -654,10 +695,10 @@ impl OldCommas {
 }
 
 /// Moves the per-construct comma keys into `multiline.comma`: each
-/// construct's trio resolves to one style ([`OldCommas::resolve`]); styles
-/// that agree merge silently, a disagreement warns once and the first
-/// construct seen wins; `multiline.comma` itself, when present, wins over
-/// every trio, and a trio that resolves to another style warns "ignored".
+/// construct's trio resolves to one style ([`OldCommas::resolve`]), then the
+/// set of styles to one value ([`merge_commas`]). `multiline.comma` itself,
+/// when present, wins over every trio, and a trio whose construct it gives
+/// another style warns "ignored".
 fn migrate_commas(map: Map<String, Value>, warnings: &mut Vec<Warning>) -> Map<String, Value> {
     let mut out = Map::new();
     let mut found: Vec<OldCommas> = Vec::new();
@@ -706,8 +747,9 @@ fn migrate_commas(map: Map<String, Value>, warnings: &mut Vec<Warning>) -> Map<S
         .filter_map(|o| Some((o, o.resolve(warnings)?)))
         .collect();
     if let Some(set) = out.get(NEW_COMMA_KEY) {
+        let set: Option<CommaStyle> = serde_json::from_value(set.clone()).ok();
         for (old, style) in &resolved {
-            if set.as_str() != Some(style.as_str()) {
+            if set.map(|set| applied(old.construct, set)) != Some(*style) {
                 warnings.push(Warning {
                     key: old.first_key.clone(),
                     message: format!(
@@ -719,27 +761,99 @@ fn migrate_commas(map: Map<String, Value>, warnings: &mut Vec<Warning>) -> Map<S
         }
         return out;
     }
-    let Some(&(_, winner)) = resolved.first() else {
-        return out;
-    };
-    if let Some((loser, _)) = resolved.iter().find(|(_, style)| *style != winner) {
-        let styles: Vec<String> = resolved
-            .iter()
-            .map(|(o, style)| format!("{} \"{}\"", o.construct, style.as_str()))
-            .collect();
-        warnings.push(Warning {
-            key: loser.first_key.clone(),
-            message: format!(
-                "is now `{NEW_COMMA_KEY}`, one style for every list; the constructs disagree \
-                 ({}), so the first, \"{}\", applies",
-                styles.join(", "),
-                winner.as_str()
-            ),
-        });
+    if let Some(value) = merge_commas(&resolved, warnings) {
+        out.insert(NEW_COMMA_KEY.into(), Value::from(value.as_str()));
     }
-    out.insert(NEW_COMMA_KEY.into(), Value::from(winner.as_str()));
     out
 }
+
+/// Whether a construct of [`COMMA_CONSTRUCTS`] is a struct or array literal
+/// (the rest are argument and parameter lists).
+fn is_literal(construct: &str) -> bool {
+    matches!(construct, "struct" | "array")
+}
+
+/// The style `value` gives `construct`'s lists: [`CommaStyle::literal`] or
+/// [`CommaStyle::list`].
+fn applied(construct: &str, value: CommaStyle) -> CommaStyle {
+    if is_literal(construct) {
+        value.literal()
+    } else {
+        value.list()
+    }
+}
+
+/// The `multiline.comma` value that gives `construct` `style`: a dangling
+/// argument or parameter list needs `"dangling_all"`.
+fn value_for(construct: &str, style: CommaStyle) -> CommaStyle {
+    if style == CommaStyle::Dangling && !is_literal(construct) {
+        CommaStyle::DanglingAll
+    } else {
+        style
+    }
+}
+
+/// The one `multiline.comma` value for the constructs' resolved styles, in
+/// file order; `None` when no construct set a key. With a leading style
+/// among them, they must all agree. Otherwise every construct trailing is
+/// `"trailing"`; every construct dangling is `"dangling_all"` when an
+/// argument or parameter list is among them, else `"dangling"`; struct and
+/// array literals dangling with argument and parameter lists trailing is
+/// `"dangling"`. Anything else no value expresses: one warning, on the first
+/// construct that does not get its style, and the first construct decides.
+fn merge_commas(
+    resolved: &[(&OldCommas, CommaStyle)],
+    warnings: &mut Vec<Warning>,
+) -> Option<CommaStyle> {
+    let &(first, first_style) = resolved.first()?;
+    let chosen = value_for(first.construct, first_style);
+    let all = |style: CommaStyle| resolved.iter().all(|&(_, s)| s == style);
+    let leading = resolved
+        .iter()
+        .any(|&(_, s)| matches!(s, CommaStyle::Leading | CommaStyle::LeadingTight));
+    let merged = if leading {
+        all(first_style).then_some(first_style)
+    } else if all(CommaStyle::Trailing) {
+        Some(CommaStyle::Trailing)
+    } else if all(CommaStyle::Dangling) {
+        Some(if resolved.iter().any(|(o, _)| !is_literal(o.construct)) {
+            CommaStyle::DanglingAll
+        } else {
+            CommaStyle::Dangling
+        })
+    } else if resolved
+        .iter()
+        .all(|&(o, s)| s == applied(o.construct, CommaStyle::Dangling))
+    {
+        Some(CommaStyle::Dangling)
+    } else {
+        None
+    };
+    if let Some(value) = merged {
+        return Some(value);
+    }
+    let loser = resolved
+        .iter()
+        .find(|&&(o, s)| applied(o.construct, chosen) != s)
+        .map_or(first, |&(o, _)| o);
+    let styles: Vec<String> = resolved
+        .iter()
+        .map(|(o, style)| format!("{} \"{}\"", o.construct, style.as_str()))
+        .collect();
+    warnings.push(Warning {
+        key: loser.first_key.clone(),
+        message: format!(
+            "{COMMA_CHOICE} which cannot give each of these constructs its own style; they \
+             disagree ({}), so the first decides: \"{}\"",
+            styles.join(", "),
+            chosen.as_str()
+        ),
+    });
+    Some(chosen)
+}
+
+/// How the warning of a comma disagreement begins ([`Warning::chose_comma`]).
+const COMMA_CHOICE: &str = "is now `multiline.comma`,";
 
 /// The key that replaces the per-construct comma keys.
 const NEW_COMMA_KEY: &str = "multiline.comma";
@@ -782,9 +896,11 @@ impl Options {
     /// and every other one is dropped with a warning. The per-construct
     /// comma keys (`*.multiline.comma_dangle`, `*.multiline.leading_comma`,
     /// `*.multiline.leading_comma.padding`) become one `multiline.comma`
-    /// value: agreeing constructs merge silently, a disagreement warns once
-    /// and the first construct seen wins, and `multiline.comma` itself wins
-    /// over all of them. A boolean `strings.convert_nested_quotes` (under
+    /// value: constructs that agree merge silently, as do struct and array
+    /// literals dangling with argument and parameter lists trailing
+    /// (`"dangling"`); any other disagreement warns once and the first
+    /// construct seen decides; `multiline.comma` itself wins over all of
+    /// them. A boolean `strings.convert_nested_quotes` (under
     /// either name) becomes `"always"` or `"never"` with a warning. Unknown
     /// keys are left for deserialisation to reject.
     pub fn migrate(map: Map<String, Value>) -> (Map<String, Value>, Vec<Warning>) {
@@ -1276,7 +1392,7 @@ mod tests {
                 "function_declaration.multiline.comma_dangle": true,
                 "function_anonymous.multiline.comma_dangle": true}"#,
         );
-        assert_eq!((comma.as_deref(), w), (Some("dangling"), vec![]));
+        assert_eq!((comma.as_deref(), w), (Some("dangling_all"), vec![]));
         // CommandBox's own defaults: every trio false, the padding true.
         let (comma, w) = commas(
             r#"{"struct.multiline.leading_comma": false,
@@ -1296,17 +1412,110 @@ mod tests {
             r#"{"struct.multiline.comma_dangle": true, "array.multiline.comma_dangle": false,
                 "function_call.multiline.comma_dangle": false}"#,
         );
-        assert_eq!(comma.as_deref(), Some("dangling"), "the first seen wins");
+        assert_eq!(comma.as_deref(), Some("dangling"), "the first decides");
         assert_eq!(w.len(), 1, "{w:?}");
         assert_eq!(w[0].key, "array.multiline.comma_dangle");
-        let text = w[0].to_string();
-        for part in [
-            "struct \"dangling\"",
-            "array \"trailing\"",
-            "the first, \"dangling\"",
-        ] {
-            assert!(text.contains(part), "{text}");
-        }
+        assert!(w[0].chose_comma(), "{}", w[0]);
+        assert_eq!(
+            w[0].to_string(),
+            "`array.multiline.comma_dangle`: is now `multiline.comma`, which cannot give each \
+             of these constructs its own style; they disagree (struct \"dangling\", array \
+             \"trailing\", function_call \"trailing\"), so the first decides: \"dangling\""
+        );
+    }
+
+    /// The rules that merge the constructs' styles ([`merge_commas`]), by
+    /// group: struct and array literals, argument and parameter lists.
+    #[test]
+    fn comma_keys_merge_by_group() {
+        // Literals dangling, lists trailing (Prettier's "es5"): "dangling",
+        // which is exactly that, silently.
+        let (comma, w) = commas(
+            r#"{"struct.multiline.comma_dangle": true, "array.multiline.comma_dangle": true,
+                "function_call.multiline.comma_dangle": false,
+                "function_declaration.multiline.comma_dangle": false,
+                "function_anonymous.multiline.comma_dangle": false}"#,
+        );
+        assert_eq!((comma.as_deref(), w), (Some("dangling"), vec![]));
+        // The same with the lists first in the file.
+        let (comma, w) = commas(
+            r#"{"function_call.multiline.comma_dangle": false,
+                "array.multiline.comma_dangle": true}"#,
+        );
+        assert_eq!((comma.as_deref(), w), (Some("dangling"), vec![]));
+        // Every construct set dangling: "dangling_all" once a list is among
+        // them, "dangling" for literals alone.
+        let (comma, w) = commas(r#"{"function_call.multiline.comma_dangle": true}"#);
+        assert_eq!((comma.as_deref(), w), (Some("dangling_all"), vec![]));
+        let (comma, w) = commas(r#"{"struct.multiline.comma_dangle": true}"#);
+        assert_eq!((comma.as_deref(), w), (Some("dangling"), vec![]));
+        let (comma, w) = commas(
+            r#"{"struct.multiline.comma_dangle": true,
+                "function_anonymous.multiline.comma_dangle": true}"#,
+        );
+        assert_eq!((comma.as_deref(), w), (Some("dangling_all"), vec![]));
+        // Every construct set trailing.
+        let (comma, w) = commas(
+            r#"{"function_call.multiline.comma_dangle": false,
+                "struct.multiline.comma_dangle": false}"#,
+        );
+        assert_eq!((comma.as_deref(), w), (Some("trailing"), vec![]));
+        // Lists dangling, literals trailing: no value does that; the first
+        // construct decides, a list dangling is "dangling_all".
+        let (comma, w) = commas(
+            r#"{"function_call.multiline.comma_dangle": true,
+                "function_declaration.multiline.comma_dangle": true,
+                "struct.multiline.comma_dangle": false}"#,
+        );
+        assert_eq!(comma.as_deref(), Some("dangling_all"));
+        assert_eq!(w.len(), 1, "{w:?}");
+        assert_eq!(w[0].key, "struct.multiline.comma_dangle");
+        assert!(w[0].chose_comma(), "{}", w[0]);
+        assert!(
+            w[0].message.contains(
+                "(function_call \"dangling\", function_declaration \"dangling\", \
+                 struct \"trailing\"), so the first decides: \"dangling_all\""
+            ),
+            "{}",
+            w[0]
+        );
+        // The same, literals first: the first is trailing.
+        let (comma, w) = commas(
+            r#"{"array.multiline.comma_dangle": false,
+                "function_call.multiline.comma_dangle": true}"#,
+        );
+        assert_eq!(comma.as_deref(), Some("trailing"));
+        assert_eq!(w.len(), 1, "{w:?}");
+        assert_eq!(w[0].key, "function_call.multiline.comma_dangle");
+        assert!(w[0].chose_comma(), "{}", w[0]);
+        // One list dangling, another trailing.
+        let (comma, w) = commas(
+            r#"{"function_declaration.multiline.comma_dangle": false,
+                "function_call.multiline.comma_dangle": true}"#,
+        );
+        assert_eq!(comma.as_deref(), Some("trailing"));
+        assert_eq!(w[0].key, "function_call.multiline.comma_dangle");
+        // A leading style among them: they must all agree.
+        let (comma, w) = commas(
+            r#"{"struct.multiline.leading_comma": true,
+                "function_call.multiline.leading_comma": true}"#,
+        );
+        assert_eq!((comma.as_deref(), w), (Some("leading"), vec![]));
+        let (comma, w) = commas(
+            r#"{"function_call.multiline.comma_dangle": true,
+                "struct.multiline.leading_comma": true}"#,
+        );
+        assert_eq!(comma.as_deref(), Some("dangling_all"));
+        assert_eq!(w.len(), 1, "{w:?}");
+        assert_eq!(w[0].key, "struct.multiline.leading_comma");
+        assert!(w[0].chose_comma(), "{}", w[0]);
+        // No other warning is the comma choice.
+        let (_, w) = commas(
+            r#"{"struct.multiline.comma_dangle": true, "struct.multiline.leading_comma": true,
+                "multiline.comma": "trailing"}"#,
+        );
+        assert_eq!(w.len(), 2, "{w:?}");
+        assert!(w.iter().all(|w| !w.chose_comma()), "{w:?}");
     }
 
     #[test]
@@ -1344,6 +1553,24 @@ mod tests {
                 "array.multiline.leading_comma": true}"#,
         );
         assert_eq!((comma.as_deref(), w), (Some("leading"), vec![]));
+        // A construct is ignored only when the value gives it another style.
+        let (comma, w) = commas(
+            r#"{"struct.multiline.comma_dangle": true, "multiline.comma": "dangling",
+                "function_call.multiline.comma_dangle": false}"#,
+        );
+        assert_eq!((comma.as_deref(), w), (Some("dangling"), vec![]));
+        let (comma, w) = commas(
+            r#"{"array.multiline.comma_dangle": true, "multiline.comma": "dangling_all",
+                "function_declaration.multiline.comma_dangle": true}"#,
+        );
+        assert_eq!((comma.as_deref(), w), (Some("dangling_all"), vec![]));
+        let (comma, w) = commas(
+            r#"{"function_call.multiline.comma_dangle": true, "multiline.comma": "dangling"}"#,
+        );
+        assert_eq!(comma.as_deref(), Some("dangling"));
+        assert_eq!(w.len(), 1, "{w:?}");
+        assert_eq!(w[0].key, "function_call.multiline.comma_dangle");
+        assert!(w[0].message.contains("ignored"), "{}", w[0]);
         let (comma, w) =
             commas(r#"{"struct.multiline.comma_dangle": true, "multiline.comma": "trailing"}"#);
         assert_eq!(comma.as_deref(), Some("trailing"));
@@ -1357,6 +1584,7 @@ mod tests {
         for (value, style) in [
             ("trailing", CommaStyle::Trailing),
             ("dangling", CommaStyle::Dangling),
+            ("dangling_all", CommaStyle::DanglingAll),
             ("leading", CommaStyle::Leading),
             ("leading_tight", CommaStyle::LeadingTight),
         ] {
@@ -1374,6 +1602,24 @@ mod tests {
         );
         let (_, w) = commas(r#"{"array.multiline.comma_dangle": "yes"}"#);
         assert_eq!(w.len(), 1);
+    }
+
+    #[test]
+    fn comma_values_by_list() {
+        use CommaStyle::*;
+        for (value, literal, list) in [
+            (Trailing, Trailing, Trailing),
+            (Dangling, Dangling, Trailing),
+            (DanglingAll, Dangling, Dangling),
+            (Leading, Leading, Leading),
+            (LeadingTight, LeadingTight, LeadingTight),
+        ] {
+            assert_eq!(
+                (value.literal(), value.list()),
+                (literal, list),
+                "{value:?}"
+            );
+        }
     }
 
     #[test]

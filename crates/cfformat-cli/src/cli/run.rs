@@ -716,8 +716,11 @@ fn settings(args: &SettingsArgs) -> ExitCode {
 /// `cfformat settings --migrate [FILE|-]`: rewrites a settings file for the
 /// current key set, as loading it does in memory ([`Options::migrate`]).
 /// Each migration warning prints as discovery prints it, then `FILE: N keys
-/// migrated`; a file with nothing to migrate is not written (`FILE: nothing
-/// to migrate`), so a second run leaves it alone. A file that does not load
+/// migrated`, plus `; multiline.comma: "VALUE" chosen, see the warning` when
+/// the old per-construct comma keys disagreed (the rewrite silences that
+/// warning, so the summary names the value once); a file with nothing to
+/// migrate is not written (`FILE: nothing to migrate`), so a second run
+/// leaves it alone. A file that does not load
 /// — unreadable, not a JSON object, a key that is no setting, a wrong value
 /// — is the settings error it is anywhere else, exit 2, and stays as it was.
 /// The object is pretty-printed with a final newline, the surviving keys in
@@ -753,11 +756,18 @@ fn migrate(path: Option<&Path>) -> ExitCode {
         .iter()
         .filter(|&(key, value)| migrated.get(key) != Some(value))
         .count();
-    let summary = match count {
+    let mut summary = match count {
         0 => format!("{name}: nothing to migrate"),
         1 => format!("{name}: 1 key migrated"),
         n => format!("{name}: {n} keys migrated"),
     };
+    // The rewrite silences a comma choice's warning; say once what it chose.
+    let chosen = warnings.iter().any(|w| w.chose_comma());
+    if let Some(value) = migrated.get("multiline.comma").filter(|_| chosen) {
+        summary.push_str(&format!(
+            "; multiline.comma: {value} chosen, see the warning"
+        ));
+    }
     let json = serde_json::to_string_pretty(&migrated).expect("a JSON object serialises") + "\n";
     match input {
         Input::Stdin => {

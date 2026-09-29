@@ -78,7 +78,10 @@ pub(crate) struct DelimitedStyle {
     pub element_count: u32,
     /// …average more than this many columns printed flat.
     pub min_item_length: u32,
-    /// Where the commas go when the list breaks (`multiline.comma`).
+    /// Where the commas go when the list breaks: `multiline.comma` as this
+    /// kind of list applies it ([`CommaStyle::literal`] for structs and
+    /// arrays, [`CommaStyle::list`] for arguments and parameters), so never
+    /// [`CommaStyle::DanglingAll`].
     pub comma: CommaStyle,
     /// How `KeyValue` items print.
     pub key_value: KeyValueStyle,
@@ -102,7 +105,7 @@ impl DelimitedStyle {
             empty_padding: o.struct_empty_padding,
             element_count: o.struct_multiline_element_count,
             min_item_length: o.struct_multiline_min_item_length,
-            comma: o.multiline_comma,
+            comma: o.multiline_comma.literal(),
             key_value: KeyValueStyle::Struct,
         }
     }
@@ -114,7 +117,7 @@ impl DelimitedStyle {
             empty_padding: o.array_empty_padding,
             element_count: o.array_multiline_element_count,
             min_item_length: o.array_multiline_min_item_length,
-            comma: o.multiline_comma,
+            comma: o.multiline_comma.literal(),
             key_value: KeyValueStyle::Struct,
         }
     }
@@ -126,7 +129,7 @@ impl DelimitedStyle {
             empty_padding: false,
             element_count: o.function_call_multiline_element_count,
             min_item_length: o.function_call_multiline_min_item_length,
-            comma: o.multiline_comma,
+            comma: o.multiline_comma.list(),
             key_value: KeyValueStyle::Argument,
         }
     }
@@ -146,7 +149,7 @@ impl DelimitedStyle {
             empty_padding: false,
             element_count: o.function_declaration_multiline_element_count,
             min_item_length: o.function_declaration_multiline_min_item_length,
-            comma: o.multiline_comma,
+            comma: o.multiline_comma.list(),
             key_value: KeyValueStyle::Parameter,
         }
     }
@@ -158,7 +161,7 @@ impl DelimitedStyle {
             empty_padding: false,
             element_count: o.function_anonymous_multiline_element_count,
             min_item_length: o.function_anonymous_multiline_min_item_length,
-            comma: o.multiline_comma,
+            comma: o.multiline_comma.list(),
             key_value: KeyValueStyle::Parameter,
         }
     }
@@ -685,20 +688,23 @@ fn comma_before(comma: CommaStyle, first: bool) -> Option<Doc> {
     let (spacer, separator) = match comma {
         CommaStyle::Leading => ("  ", ", "),
         CommaStyle::LeadingTight => (" ", ","),
-        CommaStyle::Trailing | CommaStyle::Dangling => return None,
+        // Trailing and dangling (`DelimitedStyle::comma` is never
+        // `DanglingAll`: `CommaStyle::literal` / `list` map it).
+        _ => return None,
     };
     Some(if_break(if first { spacer } else { separator }, ""))
 }
 
 /// What follows an item's content: `,` after every item but the last (in a
 /// leading style only while flat: broken, the next item's comma precedes
-/// it), and after the last the dangling comma when broken (`"dangling"`; a
-/// leading style never dangles).
+/// it), and after the last the dangling comma when broken
+/// ([`CommaStyle::Dangling`], which `CommaStyle::literal` / `list` map both
+/// dangling values to where they apply; a leading style never dangles).
 fn comma_after(comma: CommaStyle, last: bool) -> Option<Doc> {
     match comma {
         _ if last => (comma == CommaStyle::Dangling).then(|| if_break(",", "")),
         CommaStyle::Leading | CommaStyle::LeadingTight => Some(if_break("", ",")),
-        CommaStyle::Trailing | CommaStyle::Dangling => Some(Doc::from(",")),
+        _ => Some(Doc::from(",")),
     }
 }
 

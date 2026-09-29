@@ -1354,6 +1354,51 @@ fn settings_migrate_rewrites_an_old_file_once() {
         (options, "sources:\n  <tmp>/b/.cfformat.json\n".to_owned())
     );
 
+    // The comma keys of struct and array literals dangling and of argument
+    // and parameter lists not (a real file's shape) are `"dangling"`
+    // exactly: silent, and the rewrite loads without a warning.
+    s.write(
+        "e/.cfformat.json",
+        r#"{"struct.multiline.comma_dangle": true, "array.multiline.comma_dangle": true, "function_call.multiline.comma_dangle": false, "function_declaration.multiline.comma_dangle": false, "function_anonymous.multiline.comma_dangle": false, "indent_size": 2}"#,
+    );
+    let (options, warned) = effective(&s.0, &["settings", "e"]);
+    assert_eq!(warned, "sources:\n  <tmp>/e/.cfformat.json\n");
+    let out = s.run(&s.0, &["settings", "--migrate", "e/.cfformat.json"]);
+    assert_eq!(out.status.code(), Some(0), "{}", stderr(&out));
+    assert_eq!(stderr(&out), "e/.cfformat.json: 5 keys migrated\n");
+    assert_eq!(
+        s.read("e/.cfformat.json"),
+        "{\n  \"indent_size\": 2,\n  \"multiline.comma\": \"dangling\"\n}\n"
+    );
+    assert_eq!(effective(&s.0, &["settings", "e"]), (options, warned));
+
+    // Comma keys no value reproduces: a warning, and the summary names the
+    // value chosen, since the rewrite silences the warning.
+    s.write(
+        "d/.cfformat.json",
+        r#"{"function_call.multiline.comma_dangle": true, "struct.multiline.comma_dangle": false}"#,
+    );
+    let (options, _) = effective(&s.0, &["settings", "d"]);
+    let out = s.run(&s.0, &["settings", "--migrate", "d/.cfformat.json"]);
+    assert_eq!(out.status.code(), Some(0), "{}", stderr(&out));
+    assert_eq!(
+        stderr(&out),
+        "warning: d/.cfformat.json: `struct.multiline.comma_dangle`: is now `multiline.comma`, \
+         which cannot give each of these constructs its own style; they disagree \
+         (function_call \"dangling\", struct \"trailing\"), so the first decides: \
+         \"dangling_all\"\n\
+         d/.cfformat.json: 2 keys migrated; multiline.comma: \"dangling_all\" chosen, see the \
+         warning\n"
+    );
+    assert_eq!(
+        s.read("d/.cfformat.json"),
+        "{\n  \"multiline.comma\": \"dangling_all\"\n}\n"
+    );
+    assert_eq!(
+        effective(&s.0, &["settings", "d"]),
+        (options, "sources:\n  <tmp>/d/.cfformat.json\n".to_owned())
+    );
+
     // `-`: the object from stdin, migrated, on stdout.
     let out = s.run_stdin(
         &s.0,
@@ -1476,6 +1521,16 @@ fn settings_schema_describes_every_key() {
     assert_eq!(
         properties["strings.convert_nested_quotes"]["enum"],
         serde_json::json!(["always", "never", "fewer_escapes"])
+    );
+    assert_eq!(
+        properties["multiline.comma"]["enum"],
+        serde_json::json!([
+            "trailing",
+            "dangling",
+            "dangling_all",
+            "leading",
+            "leading_tight"
+        ])
     );
     assert!(!properties.contains_key("islands.timeout_ms"));
 

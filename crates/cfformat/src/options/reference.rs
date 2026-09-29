@@ -491,19 +491,35 @@ const REFERENCE: &[OptionInfo] = &[
     ),
     ex(
         "multiline.comma",
-        Kind::Enum(&["trailing", "dangling", "leading", "leading_tight"]),
+        Kind::Enum(&[
+            "trailing",
+            "dangling",
+            "dangling_all",
+            "leading",
+            "leading_tight",
+        ]),
         r#""trailing""#,
         "Where the commas go when a struct, array, argument list, parameter list or script-tag \
-         attribute list prints one item per line: `\"trailing\"` after every item but the last, \
-         `\"dangling\"` after the last item too, `\"leading\"` before every item but the \
-         first (`, b`, the first item spaced by two so the items align), `\"leading_tight\"` \
-         the same without the space (`,b`). A list on one line is `a, b` under every value. \
+         attribute list prints one item per line: `\"trailing\"` after every item but the last; \
+         `\"dangling\"` after the last item too in struct literals (`{…}` and ordered \
+         `[a: 1]`) and array literals, while argument lists (calls, `new`, script-tag calls such \
+         as `cfhttp(url = \"x\")`) and parameter lists (named functions, anonymous functions, \
+         arrows) print `\"trailing\"`; `\"dangling_all\"` after the last item of every one of \
+         those lists; `\"leading\"` before every item but the first (`, b`, the first item \
+         spaced by two so the items align); `\"leading_tight\"` the same without the space \
+         (`,b`). A list on one line is `a, b` under every value. Engines differ on a comma after \
+         the last item: Lucee 6 accepts one in a struct, array or parameter list and rejects one \
+         in an argument list, and Adobe ColdFusion releases before 2025 reject it everywhere. \
          Replaces the per-construct `*.multiline.comma_dangle`, `*.multiline.leading_comma` and \
-         `*.multiline.leading_comma.padding` keys: each construct's keys resolve to one value \
-         (leading commas never dangle), constructs that agree merge silently, and when they \
-         disagree the first one in the file applies, with a warning.",
-        "myArray = [1,2,3,4];",
-        r#"{"array.multiline.element_count": 4, "array.multiline.min_item_length": 0}"#,
+         `*.multiline.leading_comma.padding` keys: each construct's keys resolve to one style \
+         (leading commas never dangle), and the styles merge silently when one value gives \
+         them: all trailing is `\"trailing\"`; struct and array literals dangling with \
+         argument and parameter lists trailing is `\"dangling\"`; all dangling is \
+         `\"dangling_all\"` (`\"dangling\"` when only literals set a key); all one leading \
+         style is that style. Otherwise the first construct in the file decides, with a warning.",
+        "myArray = [1,2,3,4];\nmyFunction(1,2,3,4);",
+        r#"{"array.multiline.element_count": 4, "array.multiline.min_item_length": 0,
+            "function_call.multiline.element_count": 4, "function_call.multiline.min_item_length": 0}"#,
         &[],
     ),
     info(

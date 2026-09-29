@@ -36,6 +36,19 @@
         "function_call.multiline.element_count": 2,
         "function_declaration.multiline.element_count": 2,
         "function_anonymous.multiline.element_count": 2,
+        "multiline.comma": "dangling_all"
+    },
+    {
+        "struct.multiline.min_item_length": 0,
+        "array.multiline.min_item_length": 0,
+        "function_call.multiline.min_item_length": 0,
+        "function_declaration.multiline.min_item_length": 0,
+        "function_anonymous.multiline.min_item_length": 0,
+        "struct.multiline.element_count": 2,
+        "array.multiline.element_count": 3,
+        "function_call.multiline.element_count": 2,
+        "function_declaration.multiline.element_count": 2,
+        "function_anonymous.multiline.element_count": 2,
         "multiline.comma": "leading"
     },
     {
