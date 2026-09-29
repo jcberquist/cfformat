@@ -118,7 +118,7 @@ jobs:
 
       # Two files from one directory: the artifact holds them at its root.
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.suffix }}
           path: |
@@ -133,7 +133,7 @@ jobs:
       - build
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           pattern: macos_*
           path: artifacts
@@ -151,7 +151,7 @@ jobs:
           done
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: macos
           path: macos/*
@@ -179,7 +179,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           path: artifacts
 
@@ -200,7 +200,7 @@ jobs:
 
       - name: Upload the assets (dry run)
         if: ${{ env.PUBLISH != 'true' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: release-assets-v${{ env.VERSION }}
           path: assets/*
