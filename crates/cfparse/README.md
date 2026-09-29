@@ -341,13 +341,16 @@ every input shape that once overflowed the stack — `!` × 20,000, `x=` ×
 `cffile(…) ` × 4,000 in a `<cfscript>`, … — and the shapes that were once
 quadratic — unclosed `#`s retried, `<cfif a>` × 20,000 then `</cfoutput>` ×
 20,000 (and `<div>` / `</span>`, in and out of a CF body) — at the size
-of the first fuzz cases and ten times it (about a minute and a half of the
-passes' time in release). The truncation pass cuts each source at each eighth of its length and
+of the first fuzz cases and ten times it (in release on a desktop machine,
+about 45 s of the truncation pass and 15 s of the mutation pass; the two
+passes run side by side, the whole run under a minute). The truncation pass cuts each source at each eighth of its length and
 parses each cut in its own mode and as script, then formats it. The mutation
-pass makes `CFPARSE_FUZZ_MUTATIONS` (8) single edits per source from a
-seeded xorshift — `é`, `💩`, U+0301 or a delimiter (`"`, `'`, `/*`, `*/`,
-`<!---`, `--->`, `#`, brackets) inserted at a character boundary, or a
-character deleted — and also checks that both parses tile the source with
+pass makes single edits from a seeded xorshift — `é`, `💩`, U+0301 or a
+delimiter (`"`, `'`, `/*`, `*/`, `<!---`, `--->`, `#`, brackets) inserted at
+a character boundary, or a character deleted — one per fixed case (a shape
+is there to prove the parse neither recurses nor goes quadratic on it, which
+one parse proves) and `CFPARSE_FUZZ_MUTATIONS` (8) per fixture or corpus
+file, and also checks that both parses tile the source with
 every token boundary on a character boundary and every recovered region on
 token boundaries. The truncation pass checks that every recovered region
 reached the output as written (its text without whitespace is a run of the
@@ -360,7 +363,7 @@ CFPARSE_CORPUS=/a:/b …         # more corpora, colon-separated
 CFPARSE_FUZZ_TRACE=1 …         # print each case before it runs
 CFPARSE_FUZZ_TIMEOUT=60 …      # seconds one case may take
 CFPARSE_FUZZ_SEED=… …          # replay the mutation pass (the seed is printed)
-CFPARSE_FUZZ_MUTATIONS=8 …     # mutations per source
+CFPARSE_FUZZ_MUTATIONS=8 …     # mutations per fixture or corpus file
 ```
 
 `tests/lexical.rs` holds the lexical cases: token kinds where a rule is

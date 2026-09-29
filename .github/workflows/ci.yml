@@ -26,10 +26,13 @@ jobs:
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Test
         run: cargo test --workspace --locked --no-fail-fast
-      # Every fixture cut at each eighth: parse and format, no panic, no
-      # abort (crates/cfparse/tests/fuzz.rs).
-      - name: Truncation fuzz over the fixtures
-        run: cargo test --release -p cfparse --locked --test fuzz -- --ignored
+      # The fixed stress shapes (every input that once overflowed the stack
+      # or went quadratic) and every fixture, each cut at each eighth and
+      # each mutated (one edit per shape, eight per fixture): parse and
+      # format, no panic, no abort (crates/cfparse/tests/fuzz.rs). Each
+      # set's files, cases and panics printed.
+      - name: "Fuzz: stress shapes and fixtures, truncated and mutated"
+        run: cargo test --release -p cfparse --locked --test fuzz -- --ignored --nocapture
       # Every operator chain, unbraced statement and masked bracket shape at
       # the island size limit, parsed on the island thread or refused before
       # it, no abort (crates/cfformat/tests/islands_deep.rs). The Test step

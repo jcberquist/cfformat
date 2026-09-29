@@ -9,14 +9,15 @@
 //! recovered in prints as written: its text without whitespace is a
 //! run of the output's.
 //!
-//! **Mutation**: each source gets `CFPARSE_FUZZ_MUTATIONS` (default 8)
-//! single edits from a seeded xorshift — a multibyte character (`é`, `💩`,
-//! U+0301) or a delimiter (`"`, `'`, `/*`, `*/`, `<!---`, `--->`, `#`, `(`,
-//! `)`, `{`, `}`) inserted at a random character boundary, or one character
-//! deleted. Each mutated source must parse in its own mode and as script
-//! without a panic, the tokens of both parses must tile it with every
-//! boundary on a character boundary (and every recovered region on token
-//! boundaries), and it must format without a panic.
+//! **Mutation**: each fixture and corpus file gets `CFPARSE_FUZZ_MUTATIONS`
+//! (default 8), and each fixed case one, single edits from a seeded
+//! xorshift — a multibyte character (`é`, `💩`, U+0301) or a delimiter
+//! (`"`, `'`, `/*`, `*/`, `<!---`, `--->`, `#`, `(`, `)`, `{`, `}`)
+//! inserted at a random character boundary, or one character deleted.
+//! Each mutated source must parse in its own mode and as script without a
+//! panic, the tokens of both parses must tile it with every boundary on a
+//! character boundary (and every recovered region on token boundaries), and
+//! it must format without a panic.
 //! The seed is printed; `CFPARSE_FUZZ_SEED` replays it.
 //!
 //! Both passes format with islands on: one `Islands` per corpus, so
@@ -30,7 +31,7 @@
 //! CFPARSE_FUZZ_TIMEOUT=60 …     # seconds one case may take (the watchdog)
 //! CFPARSE_FUZZ_TRACE=1 …        # print each case before it runs
 //! CFPARSE_FUZZ_SEED=… …         # the mutation pass's seed (default: the clock)
-//! CFPARSE_FUZZ_MUTATIONS=8 …    # mutations per source
+//! CFPARSE_FUZZ_MUTATIONS=8 …    # mutations per fixture or corpus file
 //! ```
 //!
 //! **Fixed cases** run first in both passes: every input shape that once
@@ -73,6 +74,9 @@ use cfparse::{parse_source, Mode};
 
 /// A source to cut: its name, text and mode.
 type Source = (String, String, Mode);
+
+/// The name of the set [`sets`] puts first: `common::fixed_cases`.
+const FIXED_CASES: &str = "fixed cases";
 
 #[derive(Default)]
 struct Counts {
@@ -151,7 +155,7 @@ fn truncated_sources_neither_panic_nor_abort() {
 /// fixtures, then every corpus: each a name and its sources.
 fn sets() -> Vec<(String, Vec<Source>)> {
     let mut sets: Vec<(String, Vec<Source>)> = vec![
-        ("fixed cases".into(), common::fixed_cases()),
+        (FIXED_CASES.into(), common::fixed_cases()),
         (
             "fixtures".into(),
             common::fixtures()
@@ -277,11 +281,17 @@ fn mutated_sources_tile_and_neither_panic_nor_abort() {
         .and_then(|v| v.parse::<usize>().ok())
         .unwrap_or(8);
     println!(
-        "== mutation fuzz == seed {seed} (CFPARSE_FUZZ_SEED), {mutations} mutations per source"
+        "== mutation fuzz == seed {seed} (CFPARSE_FUZZ_SEED), {mutations} mutations per source, \
+         1 for the fixed cases"
     );
 
     let mut total = MutationCounts::default();
     for (name, sources) in sets() {
+        // A fixed case is there to prove the parse neither recurses nor
+        // goes quadratic on its shape, which one parse of it proves: one
+        // edit of a 4 MB run of `<cfif x>` is as good as eight, and eight
+        // of them made this pass minutes long.
+        let mutations = if name == FIXED_CASES { 1 } else { mutations };
         let watchdog = watchdog.clone();
         let counts = std::thread::Builder::new()
             .name(format!("mutate {name}"))
