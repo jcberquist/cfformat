@@ -6,7 +6,8 @@ name: release
 # checked and built, the assets are uploaded as the run's artifacts, and no
 # release is made. The first release (v0.1.0) is bootstrapped the same way:
 # push master, run this workflow by hand as a dry run, then tag that commit
-# and push the tag.
+# and push the tag. The linux_arm64 builds run on GitHub's ubuntu-24.04-arm
+# hosted runners, which are available to public repositories only.
 on:
   push:
     tags: ['v*']
