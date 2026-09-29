@@ -27,6 +27,27 @@ function f(
 ) {
 }
 flat = [1, 2];
+o = [
+    a: 1,
+    b: 2
+];
+x = new Foo(
+    1,
+    2
+);
+cfhttp(
+    url = "x",
+    method = "get"
+);
+g = function(
+    p,
+    q
+) {
+};
+h = (
+    p,
+    q
+) => p + q;
 ~
 s = {
     a: 1,
@@ -57,6 +78,27 @@ function f(
 ) {
 }
 flat = [1, 2];
+o = [
+    a: 1,
+    b: 2,
+];
+x = new Foo(
+    1,
+    2,
+);
+cfhttp(
+    url = "x",
+    method = "get",
+);
+g = function(
+    p,
+    q,
+) {
+};
+h = (
+    p,
+    q,
+) => p + q;
 ~
 s = {
       a: 1
@@ -87,6 +129,27 @@ function f(
 ) {
 }
 flat = [1, 2];
+o = [
+      a: 1
+    , b: 2
+];
+x = new Foo(
+      1
+    , 2
+);
+cfhttp(
+      url = "x"
+    , method = "get"
+);
+g = function(
+      p
+    , q
+) {
+};
+h = (
+      p
+    , q
+) => p + q;
 ~
 s = {
      a: 1
@@ -117,3 +180,24 @@ function f(
 ) {
 }
 flat = [1, 2];
+o = [
+     a: 1
+    ,b: 2
+];
+x = new Foo(
+     1
+    ,2
+);
+cfhttp(
+     url = "x"
+    ,method = "get"
+);
+g = function(
+     p
+    ,q
+) {
+};
+h = (
+     p
+    ,q
+) => p + q;
