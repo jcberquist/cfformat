@@ -210,6 +210,10 @@ pub struct ArrangeArgs {
     /// getMetadata, ORM mappings and serialisation)
     #[arg(long)]
     pub properties: bool,
+    /// Functions kept at the top, in this order, whatever their access;
+    /// comma-separated or repeated; --first= keeps none (default: init)
+    #[arg(long, value_name = "NAMES", value_delimiter = ',')]
+    pub first: Option<Vec<String>>,
     /// The mode flags, shared with formatting.
     #[command(flatten)]
     pub mode: ModeArgs,

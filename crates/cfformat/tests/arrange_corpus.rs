@@ -136,12 +136,13 @@ fn arrange_corpus() {
         let result = catch_unwind(AssertUnwindSafe(|| {
             let formatted = format_source(&src, Mode::Auto, &fmt_opts);
             let tree = cfparse::parse_source(&src, Mode::Auto);
-            for (opts, c) in checks::BOTH.iter().zip(counts.iter_mut()) {
+            for (opts, c) in checks::both().iter().zip(counts.iter_mut()) {
                 c.files += 1;
                 let (out, problems) = checks::check(&src, Mode::Auto, opts);
                 for p in problems {
                     failures.push(format!("{name}{}: {p}", checks::suffix(opts)));
                 }
+                let first = arrange::First::new(&opts.first);
                 let bodies = arrange::bodies(&tree, opts);
                 for b in &bodies {
                     c.bodies += 1;
@@ -153,7 +154,7 @@ fn arrange_corpus() {
                         c.runs += 1;
                         c.in_runs += run.units.len();
                         let mut order: Vec<usize> = (0..run.units.len()).collect();
-                        order.sort_by(|&x, &y| run.units[x].order(&run.units[y]));
+                        order.sort_by(|&x, &y| run.units[x].order(&run.units[y], &first));
                         moved_here += order.iter().enumerate().filter(|(s, u)| s != *u).count();
                     }
                     c.moved += moved_here;
@@ -186,7 +187,7 @@ fn arrange_corpus() {
         }
         watchdog.end(0);
     }
-    for (opts, c) in checks::BOTH.iter().zip(&counts) {
+    for (opts, c) in checks::both().iter().zip(&counts) {
         let with = if opts.properties {
             "with --properties"
         } else {

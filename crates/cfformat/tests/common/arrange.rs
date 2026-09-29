@@ -6,19 +6,30 @@ use std::cmp::Ordering;
 use cfformat::arrange::{self, Access, ArrangeOptions, Arranged, MemberKind, Run, Unit};
 use cfparse::{Mode, TokenKind, Tree};
 
-/// Both option sets every invariant runs with.
-pub const BOTH: [ArrangeOptions; 2] = [
-    ArrangeOptions { properties: false },
-    ArrangeOptions { properties: true },
-];
+/// Both option sets every invariant runs with: the default `--first`
+/// list, without and with `--properties`.
+pub fn both() -> [ArrangeOptions; 2] {
+    [
+        ArrangeOptions::default(),
+        ArrangeOptions {
+            properties: true,
+            ..ArrangeOptions::default()
+        },
+    ]
+}
 
-/// `+properties` or nothing, for messages and expected-failure keys.
-pub fn suffix(opts: &ArrangeOptions) -> &'static str {
+/// `+properties`, `+first=a,b` for a list other than the default, or
+/// nothing, for messages and expected-failure keys.
+pub fn suffix(opts: &ArrangeOptions) -> String {
+    let mut out = String::new();
     if opts.properties {
-        "+properties"
-    } else {
-        ""
+        out.push_str("+properties");
     }
+    if opts.first != ArrangeOptions::default().first {
+        out.push_str("+first=");
+        out.push_str(&opts.first.join(","));
+    }
+    out
 }
 
 /// Arranges `src` and checks invariants 1, 2 and 4 on the result:
@@ -82,7 +93,7 @@ pub fn check(src: &str, mode: Mode, opts: &ArrangeOptions) -> (Arranged, Vec<Str
         if let Some(w) = run
             .units
             .windows(2)
-            .find(|w| expected_order(&w[0], &w[1]) == Ordering::Greater)
+            .find(|w| expected_order(&w[0], &w[1], &opts.first) == Ordering::Greater)
         {
             problems.push(format!(
                 "run {i} of the output is out of order: {} before {}",
@@ -124,31 +135,34 @@ fn invalid(tree: &Tree) -> Vec<String> {
     out
 }
 
-/// The documented order, written apart from [`Unit::order`]: `init`
-/// first, then remote, public, package, private, then the name, ASCII
-/// case-insensitively; properties by name alone.
-fn expected_order(a: &Unit, b: &Unit) -> Ordering {
-    let lower = |u: &Unit| {
-        u.name
-            .bytes()
+/// The documented order, written apart from [`Unit::order`]: the
+/// functions `first` lists, in its order, then remote, public, package,
+/// private, then the name, ASCII case-insensitively; properties by name
+/// alone.
+fn expected_order(a: &Unit, b: &Unit, first: &[String]) -> Ordering {
+    let lower = |name: &str| {
+        name.bytes()
             .map(|c| c.to_ascii_lowercase())
             .collect::<Vec<u8>>()
     };
     match a.kind {
-        MemberKind::Property => lower(a).cmp(&lower(b)),
+        MemberKind::Property => lower(&a.name).cmp(&lower(&b.name)),
         MemberKind::Function => {
             let rank = |u: &Unit| {
-                if lower(u) == b"init" {
-                    return 0;
+                if let Some(i) = first.iter().position(|n| lower(n) == lower(&u.name)) {
+                    return i;
                 }
-                match u.access {
-                    Access::Remote => 1,
-                    Access::Public => 2,
-                    Access::Package => 3,
-                    Access::Private => 4,
-                }
+                first.len()
+                    + match u.access {
+                        Access::Remote => 0,
+                        Access::Public => 1,
+                        Access::Package => 2,
+                        Access::Private => 3,
+                    }
             };
-            rank(a).cmp(&rank(b)).then_with(|| lower(a).cmp(&lower(b)))
+            rank(a)
+                .cmp(&rank(b))
+                .then_with(|| lower(&a.name).cmp(&lower(&b.name)))
         }
     }
 }

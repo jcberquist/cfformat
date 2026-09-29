@@ -1797,6 +1797,8 @@ fn arrange_help_lists_its_flags() {
         "-j, --jobs <N>",
         "--quiet",
         "--properties",
+        "--first <NAMES>",
+        "--first= keeps none (default: init)",
         "--script",
         "--tags",
         "Exit codes:",
@@ -1941,6 +1943,66 @@ fn arrange_reads_stdin_and_sorts_properties_on_request() {
     assert_eq!(
         (out.status.code(), stderr(&out)),
         (Some(2), "error: -w cannot write to stdin\n".into())
+    );
+}
+
+#[test]
+fn arrange_first_lists_the_functions_kept_at_the_top() {
+    let s = Scratch::new("arrange-first");
+    let src = "component {\n    function after() {}\n    remote function api() {}\n    \
+               function Init() {}\n    function before() {}\n}\n";
+    let by = |names: &[&str]| {
+        let mut out = String::from("component {\n");
+        for name in names {
+            let access = if *name == "api" { "remote " } else { "" };
+            out.push_str(&format!("    {access}function {name}() {{}}\n"));
+        }
+        out + "}\n"
+    };
+    // The default list is `init`.
+    let out = s.run_stdin(&s.0, &["arrange", "-"], src);
+    assert_eq!(
+        (out.status.code(), stdout(&out), stderr(&out)),
+        (Some(0), by(&["Init", "api", "after", "before"]), "".into())
+    );
+    // Comma-separated or repeated, the listed order whatever the access,
+    // names matched ignoring case.
+    let before_init = by(&["before", "Init", "api", "after"]);
+    for args in [
+        &["--first", "before,init"][..],
+        &["--first", "before", "--first", "init"],
+        &["--first=BEFORE,Init"],
+    ] {
+        let mut argv = vec!["arrange"];
+        argv.extend_from_slice(args);
+        argv.push("-");
+        let out = s.run_stdin(&s.0, &argv, src);
+        assert_eq!(
+            (out.status.code(), stdout(&out)),
+            (Some(0), before_init.clone()),
+            "{args:?}"
+        );
+    }
+    // `--first=` keeps none at the top: `init` sorts by access and name.
+    let out = s.run_stdin(&s.0, &["arrange", "--first=", "-"], src);
+    assert_eq!(
+        (out.status.code(), stdout(&out), stderr(&out)),
+        (Some(0), by(&["api", "after", "before", "Init"]), "".into())
+    );
+    // Through --diff: arranged by the list, nothing to change; by the
+    // default, a move.
+    s.write("src/a.cfc", &before_init);
+    let out = s.run(
+        &s.0,
+        &["arrange", "--diff", "--first", "before,init", "src/a.cfc"],
+    );
+    assert_eq!((out.status.code(), stdout(&out)), (Some(0), "".into()));
+    let out = s.run(&s.0, &["arrange", "--diff", "src/a.cfc"]);
+    assert_eq!(out.status.code(), Some(1));
+    assert!(
+        stdout(&out).starts_with("--- a/src/a.cfc\n+++ b/src/a.cfc\n"),
+        "{}",
+        stdout(&out)
     );
 }
 

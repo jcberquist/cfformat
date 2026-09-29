@@ -67,12 +67,12 @@ over it. Every key, its default and an example of each value are in
 key warns on every run until `--migrate` rewrites it.
 
 **`cfformat arrange`.** Orders the functions of each component and
-interface, script or tags (`init` first, then by access, then by name)
-and, with `--properties`, the properties within the groups their blank
-lines make. A member moves with its attached comments; banners, other
-comments, statements and other tags stay where they are and divide the
-body into sections ordered on their own. It moves text as written and
-never formats.
+interface, script or tags (`init` first, or the functions `--first`
+names, then by access, then by name) and, with `--properties`, the
+properties within the groups their blank lines make. A member moves with
+its attached comments; banners, other comments, statements and other
+tags stay where they are and divide the body into sections ordered on
+their own. It moves text as written and never formats.
 
 **`cfvet`.** A second binary in every release, on the same parse tree, with
 two checks. `missing-var`: an unscoped write inside a function, which in

@@ -79,11 +79,13 @@ or `cfdoc` directly, by the same path or git source.
   default) reads `.oxfmtrc` / `.prettierrc` files from the formatted file's
   directory upward — set `IslandConfigMode::Off` (`"off"`) for a run that
   touches nothing but the source.
-- `arrange(src, mode, &ArrangeOptions { properties }) -> Arranged { text,
-  changed, skipped }` — `cfformat arrange`: the functions of each top-level
-  component and interface body (script or tags) in order (`init`, then
-  `remote`, `public`, `package`, `private`, then the name, ASCII
-  case-insensitively), and with `properties` the properties by name within
+- `arrange(src, mode, &ArrangeOptions { properties, first }) -> Arranged {
+  text, changed, skipped }` — `cfformat arrange`: the functions of each
+  top-level component and interface body (script or tags) in order (the
+  functions `first` names, in its order, whatever their access — `["init"]`
+  by default, `[]` for none; then `remote`, `public`, `package`, `private`,
+  then the name, ASCII case-insensitively, `first` matched the same way),
+  and with `properties` the properties by name within
   each group (a blank line between two properties ends a run; functions
   cross blank lines). The
   output is the input's bytes with the members permuted (line endings and
@@ -94,7 +96,8 @@ or `cfdoc` directly, by the same path or git source.
   -> Vec<Body { span, skipped, runs, alone, fixed }>` and `runs(&Tree,
   &ArrangeOptions) -> Vec<Run { kind, units, separators }>`, where a `Unit
   { span, kind, name, access }` is a member with its attached comments and
-  `Unit::order` the comparator; `fixed` gives each element that does not
+  `Unit::order(&Unit, &First)` the comparator (`First::new(&opts.first)`
+  lowercases the list once); `fixed` gives each element that does not
   move and why (`Fixed`, `Ineligible`). The rules are the root README's
   "Arranging members".
 - `tree_to_doc(&Tree, &Options) -> Doc` — the document, before the
@@ -421,7 +424,7 @@ cfformat settings --migrate [FILE|-]
 cfformat arrange [PATHS...] [-w|--write] [--check] [--diff] [--stdin]
          [--stdin-filepath PATH] [--files-from FILE|-]
          [--git staged|unstaged|all] [-j N] [--quiet]
-         [--script|--tags] [--properties]
+         [--script|--tags] [--properties] [--first NAMES]
 cfformat --version                   # cfformat 0.1.0
 ```
 
@@ -511,7 +514,10 @@ changes); no settings are read (no `--config`, no discovery, so a
 broken `.cfformat.json` cannot fail it); there are no islands and no
 `--timing`. A body the parse recovered in prints `path:line: not arranged:
 <reason>` and counts in the summary's `, R not arranged`; it never changes
-the exit code. `--properties` sets `ArrangeOptions::properties`.
+the exit code. `--properties` sets `ArrangeOptions::properties`;
+`--first NAMES` (comma-separated or repeated) sets `ArrangeOptions::first`,
+an empty name dropped, so `--first=` sets it to none; without the flag it
+is the default, `init`.
 
 **Git.** `--git WHICH` selects the files git reports as changed, in the
 whole repository whatever the current directory (`cfcli::git_changes`):

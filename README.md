@@ -294,11 +294,13 @@ any case (`// CFFORMAT-IGNORE-START`).
 `cfformat arrange` orders the members of each component and interface,
 script or tags:
 
-- **Functions** always: `init` first, then by access, widest first
-  (`remote`, `public`, `package`, `private`), then by name, ignoring case.
-  The access is the `public` / `private` / `package` / `remote` modifier or
-  the `access` attribute, and `public` when neither is given; `static`,
-  `abstract` and `final` do not change the order.
+- **Functions** always: the functions named by `--first` first, in that
+  order, whatever their access (`init` by default; `--first before,init`
+  keeps `before` above it; `--first=` names none), then by access, widest
+  first (`remote`, `public`, `package`, `private`), then by name, ignoring
+  case. The access is the `public` / `private` / `package` / `remote`
+  modifier or the `access` attribute, and `public` when neither is given;
+  `static`, `abstract` and `final` do not change the order.
 - **Properties** with `--properties`: by name, ignoring case, within each
   group: a blank line between two properties ends a group, so properties
   grouped by hand (injections, then data) are ordered among themselves and
@@ -309,6 +311,7 @@ cfformat arrange --check src     # list the components out of order (exit 1 if a
 cfformat arrange --diff src      # show the moves
 cfformat arrange -w src          # write them
 cfformat arrange -w --properties src
+cfformat arrange -w --first before,init src   # `before`, then `init`, then the rest
 ```
 
 It takes the bare command's inputs, output modes and exit codes (`-`,

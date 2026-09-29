@@ -3,10 +3,12 @@
 //!
 //! Each fixture directory holds `source.cfc`, `arranged.cfc` (the output
 //! without `--properties`) and `arranged-properties.cfc` (with it), compared
-//! byte for byte. `UPDATE_ARRANGE=1` rewrites the expected files.
+//! byte for byte; the fixtures [`FIRST_CASES`] names hold one more expected
+//! file per `--first` list. `UPDATE_ARRANGE=1` rewrites the expected files.
 //!
 //! The invariants run over every arrange fixture and every golden fixture
-//! under `tests/fixtures`, each without and with `--properties`:
+//! under `tests/fixtures`, each without and with `--properties` (and an
+//! arrange fixture with its `--first` lists too):
 //! idempotence, permutation, sortedness (`common/arrange.rs`), and
 //! commutation with the formatter: `fmt(arrange(x)) == arrange(fmt(x))`
 //! for every settings case of a golden fixture, and for the arrange
@@ -68,11 +70,44 @@ fn fixtures() -> Vec<Fixture> {
         .collect()
 }
 
-fn expected_file(opts: &ArrangeOptions) -> &'static str {
-    if opts.properties {
-        "arranged-properties.cfc"
-    } else {
-        "arranged.cfc"
+/// The `--first` cases, beside every fixture's two with the default list
+/// (`init`): the fixture, the list, and its expected file.
+const FIRST_CASES: &[(&str, &[&str], &str)] = &[
+    (
+        "first",
+        &["before", "init"],
+        "arranged-first-before-init.cfc",
+    ),
+    ("first", &[], "arranged-first-none.cfc"),
+];
+
+/// The option sets a fixture runs with, and the expected file of each.
+fn cases(fixture: &str) -> Vec<(ArrangeOptions, &'static str)> {
+    let [plain, properties] = checks::both();
+    let mut out = vec![
+        (plain, "arranged.cfc"),
+        (properties, "arranged-properties.cfc"),
+    ];
+    for (name, first, file) in FIRST_CASES {
+        if *name == fixture {
+            let first = first.iter().map(|n| n.to_string()).collect();
+            out.push((
+                ArrangeOptions {
+                    first,
+                    ..ArrangeOptions::default()
+                },
+                file,
+            ));
+        }
+    }
+    out
+}
+
+#[test]
+fn every_first_case_names_a_fixture() {
+    let names: Vec<String> = fixtures().into_iter().map(|f| f.name).collect();
+    for (name, _, _) in FIRST_CASES {
+        assert!(names.iter().any(|n| n == name), "no fixture {name}");
     }
 }
 
@@ -81,9 +116,9 @@ fn arrange_fixtures() {
     let update = std::env::var_os("UPDATE_ARRANGE").is_some();
     let mut failures = Vec::new();
     for fixture in fixtures() {
-        for opts in checks::BOTH {
+        for (opts, file) in cases(&fixture.name) {
             let out = arrange::arrange(&fixture.source, Mode::Auto, &opts);
-            let path = fixture.dir.join(expected_file(&opts));
+            let path = fixture.dir.join(file);
             if update {
                 std::fs::write(&path, &out.text).unwrap();
                 continue;
@@ -117,7 +152,7 @@ fn arrange_fixtures() {
 #[test]
 fn a_body_the_parse_recovered_in_is_skipped() {
     let src = std::fs::read_to_string(fixtures_dir().join("recovery/source.cfc")).unwrap();
-    for opts in checks::BOTH {
+    for opts in checks::both() {
         let out = arrange::arrange(&src, Mode::Auto, &opts);
         assert!(!out.changed);
         assert_eq!(
@@ -133,7 +168,7 @@ fn a_body_the_parse_recovered_in_is_skipped() {
 #[test]
 fn an_arranged_body_is_unchanged() {
     let src = std::fs::read_to_string(fixtures_dir().join("already-arranged/source.cfc")).unwrap();
-    for opts in checks::BOTH {
+    for opts in checks::both() {
         let out = arrange::arrange(&src, Mode::Auto, &opts);
         assert!(!out.changed && out.text == src && out.skipped.is_empty());
     }
@@ -149,7 +184,7 @@ fn nothing_outside_a_top_level_component_moves() {
         // A component inside `<cfscript>` in a template.
         "<cfscript>\ncomponent {\n    function b() {}\n    function a() {}\n}\n</cfscript>\n",
     ] {
-        for opts in checks::BOTH {
+        for opts in checks::both() {
             assert!(!arrange::arrange(src, Mode::Auto, &opts).changed, "{src}");
         }
     }
@@ -158,22 +193,25 @@ fn nothing_outside_a_top_level_component_moves() {
 #[test]
 fn invariants() {
     let mut failures = Vec::new();
-    let mut sources: Vec<(String, String, Mode)> = fixtures()
+    let mut sources: Vec<(String, String, Mode, Vec<ArrangeOptions>)> = fixtures()
         .into_iter()
-        .map(|f| (format!("arrange/{}", f.name), f.source, Mode::Auto))
+        .map(|f| {
+            let opts = cases(&f.name).into_iter().map(|(o, _)| o).collect();
+            (format!("arrange/{}", f.name), f.source, Mode::Auto, opts)
+        })
         .collect();
     sources.extend(
         common::fixtures()
             .into_iter()
-            .map(|f| (f.name, f.source, f.mode)),
+            .map(|f| (f.name, f.source, f.mode, checks::both().to_vec())),
     );
-    for (name, src, mode) in &sources {
-        for opts in checks::BOTH {
-            let (_, problems) = checks::check(src, *mode, &opts);
+    for (name, src, mode, sets) in &sources {
+        for opts in sets {
+            let (_, problems) = checks::check(src, *mode, opts);
             failures.extend(
                 problems
                     .into_iter()
-                    .map(|p| format!("{name}{}: {p}", checks::suffix(&opts))),
+                    .map(|p| format!("{name}{}: {p}", checks::suffix(opts))),
             );
         }
     }
@@ -233,7 +271,7 @@ fn commutation() {
     }
     let mut failures = Vec::new();
     for (key, fixture, opts) in &cases {
-        for arrange_opts in checks::BOTH {
+        for arrange_opts in checks::both() {
             let full = format!("{key}{}", checks::suffix(&arrange_opts));
             let expected = EXPECT_COMMUTE_FAIL
                 .iter()

@@ -1,5 +1,6 @@
 //! Member ordering (`cfformat arrange`): a component's functions ordered by
-//! access, then name, and, on request, its properties by name.
+//! access, then name, after the ones [`ArrangeOptions::first`] names, and,
+//! on request, its properties by name.
 //!
 //! This is a splice over the parse tree, not a printer transform: the
 //! output is the input's own bytes with the members of each run permuted,
@@ -42,13 +43,55 @@ use cfparse::{
     StatementKind, Storage, TagShape, TokenKind, Tree,
 };
 
-/// What [`arrange`] moves beyond functions.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+/// What [`arrange`] moves beyond functions, and which functions it keeps
+/// at the top.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ArrangeOptions {
     /// Sort properties by name too. Off by default: property order is
     /// visible at runtime (`getMetadata().properties`, ORM mappings,
     /// serialisation).
     pub properties: bool,
+    /// The functions sorted first, in this order, whatever their access
+    /// (`--first`); the others follow by access, then name. Names match
+    /// ASCII case-insensitively, a name listed twice counts at its first
+    /// place, and an empty list keeps none at the top. `["init"]` by
+    /// default.
+    pub first: Vec<String>,
+}
+
+impl Default for ArrangeOptions {
+    fn default() -> ArrangeOptions {
+        ArrangeOptions {
+            properties: false,
+            first: vec!["init".into()],
+        }
+    }
+}
+
+/// [`ArrangeOptions::first`] ready for comparing: lowercased once, not per
+/// comparison.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct First(Vec<String>);
+
+impl First {
+    /// `names`, each lowercased.
+    pub fn new<S: AsRef<str>>(names: &[S]) -> First {
+        First(
+            names
+                .iter()
+                .map(|n| n.as_ref().to_ascii_lowercase())
+                .collect(),
+        )
+    }
+
+    /// A function's place given its lowercased name: its first index in
+    /// the list, or the list's length for a function not listed.
+    fn rank(&self, lowercased: &str) -> usize {
+        self.0
+            .iter()
+            .position(|n| n == lowercased)
+            .unwrap_or(self.0.len())
+    }
 }
 
 /// An arranged source.
@@ -116,15 +159,18 @@ pub struct Unit {
 }
 
 impl Unit {
-    /// The order units sort in: for functions `init` first, then widest
-    /// access, then name; for properties the name alone. Names compare
-    /// ASCII case-insensitively.
-    pub fn order(&self, other: &Unit) -> Ordering {
+    /// The order units sort in: for functions the ones `first` lists, in
+    /// its order, then widest access, then name; for properties the name
+    /// alone. Names compare ASCII case-insensitively.
+    pub fn order(&self, other: &Unit, first: &First) -> Ordering {
         let name = |u: &Unit| u.name.to_ascii_lowercase();
         match self.kind {
             MemberKind::Function => {
-                let init = |u: &Unit| !u.name.eq_ignore_ascii_case("init");
-                (init(self), self.access, name(self)).cmp(&(init(other), other.access, name(other)))
+                let key = |u: &Unit| {
+                    let name = name(u);
+                    (first.rank(&name), u.access, name)
+                };
+                key(self).cmp(&key(other))
             }
             MemberKind::Property => name(self).cmp(&name(other)),
         }
@@ -216,10 +262,11 @@ pub fn arrange(src: &str, mode: Mode, opts: &ArrangeOptions) -> Arranged {
         })
         .collect();
     // Each slot that receives another unit's text: (slot, unit).
+    let first = First::new(&opts.first);
     let mut moves = Vec::new();
     for run in bodies.iter().flat_map(|b| &b.runs) {
         let mut order: Vec<usize> = (0..run.units.len()).collect();
-        order.sort_by(|&a, &b| run.units[a].order(&run.units[b]));
+        order.sort_by(|&a, &b| run.units[a].order(&run.units[b], &first));
         for (slot, &unit) in order.iter().enumerate() {
             if slot != unit {
                 moves.push((run.units[slot].span.clone(), run.units[unit].span.clone()));
@@ -763,4 +810,110 @@ fn doc_access(tree: &Tree, comment: &Element) -> bool {
             .iter()
             .filter_map(Node::as_token)
             .any(|t| t.kind == TokenKind::DocTag && tree.text(t).eq_ignore_ascii_case("@access"))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn function(name: &str, access: Access) -> Unit {
+        Unit {
+            span: 0..0,
+            kind: MemberKind::Function,
+            name: name.into(),
+            access,
+        }
+    }
+
+    /// The names of `units` sorted with `first`.
+    fn sorted(first: &[&str], units: &[Unit]) -> Vec<String> {
+        let first = First::new(first);
+        let mut units = units.to_vec();
+        units.sort_by(|a, b| a.order(b, &first));
+        units.into_iter().map(|u| u.name).collect()
+    }
+
+    fn component() -> Vec<Unit> {
+        vec![
+            function("helper", Access::Private),
+            function("after", Access::Public),
+            function("api", Access::Remote),
+            function("init", Access::Public),
+            function("before", Access::Public),
+            function("list", Access::Public),
+        ]
+    }
+
+    #[test]
+    fn init_is_first_by_default() {
+        assert_eq!(ArrangeOptions::default().first, ["init"]);
+        assert_eq!(
+            sorted(&["init"], &component()),
+            ["init", "api", "after", "before", "list", "helper"]
+        );
+    }
+
+    #[test]
+    fn listed_functions_come_first_in_the_listed_order_whatever_their_access() {
+        assert_eq!(
+            sorted(&["before", "init"], &component()),
+            ["before", "init", "api", "after", "list", "helper"]
+        );
+        assert_eq!(
+            sorted(&["helper", "list"], &component()),
+            ["helper", "list", "api", "after", "before", "init"]
+        );
+    }
+
+    #[test]
+    fn an_empty_list_keeps_none_at_the_top() {
+        assert_eq!(
+            sorted(&[], &component()),
+            ["api", "after", "before", "init", "list", "helper"]
+        );
+    }
+
+    #[test]
+    fn a_name_listed_twice_counts_at_its_first_place() {
+        assert_eq!(
+            sorted(&["before", "init", "before"], &component()),
+            sorted(&["before", "init"], &component())
+        );
+        assert_eq!(
+            sorted(&["init", "before", "init"], &component()),
+            ["init", "before", "api", "after", "list", "helper"]
+        );
+    }
+
+    #[test]
+    fn names_match_ascii_case_insensitively() {
+        let units = [
+            function("Before", Access::Public),
+            function("api", Access::Remote),
+            function("INIT", Access::Public),
+        ];
+        assert_eq!(
+            sorted(&["init", "BEFORE"], &units),
+            ["INIT", "Before", "api"]
+        );
+        // A listed name absent from the component is simply absent.
+        assert_eq!(
+            sorted(&["missing", "Init"], &units),
+            ["INIT", "api", "Before"]
+        );
+    }
+
+    #[test]
+    fn properties_sort_by_name_alone() {
+        let property = |name: &str| Unit {
+            span: 0..0,
+            kind: MemberKind::Property,
+            name: name.into(),
+            access: Access::Public,
+        };
+        assert_eq!(
+            sorted(&["zeta"], &[property("zeta"), property("Alpha")]),
+            ["Alpha", "zeta"]
+        );
+    }
 }

@@ -103,12 +103,16 @@ fn arrange(args: &ArrangeArgs) -> ExitCode {
         timing: false,
         mode: args.mode.mode(),
     };
-    run_files(
-        &run,
-        Task::Arrange(ArrangeOptions {
-            properties: args.properties,
-        }),
-    )
+    let opts = ArrangeOptions {
+        properties: args.properties,
+        // `--first=` is one empty name (`--first a,,b` holds one too): an
+        // empty name is dropped, so `--first=` lists none.
+        first: match &args.first {
+            Some(names) => names.iter().filter(|n| !n.is_empty()).cloned().collect(),
+            None => ArrangeOptions::default().first,
+        },
+    };
+    run_files(&run, Task::Arrange(&opts))
 }
 
 /// The inputs and output flags the bare command and `arrange` share.
@@ -132,7 +136,7 @@ enum Task<'a> {
         use_islands: bool,
     },
     /// Arrange it with these options.
-    Arrange(ArrangeOptions),
+    Arrange(&'a ArrangeOptions),
 }
 
 impl Task<'_> {
@@ -430,7 +434,7 @@ struct Job<'a> {
 /// islands to format with, or the options to arrange with.
 enum Ready<'a> {
     Format(Options, Option<&'a Islands>),
-    Arrange(ArrangeOptions),
+    Arrange(&'a ArrangeOptions),
 }
 
 /// Runs the task on one file (settings resolved, read, formatted or
@@ -498,7 +502,7 @@ fn run_item(job: &Job, item: &Item) -> FileOutcome {
             formatted.text
         }
         Ready::Arrange(opts) => {
-            let arranged = cfformat::arrange(&src, mode, &opts);
+            let arranged = cfformat::arrange(&src, mode, opts);
             // The warning's path stays `None`: the CLI prints a warning
             // with the file's name as given (`Outcome::name`).
             outcome.warnings = arranged
