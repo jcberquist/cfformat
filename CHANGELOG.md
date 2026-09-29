@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 — unreleased
+## 0.1.0 — 2026-09-29
 
 The first release: a CFML formatter in one binary, a rewrite in Rust of the
 CommandBox cfformat module. It reads CommandBox's `.cfformat.json` files;
