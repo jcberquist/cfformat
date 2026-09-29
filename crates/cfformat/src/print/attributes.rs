@@ -46,8 +46,9 @@ impl Printer<'_> {
         )
     }
 
-    /// [`Printer::attributes`]. A `KeyValue` prints as `key=value`
-    /// (`attributes.key_value.padding` adds spaces), a bare attribute as its
+    /// [`Printer::attributes`]. A `KeyValue` prints in `style`: `key=value`,
+    /// or `key = value` for a script attribute with
+    /// `attributes.key_value.padding` ([`KeyValueStyle`]); a bare attribute as its
     /// name, a comment in place. Any other node is an entry of its own on its
     /// own `line` (a CF tag or `#expr#` between two HTML attributes), unless
     /// it sits directly against what precedes it (`class=a<cfif x> b</cfif>`),

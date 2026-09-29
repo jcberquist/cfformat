@@ -74,6 +74,10 @@ pub(crate) struct TagCtx {
     /// `<!--- --->` a tag comment rather than verbatim text (inside a
     /// `<cfscript>` body it is verbatim, as it is in a script file).
     pub tags: bool,
+    /// Inside an HTML tag's attribute list, where a CF tag body's attributes
+    /// (`<div <cfif x>id="y"</cfif>>`) are HTML attributes
+    /// ([`KeyValueStyle::HtmlAttribute`]), not a CF tag's.
+    pub html_attributes: bool,
 }
 
 impl TagCtx {
@@ -85,6 +89,7 @@ impl TagCtx {
             island: false,
             verbatim: Verbatim::Shift,
             tags: true,
+            html_attributes: false,
         }
     }
 
@@ -671,11 +676,17 @@ impl Printer<'_> {
                 group_id = Some(id);
             }
         } else {
-            let style = match e.kind {
-                ElementKind::HtmlTag(_) => KeyValueStyle::HtmlAttribute,
-                _ => KeyValueStyle::Attribute,
+            let html = matches!(e.kind, ElementKind::HtmlTag(_));
+            let style = if html {
+                KeyValueStyle::HtmlAttribute
+            } else {
+                KeyValueStyle::TagAttribute
             };
-            if let Some((attrs, id)) = self.with_tag_ctx(ctx.deeper(), || {
+            let attrs_ctx = TagCtx {
+                html_attributes: html,
+                ..ctx.deeper()
+            };
+            if let Some((attrs, id)) = self.with_tag_ctx(attrs_ctx, || {
                 let after = e.children[..names].last().map(|n| n.span().end);
                 self.attribute_group(&rest, None, style, false, None, after)
             }) {

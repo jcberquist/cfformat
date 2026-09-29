@@ -258,7 +258,9 @@ impl<'a> Printer<'a> {
             }
             ElementKind::Function { .. } => self.function(e),
             ElementKind::FunctionDecl | ElementKind::ArrowFunction => self.function_header(e).0,
-            ElementKind::KeyValue => self.key_value(e, delimited::KeyValueStyle::by_key(e)),
+            ElementKind::KeyValue => {
+                self.key_value(e, delimited::KeyValueStyle::by_key(e, self.tag_ctx()))
+            }
             ElementKind::Class | ElementKind::Interface => self.class(e),
             ElementKind::ClassDecl | ElementKind::InterfaceDecl => self.class_header(e).0,
             ElementKind::StaticBlock => self.static_block(e),

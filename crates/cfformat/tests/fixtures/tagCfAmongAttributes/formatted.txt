@@ -33,3 +33,39 @@
     </tr>
 </table>
 <option value="1"<cfif x> selected</cfif>>One</option>
+~
+<div <cfif x>class="a"</cfif>>
+<div<cfif x> class="a"</cfif>>
+<div <cfif x> class="a" </cfif>>
+<div id="b" <cfif x>class="a"</cfif>>
+<div id="b"<cfif x> class="a"</cfif>>
+<div
+    <cfif x>
+        class="a"
+    <cfelse>
+        class="b"
+    </cfif>
+>
+<div<cfif x>
+        class="a"
+    <cfelse>
+        class="b"
+    </cfif>
+>
+<div <cfif x></cfif>>
+<div<cfif x></cfif>>
+<table>
+    <tr>
+        <td<cfif local.row.missing> class="bg-danger"</cfif>>#v#</td>
+        <td<cfif local.row.missing> class="bg-danger"</cfif>
+            data-first-attribute="one"
+            data-second-attribute="two"
+        >#v#</td>
+        <td
+            <cfif local.row.missing> class="bg-danger"</cfif>
+            data-first-attribute="one"
+            data-second-attribute="two"
+        >#v#</td>
+    </tr>
+</table>
+<option value="1"<cfif x> selected</cfif>>One</option>

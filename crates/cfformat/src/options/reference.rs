@@ -249,9 +249,11 @@ const REFERENCE: &[OptionInfo] = &[
         "attributes.key_value.padding",
         Kind::Bool,
         "false",
-        "Whether to pad the key value separator of attributes: component and function metadata, \
-         `property`, `param` and tags in script (formerly `metadata.key_value.padding`, \
-         `param.key_value.padding` and `property.key_value.padding`).",
+        "Whether to pad the key value separator of attributes in script: component and function \
+         metadata, `property`, `param` and tag statements such as `http url=\"x\";` (formerly \
+         `metadata.key_value.padding`, `param.key_value.padding` and \
+         `property.key_value.padding`). A script tag call (`cfhttp(url = \"x\")`) is always \
+         padded, like named arguments. The attributes of tags in tag mode are never padded.",
         "component extends=\"base.component\" output=false {\n    property name=\"test\";\n}",
         "{}",
         &[],
@@ -594,8 +596,10 @@ const REFERENCE: &[OptionInfo] = &[
         "strings.attributes.quote",
         QUOTES,
         r#""double""#,
-        "Whether to use a single or double quote for attribute values. If set to \"ignored\", \
-         leaves attribute value quotes as they are found.",
+        "Whether to use a single or double quote for attribute values: those of CF tags, in tag \
+         mode and in script, and of component and function metadata, `property` and `param`. \
+         If set to \"ignored\", leaves attribute value quotes as they are found. The values of \
+         HTML tag attributes are never re-quoted.",
         "http url='www.google.com';\nparam name=\"key\";",
         "{}",
         &[],

@@ -19,6 +19,7 @@ use cfdoc::{Doc, FlatWidth, GroupId};
 use cfparse::{Element, ElementKind, Ident, Item, Literal, Node, Punct, TokenKind};
 
 use super::alignment::{self, RunPart};
+use super::tags::TagCtx;
 use super::Printer;
 use crate::options::{CommaStyle, QuoteStyle};
 use crate::Options;
@@ -36,9 +37,15 @@ pub(crate) enum KeyValueStyle {
     /// Parameter default `a = 1` (always padded); a parameter attribute
     /// (`string a key=true`) prints as an [`KeyValueStyle::Attribute`].
     Parameter,
-    /// Declaration, `property`, `param` or `http …;` attribute: `key=value`,
-    /// or `key = value` with `attributes.key_value.padding`.
+    /// Script declaration, `property`, `param` or `http …;` attribute:
+    /// `key=value`, or `key = value` with `attributes.key_value.padding`; a
+    /// quoted value follows `strings.attributes.quote`.
     Attribute,
+    /// CF tag attribute in tag mode (`<cfparam name="x">`, `<cf_x a="1">`):
+    /// always `key=value`, as CommandBox cfformat printed it and as templates
+    /// are written, whatever `attributes.key_value.padding` says (that option
+    /// is for script); a quoted value follows `strings.attributes.quote`.
+    TagAttribute,
     /// HTML tag attribute: `key=value`, the value's quotes as written.
     /// Neither `strings.attributes.quote` nor `attributes.key_value.padding`
     /// reaches it: those options are for the attributes of CF tags and script
@@ -49,11 +56,18 @@ pub(crate) enum KeyValueStyle {
 
 impl KeyValueStyle {
     /// The style a `KeyValue` gets from its key alone, outside a delimited
-    /// element that knows better: attribute, named argument, parameter
-    /// default or struct member.
-    pub(crate) fn by_key(e: &Element) -> Self {
+    /// element or attribute group that knows better: attribute, named
+    /// argument, parameter default or struct member. Under the tag printer
+    /// (`ctx`) an attribute is a tag's: an HTML tag's when it sits in a CF
+    /// tag body inside an HTML tag's attribute list
+    /// (`<div <cfif x>id="y"</cfif>>`), else a CF tag's.
+    pub(crate) fn by_key(e: &Element, ctx: TagCtx) -> Self {
         match e.as_key_value().map(|kv| kv.key()) {
             Some(Node::Token(t)) => match t.kind {
+                TokenKind::Ident(Ident::AttributeName) if ctx.tags && ctx.html_attributes => {
+                    KeyValueStyle::HtmlAttribute
+                }
+                TokenKind::Ident(Ident::AttributeName) if ctx.tags => KeyValueStyle::TagAttribute,
                 TokenKind::Ident(Ident::AttributeName) => KeyValueStyle::Attribute,
                 TokenKind::Ident(Ident::ArgName) => KeyValueStyle::Argument,
                 TokenKind::Ident(Ident::Parameter) => KeyValueStyle::Parameter,
@@ -490,9 +504,9 @@ impl Printer<'_> {
             KeyValueStyle::Attribute if self.opts.attributes_key_value_padding => {
                 format!(" {} ", self.tree.text(sep))
             }
-            KeyValueStyle::Attribute | KeyValueStyle::HtmlAttribute => {
-                self.tree.text(sep).to_string()
-            }
+            KeyValueStyle::Attribute
+            | KeyValueStyle::TagAttribute
+            | KeyValueStyle::HtmlAttribute => self.tree.text(sep).to_string(),
         })
     }
 
@@ -558,7 +572,7 @@ impl Printer<'_> {
         // the attribute ends on, and breaks nothing.
         let in_attributes = matches!(
             style,
-            KeyValueStyle::Attribute | KeyValueStyle::HtmlAttribute
+            KeyValueStyle::Attribute | KeyValueStyle::TagAttribute | KeyValueStyle::HtmlAttribute
         );
         for n in &e.children {
             match n {
@@ -580,7 +594,10 @@ impl Printer<'_> {
             parts.extend(pieces.into_iter().map(|n| self.node(n)));
             return Doc::Concat(parts);
         }
-        let attribute = matches!(style, KeyValueStyle::Padded | KeyValueStyle::Attribute);
+        let attribute = matches!(
+            style,
+            KeyValueStyle::Padded | KeyValueStyle::Attribute | KeyValueStyle::TagAttribute
+        );
         let html = style == KeyValueStyle::HtmlAttribute;
         parts.extend(self.sequence_by(kv.value(), &|n| match n {
             Node::Element(s) if attribute && matches!(s.kind, ElementKind::String { .. }) => {
@@ -589,8 +606,10 @@ impl Printer<'_> {
             // An unquoted value ends at whitespace: its operators
             // stay as tight as written, or the value would end at the first.
             Node::Element(b)
-                if style == KeyValueStyle::Attribute
-                    && matches!(b.kind, ElementKind::Binary { .. }) =>
+                if matches!(
+                    style,
+                    KeyValueStyle::Attribute | KeyValueStyle::TagAttribute
+                ) && matches!(b.kind, ElementKind::Binary { .. }) =>
             {
                 self.as_written(b)
             }
