@@ -21,11 +21,17 @@ printed `( { m, n: 1 } = st );`), and a skipped element of an array pattern
 was dropped (`[a, , c] = x;` printed `[ a, c ] = x;`, `c` then taking the
 second element; the same in `for ([k, , v] in x)`). `{a, b} = x;`, which no
 engine runs, printed as a block and then `= x;` with no warning, and
-`static {a, b} = x;` as a static block. A pattern now prints on one line,
-spaced as a `var` pattern already was: `[a,, c] = x;`,
-`( {m, n = 1} = st );`, `var {p, q : {r}} = st;`. It loses the array
-literal's padding it had when read as one (`[ a, b ] = x;` is now
-`[a, b] = x;`), takes no setting and does not break yet.
+`static {a, b} = x;` as a static block. A pattern now prints and breaks
+like the literal it resembles, under that literal's settings
+(`struct.padding` / `array.padding`, the empty padding, the
+`*.multiline.*` thresholds, `multiline.comma`), as Prettier prints
+patterns: `[a, , c] = x;` keeps its skip, `({m, n = 1} = st);` its
+default, a comma after a rest item is never written, and the rename is
+always `key: target` (`var {p, q: {r}} = st;`, where a `var` pattern used to
+print `q : {r}`), whatever `struct.separator` and `struct.quote_keys` say. A
+sole pattern parameter hugs the parentheses and breaks inside itself
+(`function f({` ends the first line, `}) {` starts the last), and a struct
+pattern that renames to a nested pattern breaks where it is assigned to.
 
 ## 0.1.0 — 2026-09-29
 

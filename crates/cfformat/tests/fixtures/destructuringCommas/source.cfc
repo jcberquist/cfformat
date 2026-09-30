@@ -1,0 +1,15 @@
+//
+component {
+    function run() {
+        var x = [1, 2, 3];
+        var s = {a: 1, b: 2, c: 3};
+        [a, , c] = x;
+        [, b, c] = x;
+        [a, b, ,] = x;
+        [a, ...r] = x;
+        ({a, b: bb, ...rest} = s);
+        ({a, b} = s);
+        var [p, q] = x;
+        writeOutput(a & b & c & bb & p & q & arrayLen(r) & structCount(rest));
+    }
+}

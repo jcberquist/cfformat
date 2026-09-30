@@ -1,0 +1,29 @@
+//
+component {
+    function run() {
+        var x = [1, 2, 3];
+        var s = {a: 1, b: 2, d: 3};
+        [a, , c] = x;
+        [a, ...r] = x;
+        ({a, b: c, d = 1} = s);
+        var {a: va, b: [vb] = [2]} = {a: 1};
+        literal = {a: 1, b: [2, 3], c: {}, d: []};
+        writeOutput(a & c & d & va & vb & arrayLen(r) & structCount(literal));
+        writeOutput(sole({a: 1}) & commented({a: 1, b: 2}) & empty({}));
+    }
+
+    function sole({a, b = 2}) {
+        return a + b;
+    }
+
+    function commented({
+        a, // the first
+        b
+    }) {
+        return a + b;
+    }
+
+    function empty({}) {
+        return 1;
+    }
+}

@@ -3,7 +3,8 @@
 //! `[modifiers type function name, params, attributes, sep, body]`: the words
 //! before the parameters joined by one space, the parameters through the
 //! delimited printer (`function_declaration` for a named function,
-//! `function_anonymous` otherwise), the metadata attributes as an attribute
+//! `function_anonymous` otherwise) unless a sole pattern parameter hugs the
+//! parentheses ([`hugged_parameter`]), the metadata attributes as an attribute
 //! group, then `{` after one space — or on its own line when the attributes
 //! broke (`if_break_group` on the attribute group). An arrow prints ` => ` and
 //! its body; a brace-less body may break onto the next line after `=>`
@@ -16,9 +17,11 @@ use cfdoc::builders::{
 };
 use cfdoc::utils::remove_lines;
 use cfdoc::{Doc, GroupId};
-use cfparse::{BlockKind, Element, ElementKind, Ident, Keyword, Node, TokenKind};
+use cfparse::{BlockKind, Element, ElementKind, Ident, Item, Keyword, Node, TokenKind};
 
-use super::delimited::DelimitedStyle;
+use super::delimited::{
+    has_comments, is_pattern_assignment, is_printable, printable_items, DelimitedStyle,
+};
 use super::expressions::is_parenthesised_literal;
 use super::Printer;
 
@@ -127,7 +130,20 @@ impl Printer<'_> {
             parts.push(Doc::from(" "));
         }
         let params = h.children[params_at].as_element().expect("parameters");
-        parts.push(if params.open.is_some() {
+        parts.push(if let Some(only) = hugged_parameter(params) {
+            // Prettier's `shouldHugTheOnlyFunctionParameter`: the
+            // parentheses hug a sole pattern, which breaks inside itself
+            // (`function f({` ⏎ `a,` ⏎ `b` ⏎ `}) {`); the parameter
+            // threshold has one item to count and does not apply.
+            let pad = || Doc::from(if style.padding { " " } else { "" });
+            Doc::Concat(vec![
+                self.token(params.open.as_ref().expect("parentheses")),
+                pad(),
+                self.item_content(only, style.key_value, None),
+                pad(),
+                self.token(params.close.as_ref().expect("parentheses")),
+            ])
+        } else if params.open.is_some() {
             self.print_delimited(params, &style)
         } else {
             // `a => …`: the bare parameter.
@@ -276,6 +292,49 @@ pub(crate) fn arrow_breaks_after(body: &Element) -> bool {
             ) && !is_parenthesised_literal(e)
         }
     }
+}
+
+/// The one parameter of a parenthesised list that hugs its parentheses: a
+/// pattern, or a pattern whose default is a name, `{}` or `[]`, with no
+/// comment on it and no comma after it.
+fn hugged_parameter(params: &Element) -> Option<&Item> {
+    if params.open.is_none() || params.close.is_none() {
+        return None;
+    }
+    let [only] = printable_items(params)[..] else {
+        return None;
+    };
+    if has_comments(only) || only.separator.is_some() {
+        return None;
+    }
+    let mut sig = only.significant();
+    let (Some(Node::Element(p)), None) = (sig.next(), sig.next()) else {
+        return None;
+    };
+    let commented = |e: &Element| {
+        e.children
+            .iter()
+            .any(|n| n.as_element().is_some_and(|c| c.kind.is_comment()))
+    };
+    let hugs = match p.kind {
+        ElementKind::Pattern { .. } => true,
+        ElementKind::Assignment if is_pattern_assignment(p) && !commented(p) => {
+            let mut value = p.children.iter().filter(|n| !n.is_trivia()).skip(2);
+            match (value.next(), value.next()) {
+                (Some(Node::Token(t)), None) => matches!(t.kind, TokenKind::Ident(_)),
+                (Some(Node::Element(v)), None) => {
+                    matches!(
+                        v.kind,
+                        ElementKind::Struct { ordered: false } | ElementKind::Array
+                    ) && !v.items.iter().any(is_printable)
+                        && !commented(v)
+                }
+                _ => false,
+            }
+        }
+        _ => false,
+    };
+    hugs.then_some(only)
 }
 
 /// The expression of a brace-less arrow body, when it is an element.

@@ -8,7 +8,7 @@ use cfdoc::utils::{find_in_doc, remove_lines, will_break};
 use cfdoc::Doc;
 use cfparse::{Element, ElementKind, Literal, Node, Operator, Prec, TokenKind};
 
-use super::delimited::printable_items;
+use super::delimited::{is_pattern_assignment, printable_items};
 use super::Printer;
 
 impl Printer<'_> {
@@ -46,6 +46,24 @@ impl Printer<'_> {
             // `: b )`, `( {` ⏎ … ⏎ `} )`), as Prettier prints a parenthesised
             // conditional or an arrow's `({ … })`, rather than taking lines
             // for `(` and `)` as well.
+            // So does a destructuring assignment, whose parentheses are its
+            // syntax (`({` ⏎ `a,` ⏎ `b` ⏎ `} = x)`, Prettier's).
+            Some(ElementKind::Assignment)
+                if !commented && only.is_some_and(|a| is_pattern_assignment(a)) =>
+            {
+                let pad = Doc::from(if self.opts.parentheses_padding {
+                    " "
+                } else {
+                    ""
+                });
+                return Doc::Concat(vec![
+                    self.token(open),
+                    pad.clone(),
+                    Doc::Concat(self.sequence(&e.children)),
+                    pad,
+                    self.token(close),
+                ]);
+            }
             Some(ElementKind::Ternary | ElementKind::Struct { .. } | ElementKind::Array)
                 if !commented =>
             {
@@ -246,10 +264,21 @@ impl Printer<'_> {
             let comments: Vec<&Element> =
                 parts.iter().flat_map(|(_, c)| c.iter().copied()).collect();
             if comments.is_empty() {
-                let mut left = vec![self.node(target)];
+                let complex = is_complex_destructuring(target);
+                let mut left = vec![if complex {
+                    // The pattern's own group would keep it flat while its
+                    // first line fits; the layout's group breaks it instead.
+                    ungroup(self.node(target))
+                } else {
+                    self.node(target)
+                }];
                 left.extend(pad);
                 let left = Doc::Concat(left);
-                let layout = self.assign_layout(value, false, &left);
+                let layout = if complex {
+                    AssignLayout::BreakLhs
+                } else {
+                    self.assign_layout(value, false, &left)
+                };
                 let operator = Doc::Concat(vec![Doc::from(" "), self.operator(op)]);
                 return self.assign_doc(left, operator, self.assigned_value(value), layout);
             }
@@ -365,6 +394,15 @@ impl Printer<'_> {
                             ..GroupOpts::default()
                         },
                     ),
+                ])
+            }
+            AssignLayout::BreakLhs => {
+                self.assign_break.set(None);
+                group(vec![
+                    left,
+                    operator,
+                    Doc::from(if spaced { " " } else { "" }),
+                    group(value),
                 ])
             }
             AssignLayout::NeverBreakAfterOperator => {
@@ -990,6 +1028,44 @@ pub(crate) enum AssignLayout {
     /// The value moves to the next line only when even its first line does
     /// not fit on the operator's.
     Fluid,
+    /// The target breaks first, the value never moves off the operator's
+    /// line: a struct pattern Prettier calls a complex destructuring
+    /// ([`is_complex_destructuring`]).
+    BreakLhs,
+}
+
+/// Prettier's `isComplexDestructuring`: a struct pattern with more than two
+/// items, one of them a rename or a default (`{a, b: c, d = 1}`).
+fn is_complex_destructuring(target: &Node) -> bool {
+    let Node::Element(p) = target else {
+        return false;
+    };
+    if p.kind != (ElementKind::Pattern { array: false }) {
+        return false;
+    }
+    let items: Vec<&cfparse::Item> = p
+        .items
+        .iter()
+        .filter(|i| i.significant().next().is_some())
+        .collect();
+    items.len() > 2
+        && items.iter().any(|i| {
+            i.significant().any(|n| match n {
+                Node::Token(t) => t.kind == TokenKind::Punct(cfparse::Punct::KeyValue),
+                Node::Element(a) => a.kind == ElementKind::Assignment,
+            })
+        })
+}
+
+/// A group's contents without the group, unless it must break or has an id:
+/// the part of an enclosing group that breaks with it.
+fn ungroup(doc: Doc) -> Doc {
+    match doc {
+        Doc::Group(g) if !g.should_break && g.id.is_none() && g.expanded_states.is_none() => {
+            g.contents
+        }
+        doc => doc,
+    }
 }
 
 /// The comments after one part of an expression ([`Printer::comment_run`]).

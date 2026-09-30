@@ -206,7 +206,8 @@ const REFERENCE: &[OptionInfo] = &[
         "array.empty_padding",
         Kind::Bool,
         "false",
-        "When true, an empty array is padded with a space: `[ ]`.",
+        "When true, an empty array is padded with a space: `[ ]`; so is an empty array \
+         destructuring pattern.",
         "myArray = [];",
         "{}",
         &[],
@@ -216,9 +217,9 @@ const REFERENCE: &[OptionInfo] = &[
         Kind::Integer,
         "0",
         "Forces an array onto multiple lines when it has at least this many elements and their \
-         one-line widths average more than `array.multiline.min_item_length` columns. At 0, the \
-         default, nothing is forced, as Prettier has no such rule: it breaks only when it does not \
-         fit within `max_columns`.",
+         one-line widths average more than `array.multiline.min_item_length` columns; an array \
+         destructuring pattern (`[a, b] = x`) too. At 0, the default, nothing is forced, as \
+         Prettier has no such rule: it breaks only when it does not fit within `max_columns`.",
         "myArray = [1, 2, 3];",
         r#"{"array.multiline.min_item_length": 0}"#,
         &["0", "3"],
@@ -239,8 +240,8 @@ const REFERENCE: &[OptionInfo] = &[
         "array.padding",
         Kind::Bool,
         "false",
-        "When true, non-empty arrays are padded with spaces. An empty array follows \
-         `array.empty_padding`.",
+        "When true, non-empty arrays are padded with spaces, array destructuring patterns \
+         (`[ a, b ] = x`) included. An empty array follows `array.empty_padding`.",
         "myArray = [1,2];",
         "{}",
         &[],
@@ -509,7 +510,9 @@ const REFERENCE: &[OptionInfo] = &[
          arrows) print `\"trailing\"`; `\"dangling_all\"` after the last item of every one of \
          those lists; `\"leading\"` before every item but the first (`, b`, the first item \
          spaced by two so the items align); `\"leading_tight\"` the same without the space \
-         (`,b`). A list on one line is `a, b` under every value. Engines differ on a comma after \
+         (`,b`). A list on one line is `a, b` under every value. A destructuring pattern takes \
+         the style of the literal it resembles; its dangling comma is ColdFusion 2025 syntax, and \
+         none is written after a rest item (`...r`). Engines differ on a comma after \
          the last item: Lucee 6 accepts one in a struct, array or parameter list and rejects one \
          in an argument list, and Adobe ColdFusion releases before 2025 reject it everywhere. \
          Replaces the per-construct `*.multiline.comma_dangle`, `*.multiline.leading_comma` and \
@@ -633,8 +636,8 @@ const REFERENCE: &[OptionInfo] = &[
         "struct.empty_padding",
         Kind::Bool,
         "false",
-        "When true, an empty struct is padded with a space: `{ }`, and an empty ordered struct \
-         prints `[ : ]`.",
+        "When true, an empty struct is padded with a space: `{ }` (an empty struct \
+         destructuring pattern too), and an empty ordered struct prints `[ : ]`.",
         "myStruct = {};\nmyOrdered = [:];",
         "{}",
         &[],
@@ -644,9 +647,9 @@ const REFERENCE: &[OptionInfo] = &[
         Kind::Integer,
         "0",
         "Forces a struct onto multiple lines when it has at least this many members and their \
-         one-line widths average more than `struct.multiline.min_item_length` columns. At 0, the \
-         default, nothing is forced, as Prettier has no such rule: it breaks only when it does not \
-         fit within `max_columns`.",
+         one-line widths average more than `struct.multiline.min_item_length` columns; a struct \
+         destructuring pattern (`({a, b} = x)`) too. At 0, the default, nothing is forced, as \
+         Prettier has no such rule: it breaks only when it does not fit within `max_columns`.",
         "myStruct = {a: 1, b: 2, c: 3};",
         r#"{"struct.multiline.min_item_length": 0}"#,
         &["0", "3"],
@@ -667,7 +670,8 @@ const REFERENCE: &[OptionInfo] = &[
         "struct.padding",
         Kind::Bool,
         "false",
-        "Whether to pad non-empty structs with spaces. An empty struct follows `struct.empty_padding`.",
+        "Whether to pad non-empty structs with spaces, struct destructuring patterns (`({ a, b } = \
+         x)`) included. An empty struct follows `struct.empty_padding`.",
         "myStruct={a:1,b:2};",
         "{}",
         &[],
@@ -676,7 +680,8 @@ const REFERENCE: &[OptionInfo] = &[
         "struct.quote_keys",
         Kind::Bool,
         "false",
-        "When true, struct keys are quoted.",
+        "When true, struct keys are quoted. A destructuring pattern's keys are names and never \
+         quoted.",
         "myStruct={a: 1, 'b': 2};",
         "{}",
         &[],
@@ -686,7 +691,8 @@ const REFERENCE: &[OptionInfo] = &[
         Kind::Separator,
         r#"": ""#,
         "The key value separator to use in structs - it must contain either a single `:` or `=` \
-         with at most one space on each side.",
+         with at most one space on each side. A destructuring pattern's rename is always \
+         `key: target` (`=` there is a default).",
         "myStruct={a:1,b:2};",
         "{}",
         &[],

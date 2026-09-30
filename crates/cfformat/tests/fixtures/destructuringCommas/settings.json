@@ -1,0 +1,30 @@
+[
+    {
+        "struct.multiline.element_count": 2,
+        "struct.multiline.min_item_length": 0,
+        "array.multiline.element_count": 2,
+        "array.multiline.min_item_length": 0,
+        "multiline.comma": "dangling"
+    },
+    {
+        "struct.multiline.element_count": 2,
+        "struct.multiline.min_item_length": 0,
+        "array.multiline.element_count": 2,
+        "array.multiline.min_item_length": 0,
+        "multiline.comma": "dangling_all"
+    },
+    {
+        "struct.multiline.element_count": 2,
+        "struct.multiline.min_item_length": 0,
+        "array.multiline.element_count": 2,
+        "array.multiline.min_item_length": 0,
+        "multiline.comma": "leading"
+    },
+    {
+        "struct.multiline.element_count": 2,
+        "struct.multiline.min_item_length": 0,
+        "array.multiline.element_count": 2,
+        "array.multiline.min_item_length": 0,
+        "multiline.comma": "leading_tight"
+    }
+]

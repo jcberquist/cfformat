@@ -1,0 +1,44 @@
+//
+component {
+    function run() {
+        var items = [{alpha: 1, beta: 2}];
+        var pairs = [[1, 2, 3]];
+        var settings = {alpha: 1, beta: 2, delta: 3, extra: {inner: 4, other: 5}};
+        ({alpha, beta: renamed, delta = 1} = someLongFunction(settings, "argument"));
+        ({alpha, extra: {inner, other}} = settings);
+        [firstValue, secondValue] = [secondValue ?: "second value", firstValue ?: "first value"];
+        for ([keyName, valueName, extraValue] in pairs) {
+            writeOutput(keyName & valueName & extraValue);
+        }
+        [
+            alpha, // the first
+            beta
+        ] = [1, 2];
+        items.each(({alpha, beta}) => writeOutput(process(alpha, beta)));
+        items.each(({alpha, beta}) => writeOutput(process(alpha, beta, renamed, delta, inner, other)));
+        withItem(({alpha, beta}) => process(alpha, beta, renamed, delta, inner, other), "second argument");
+        withItem(function({alpha, beta}) { return process(alpha, beta, renamed, delta); }, "second argument");
+        items.each(({alpha, beta}) => alpha + beta + renamed + delta + inner);
+        handler = function({alpha, beta = 1, gamma = 2}) {
+            return alpha + beta + gamma;
+        };
+        arrow = ({alpha, beta = 1, gamma = 2}) => alpha + beta + gamma + handler({alpha: alpha});
+        writeOutput(declared({alpha: 1, beta: 2}) & arrow({alpha: 1}) & firstValue & secondValue);
+    }
+
+    function declared({alpha, beta = 1, ...remaining}) {
+        return alpha + beta + structCount(remaining);
+    }
+
+    function someLongFunction(value, name) {
+        return value;
+    }
+
+    function withItem(fn, name) {
+        return fn({alpha: 1, beta: 2});
+    }
+
+    function process() {
+        return serializeJSON(arguments);
+    }
+}

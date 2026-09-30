@@ -2145,3 +2145,35 @@ fn an_unclosed_hash_leaves_the_rest_formatted() {
         assert_eq!(warned(src), (text.to_string(), vec![]), "{src:?}");
     }
 }
+
+#[test]
+fn a_sole_pattern_parameter_with_a_default_hugs_as_prettier_does() {
+    // No engine runs a default after a whole pattern, or an array pattern as
+    // a parameter, so no golden holds them; both parse and print.
+    let narrow = r#"{"newline": "\n", "max_columns": 20}"#;
+    // A default that is a name, `{}` or `[]`: the parentheses hug.
+    assert_eq!(
+        fmt_with("function f({alpha, beta} = {}) {}", narrow),
+        "function f({\n    alpha,\n    beta\n} = {}) {\n}\n"
+    );
+    assert_eq!(
+        fmt_with("function f({alpha, beta} = defaults) {}", narrow),
+        "function f({\n    alpha,\n    beta\n} = defaults) {\n}\n"
+    );
+    // Any other default: an ordinary parameter list.
+    assert_eq!(
+        fmt_with("function f({alpha} = {beta: 1}) {}", narrow),
+        "function f(\n    {alpha} = {\n        beta: 1\n    }\n) {\n}\n"
+    );
+    // An array pattern hugs like a struct pattern.
+    assert_eq!(
+        fmt_with("function f([alpha, beta]) {}", narrow),
+        "function f([\n    alpha,\n    beta\n]) {\n}\n"
+    );
+    // A comment on the parameter, or a comma after it: no hug.
+    assert_eq!(
+        fmt("function f(/* c */ {a}) {}"),
+        "function f(/* c */ {a}) {\n}\n"
+    );
+    assert_eq!(fmt("function f({a},) {}"), "function f({a}) {\n}\n");
+}

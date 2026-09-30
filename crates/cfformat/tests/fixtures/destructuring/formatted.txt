@@ -1,0 +1,189 @@
+component {
+
+    static [sa, sb] = [1, 2];
+
+    function run() {
+        var x = [1, 2, 3, 4];
+        var s = {a: 1, b: 2, d: 3, e: 4, g: 5};
+        var st = {p: 1, q: {r: 2}, u: 3};
+        var pairs = [[1, 2], [3, 4]];
+        var structs = [{a: 1, b: 2}];
+        [a, b] = x;
+        writeOutput(a & b);
+        [a, , c] = x;
+        writeOutput(a & c);
+        [, a] = x;
+        writeOutput(a);
+        [a, ,] = x;
+        writeOutput(a);
+        [a, b] = x;
+        writeOutput(a & b);
+        [a, ...r] = x;
+        writeOutput(a & arrayLen(r));
+        [a, [b, c], {d}] = [1, [2, 3], {d: 4}];
+        writeOutput(a & b & c & d);
+        [a, b = 9] = [1];
+        writeOutput(a & b);
+        [a, b] = [b, a];
+        writeOutput(a & b);
+        ({a, b: c, d = 1, e: f = 2, ...r} = s);
+        writeOutput(a & c & d & f & structCount(r));
+        ({a, b} = s);
+        writeOutput(a & b);
+        ({
+            p: {
+                q,
+                r: [s1, s2]
+            }
+        } = {p: {q: 1, r: [2, 3]}});
+        writeOutput(q & s1 & s2);
+        one = 1;
+        three = 3;
+        var [va, , vc] = x;
+        four = 4;
+        var {
+            p,
+            q: {r: qr, w = 1},
+            ...t
+        } = st;
+        two = 2;
+        writeOutput(one & two & three & four & va & vc & p & qr & w & structCount(t));
+        final [fa, fb] = x;
+        writeOutput(fa & fb & sa & sb);
+        for ([k, v] in pairs) {
+            writeOutput(k & v);
+        }
+        for ({a, b} in structs) {
+            writeOutput(a & b);
+        }
+        for (var [lk, lv] in pairs) {
+            writeOutput(lk & lv);
+        }
+        for (var {a: la, b: lb} in structs) {
+            writeOutput(la & lb);
+        }
+        ({
+            a, // first
+            b: c /* renamed */,
+            d = 1
+        } = s);
+        writeOutput(a & c & d);
+        h = function({a, b}) {
+            return a + b;
+        };
+        k = ({a, b}) => a + b;
+        m = ({a, b = 2}, c) => {
+            return a + b + c;
+        };
+        writeOutput(h({a: 1, b: 2}) & k({a: 1, b: 2}) & m({a: 1}, 3));
+        writeOutput(sole({a: 1}) & mixed(1, {a: 2, p: {q: 3}}, {c: 4}) & nested({a: 1, p: {q: 2}}));
+    }
+
+    function sole({a, b = 2}) {
+        return a + b;
+    }
+
+    function mixed(x, {a, b = 9, p: {q}, ...r}, {c}) {
+        return x + a + b + q + c + structCount(r);
+    }
+
+    function nested({a, p: {q}}) {
+        return a + q;
+    }
+
+}
+~
+component {
+
+    static [sa, sb] = [1, 2];
+
+    function run() {
+        var x       = [1, 2, 3, 4];
+        var s       = {a: 1, b: 2, d: 3, e: 4, g: 5};
+        var st      = {p: 1, q: {r: 2}, u: 3};
+        var pairs   = [[1, 2], [3, 4]];
+        var structs = [{a: 1, b: 2}];
+        [a, b] = x;
+        writeOutput(a & b);
+        [a, , c] = x;
+        writeOutput(a & c);
+        [, a] = x;
+        writeOutput(a);
+        [a, ,] = x;
+        writeOutput(a);
+        [a, b] = x;
+        writeOutput(a & b);
+        [a, ...r] = x;
+        writeOutput(a & arrayLen(r));
+        [a, [b, c], {d}] = [1, [2, 3], {d: 4}];
+        writeOutput(a & b & c & d);
+        [a, b = 9] = [1];
+        writeOutput(a & b);
+        [a, b] = [b, a];
+        writeOutput(a & b);
+        ({a, b: c, d = 1, e: f = 2, ...r} = s);
+        writeOutput(a & c & d & f & structCount(r));
+        ({a, b} = s);
+        writeOutput(a & b);
+        ({
+            p: {
+                q,
+                r: [s1, s2]
+            }
+        } = {p: {q: 1, r: [2, 3]}});
+        writeOutput(q & s1 & s2);
+        one   = 1;
+        three = 3;
+        var [va, , vc] = x;
+        four = 4;
+        var {
+            p,
+            q: {r: qr, w = 1},
+            ...t
+        } = st;
+        two = 2;
+        writeOutput(one & two & three & four & va & vc & p & qr & w & structCount(t));
+        final [fa, fb] = x;
+        writeOutput(fa & fb & sa & sb);
+        for ([k, v] in pairs) {
+            writeOutput(k & v);
+        }
+        for ({a, b} in structs) {
+            writeOutput(a & b);
+        }
+        for (var [lk, lv] in pairs) {
+            writeOutput(lk & lv);
+        }
+        for (var {a: la, b: lb} in structs) {
+            writeOutput(la & lb);
+        }
+        ({
+            a, // first
+            b: c /* renamed */,
+            d = 1
+        } = s);
+        writeOutput(a & c & d);
+        h = function({a, b}) {
+            return a + b;
+        };
+        k = ({a, b}) => a + b;
+        m = ({a, b = 2}, c) => {
+            return a + b + c;
+        };
+        writeOutput(h({a: 1, b: 2}) & k({a: 1, b: 2}) & m({a: 1}, 3));
+        writeOutput(sole({a: 1}) & mixed(1, {a: 2, p: {q: 3}}, {c: 4}) & nested({a: 1, p: {q: 2}}));
+    }
+
+    function sole({a, b = 2}) {
+        return a + b;
+    }
+
+    function mixed(x, {a, b = 9, p: {q}, ...r}, {c}) {
+        return x + a + b + q + c + structCount(r);
+    }
+
+    function nested({a, p: {q}}) {
+        return a + q;
+    }
+
+}

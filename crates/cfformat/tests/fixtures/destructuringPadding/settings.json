@@ -1,0 +1,11 @@
+[
+    {
+        "struct.padding": true,
+        "array.padding": true,
+        "parentheses.padding": true,
+        "struct.separator": " = ",
+        "struct.quote_keys": true,
+        "struct.empty_padding": true,
+        "array.empty_padding": true
+    }
+]

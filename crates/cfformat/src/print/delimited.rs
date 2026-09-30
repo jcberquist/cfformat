@@ -1,7 +1,8 @@
-//! Delimited elements: structs, arrays, call arguments, parameters and
-//! `cfhttp(…)` attributes.
+//! Delimited elements: structs, arrays, destructuring patterns, call
+//! arguments, parameters and `cfhttp(…)` attributes.
 //!
-//! One printer, [`Printer::print_delimited`], lays every kind out as
+//! One printer, [`Printer::print_delimited`] ([`Printer::pattern_as`] for a
+//! pattern, which keeps its empty items), lays every kind out as
 //! `group([open, pad, indent([softline, items]), softline, pad, close])`: flat
 //! when it fits and the construct's threshold ([`threshold_breaks`]: at least
 //! `element_count` items averaging more than `min_item_length` columns) does
@@ -16,7 +17,7 @@ use cfdoc::builders::{
 };
 use cfdoc::utils::flat_width;
 use cfdoc::{Doc, FlatWidth, GroupId};
-use cfparse::{Element, ElementKind, Ident, Item, Literal, Node, Punct, TokenKind};
+use cfparse::{Element, ElementKind, Ident, Item, Literal, Node, Operator, Punct, TokenKind};
 
 use super::alignment::{self, RunPart};
 use super::tags::TagCtx;
@@ -232,14 +233,7 @@ impl Printer<'_> {
         };
         let items = printable_items(e);
         if items.is_empty() || is_empty_ordered_struct(e, &items) {
-            let pad = || Doc::from(if style.empty_padding { " " } else { "" });
-            let mut parts = vec![self.token(open), pad()];
-            if !items.is_empty() {
-                parts.push(Doc::from(":"));
-                parts.push(pad());
-            }
-            parts.push(self.token(close));
-            return Doc::Concat(parts);
+            return self.empty_delimiters(open, close, style, !items.is_empty());
         }
         let last = items.len() - 1;
         // A comment-only item takes no comma: the first item with content
@@ -268,6 +262,25 @@ impl Printer<'_> {
                 should_break: should_break || style.breaks(&widths),
             },
         )
+    }
+
+    /// `{}`, `[]`, `()`, or `[:]` when `ordered`; a space apart with
+    /// `style.empty_padding`.
+    fn empty_delimiters(
+        &self,
+        open: &cfparse::Token,
+        close: &cfparse::Token,
+        style: &DelimitedStyle,
+        ordered: bool,
+    ) -> Doc {
+        let pad = || Doc::from(if style.empty_padding { " " } else { "" });
+        let mut parts = vec![self.token(open), pad()];
+        if ordered {
+            parts.push(Doc::from(":"));
+            parts.push(pad());
+        }
+        parts.push(self.token(close));
+        Doc::Concat(parts)
     }
 
     /// `[open, pad, indent([softline, item, line, item …]), softline, pad,
@@ -344,31 +357,64 @@ impl Printer<'_> {
         pad: Option<Doc>,
         widths: Option<&mut Vec<FlatWidth>>,
     ) -> Doc {
+        if item.significant().next().is_none() {
+            return self.comment_only_item(item);
+        }
+        let content = self.item_content(item, style.key_value, pad.as_ref());
+        self.item_parts(
+            item,
+            comma_before(style.comma, first),
+            Some(content),
+            comma_after(style.comma, last),
+            widths,
+        )
+    }
+
+    /// An item holding only comments: each on its own line, no separator.
+    fn comment_only_item(&self, item: &Item) -> Doc {
         let mut parts = Vec::new();
         for c in item.leading_comments() {
             parts.push(self.comment(c));
             parts.push(hardline());
         }
-        if item.significant().next().is_none() {
-            for (i, c) in item.trailing_comments().enumerate() {
-                if i > 0 {
-                    parts.push(hardline());
-                }
-                parts.push(self.comment(c));
+        for (i, c) in item.trailing_comments().enumerate() {
+            if i > 0 {
+                parts.push(hardline());
             }
-            parts.push(break_parent());
-            return Doc::Concat(parts);
+            parts.push(self.comment(c));
+        }
+        parts.push(break_parent());
+        Doc::Concat(parts)
+    }
+
+    /// [`Printer::item_doc`] for an item with content, or for a pattern's
+    /// empty item (`content` `None`): the leading comments, `before`, the
+    /// content, the same-line trailing comments, `after`, the own-line
+    /// trailing comments.
+    fn item_parts(
+        &self,
+        item: &Item,
+        before: Option<Doc>,
+        content: Option<Doc>,
+        after: Option<Doc>,
+        widths: Option<&mut Vec<FlatWidth>>,
+    ) -> Doc {
+        let mut parts = Vec::new();
+        for c in item.leading_comments() {
+            parts.push(self.comment(c));
+            parts.push(hardline());
         }
         // A leading comma follows the item's own-line comments (`// c` newline
         // `, b`): printed before them it would end the line of a comment the
         // next parse gives to the previous item (a line comment right after a
         // comma belongs to the item before the comma).
-        parts.extend(comma_before(style.comma, first));
-        let content = self.item_content(item, style.key_value, pad.as_ref());
-        if let Some(widths) = widths {
-            widths.push(flat_width(&content));
+        parts.extend(before);
+        if let Some(content) = content {
+            if let Some(widths) = widths {
+                widths.push(flat_width(&content));
+            }
+            parts.push(content);
         }
-        parts.push(content);
 
         // The trailing run and the separator in source order: a comment with
         // no newline before it (since the content) shares the content's line.
@@ -389,7 +435,7 @@ impl Printer<'_> {
                 _ => {}
             }
         }
-        parts.extend(comma_after(style.comma, last));
+        parts.extend(after);
         for c in own_line {
             parts.push(hardline());
             parts.push(self.comment(c));
@@ -485,9 +531,18 @@ impl Printer<'_> {
                 (Some(Node::Element(t)), None) if t.kind == ElementKind::Ternary
             );
         self.ternary_cond_indent.set(ternary_arg);
+        let parameter = key_value == KeyValueStyle::Parameter;
         let parts = self.sequence_by(&item.children, &|n| match n {
             Node::Element(kv) if kv.kind == ElementKind::KeyValue => {
                 self.key_value_with(kv, key_value, pad.cloned())
+            }
+            // A pattern parameter, with or without a default, never takes
+            // the nested-pattern break.
+            Node::Element(p) if parameter && matches!(p.kind, ElementKind::Pattern { .. }) => {
+                self.guarded(p, || self.pattern_as(p, false))
+            }
+            Node::Element(a) if parameter && is_pattern_assignment(a) => {
+                self.guarded(a, || self.pattern_default(a))
             }
             n => self.node(n),
         });
@@ -652,27 +707,152 @@ impl Printer<'_> {
         )
     }
 
-    /// A destructuring pattern, on one line: its delimiters, items and
-    /// separators in source order through [`Printer::sequence`], so one space
-    /// between parts and none after the opener or before a comma or the
-    /// closer (`var {p, q : {r, s = 1}, ...t}`, `[a,, c]`).
+    /// A destructuring pattern where it is assigned to (an assignment, a
+    /// declaration, a `for` header, nested in another pattern):
+    /// [`Printer::pattern_as`] with its forced break.
     pub(crate) fn pattern(&self, e: &Element) -> Doc {
-        let delimiters: Vec<Node> = e
-            .open
-            .iter()
-            .chain(e.items.iter().filter_map(|i| i.separator.as_ref()))
-            .chain(e.close.iter())
-            .map(|t| Node::Token(t.clone()))
-            .collect();
-        let mut nodes: Vec<&Node> = e
+        self.pattern_as(e, true)
+    }
+
+    /// A destructuring pattern, laid out as the literal it resembles (see the
+    /// module docs) with that literal's options: `struct.*` for `{…}`,
+    /// `array.*` for `[…]`, `multiline.comma` as for literals. Unlike a
+    /// literal it keeps every item: an empty one (`[a, , c]`, a skipped
+    /// element) prints its comma alone, flat `, ,`, broken on a line of its
+    /// own. The last item takes the dangling comma a literal's would, except
+    /// a rest item (`...r,` is a syntax error), and an empty last item (`[a,
+    /// ,]`, a hole before a trailing comma) always prints its comma. A
+    /// struct pattern holding a rename whose target is a pattern breaks
+    /// (Prettier's `ObjectPattern` rule) when `nested_breaks`, which is false
+    /// for a function's parameter and for a default's target.
+    pub(crate) fn pattern_as(&self, e: &Element, nested_breaks: bool) -> Doc {
+        let (Some(open), Some(close)) = (&e.open, &e.close) else {
+            return self.as_written(e);
+        };
+        let array = e.kind == (ElementKind::Pattern { array: true });
+        let style = if array {
+            DelimitedStyle::array(self.opts)
+        } else {
+            DelimitedStyle::structs(self.opts)
+        };
+        let items: Vec<&Item> = e
             .items
             .iter()
-            .flat_map(Item::nodes)
-            .chain(&e.children)
-            .chain(&delimiters)
+            .filter(|i| is_printable(i) || i.separator.is_some())
             .collect();
-        nodes.sort_by_key(|n| n.span().start);
-        Doc::Concat(self.sequence(nodes))
+        if items.is_empty() {
+            return self.empty_delimiters(open, close, &style, false);
+        }
+        let last = items.len() - 1;
+        let is_hole = |i: &Item| i.significant().next().is_none() && i.separator.is_some();
+        // A comment-only item takes no comma; an empty one does.
+        let first = items
+            .iter()
+            .position(|i| i.significant().next().is_some() || is_hole(i))
+            .unwrap_or(0);
+        let leading = matches!(style.comma, CommaStyle::Leading | CommaStyle::LeadingTight);
+        let measure = style.measures(items.len());
+        let mut widths = Vec::new();
+        let mut docs: Vec<Doc> = Vec::new();
+        // In a leading style an empty first item has nothing of its own on
+        // its line when broken (its comma is the next item's leading one),
+        // so it joins the next item's line: `, b`.
+        let mut prefix: Option<Doc> = None;
+        for (i, item) in items.iter().enumerate() {
+            let widths = measure.then_some(&mut widths);
+            let doc = if is_hole(item) {
+                let before = if i == first {
+                    None
+                } else {
+                    comma_before(style.comma, false)
+                };
+                let after = if i == last {
+                    Some(Doc::from(","))
+                } else {
+                    comma_after(style.comma, false)
+                };
+                if leading && i == first && i != last && !has_comments(item) {
+                    prefix = Some(if_break("", ", "));
+                    continue;
+                }
+                self.item_parts(item, before, None, after, widths)
+            } else if item.significant().next().is_none() {
+                self.comment_only_item(item)
+            } else {
+                let content = self.pattern_item(item);
+                let after = if i == last && is_rest(item) {
+                    None
+                } else {
+                    comma_after(style.comma, i == last)
+                };
+                self.item_parts(
+                    item,
+                    comma_before(style.comma, i == first),
+                    Some(content),
+                    after,
+                    widths,
+                )
+            };
+            docs.push(match prefix.take() {
+                Some(p) => Doc::Concat(vec![p, doc]),
+                None => doc,
+            });
+        }
+        let nested = nested_breaks && !array && items.iter().any(|i| renames_to_pattern(i));
+        group_opts(
+            self.delimited_body(e, &style, docs, None),
+            GroupOpts {
+                id: None,
+                should_break: nested || style.breaks(&widths),
+            },
+        )
+    }
+
+    /// A pattern item's content: a rename as `key: target` (the key as
+    /// written, never quoted, and never `struct.separator`, whose `=` would
+    /// make it a default), a default as `target = value`
+    /// ([`Printer::pattern_default`]), a nested pattern, a rest item or a
+    /// name as they print.
+    fn pattern_item(&self, item: &Item) -> Doc {
+        let print = |n: &Node| match n {
+            Node::Element(a) if a.kind == ElementKind::Assignment => {
+                self.guarded(a, || self.pattern_default(a))
+            }
+            n => self.node(n),
+        };
+        let children = &item.children;
+        let colon = children.iter().position(
+            |n| matches!(n, Node::Token(t) if t.kind == TokenKind::Punct(Punct::KeyValue)),
+        );
+        let Some(colon) = colon else {
+            return Doc::Concat(self.sequence_by(children, &print));
+        };
+        let mut parts = self.sequence_by(&children[..colon], &print);
+        parts.push(Doc::from(":"));
+        let target = self.sequence_by(&children[colon + 1..], &print);
+        if !target.is_empty() {
+            parts.push(Doc::from(" "));
+        }
+        parts.extend(target);
+        Doc::Concat(parts)
+    }
+
+    /// A default in a pattern, or a pattern parameter with a default:
+    /// `target = value` on one line, as Prettier prints an
+    /// `AssignmentPattern` — none of an assignment's layouts, so a long
+    /// default never moves to the line after `=`. A pattern target does not
+    /// take the nested-pattern break ([`Printer::pattern_as`]).
+    pub(crate) fn pattern_default(&self, a: &Element) -> Doc {
+        let target = a.as_assignment().map(|v| v.target());
+        Doc::Concat(self.sequence_by(&a.children, &|n| match n {
+            Node::Element(p)
+                if matches!(p.kind, ElementKind::Pattern { .. })
+                    && target.is_some_and(|t| std::ptr::eq(t, n)) =>
+            {
+                self.guarded(p, || self.pattern_as(p, false))
+            }
+            n => self.node(n),
+        }))
     }
 
     /// `a[expr]`'s brackets: padded with `brackets.padding` while flat
@@ -748,6 +928,39 @@ fn comma_after(comma: CommaStyle, last: bool) -> Option<Doc> {
         CommaStyle::Leading | CommaStyle::LeadingTight => Some(if_break("", ",")),
         _ => Some(Doc::from(",")),
     }
+}
+
+/// An assignment whose target is a pattern: a pattern parameter's default
+/// (`{a, b} = {}`), or the destructuring assignment in `({a, b} = x)`.
+pub(crate) fn is_pattern_assignment(a: &Element) -> bool {
+    a.as_assignment().is_some_and(
+        |v| matches!(v.target(), Node::Element(p) if matches!(p.kind, ElementKind::Pattern { .. })),
+    )
+}
+
+/// A pattern's rest item, `...r`.
+fn is_rest(item: &Item) -> bool {
+    let mut sig = item.significant();
+    matches!(
+        (sig.next(), sig.next()),
+        (Some(Node::Element(u)), None) if u.kind == (ElementKind::Unary { postfix: false })
+            && u.children.iter().any(|n| {
+                matches!(n, Node::Token(t) if t.kind == TokenKind::Operator(Operator::Spread))
+            })
+    )
+}
+
+/// A pattern item that renames to a nested pattern (`q: {r, s}`, `q: [r]`;
+/// not `q: {r} = {}`, whose target is a default, as in Prettier).
+fn renames_to_pattern(item: &Item) -> bool {
+    let mut sig = item.significant();
+    let (Some(Node::Token(_)), Some(Node::Token(colon)), Some(Node::Element(target))) =
+        (sig.next(), sig.next(), sig.next())
+    else {
+        return false;
+    };
+    colon.kind == TokenKind::Punct(Punct::KeyValue)
+        && matches!(target.kind, ElementKind::Pattern { .. })
 }
 
 /// `[:]`: an ordered struct whose only item is the `:` token.
