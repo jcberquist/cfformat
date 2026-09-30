@@ -28,8 +28,9 @@ pub fn commandbox_dir() -> Option<PathBuf> {
 
 /// Vendored copies of `commandbox-cfformat/tests/data/*/source.cfc`
 /// (`<name>.cfc`) and `tests/data/exprTests/*.cfc` (`exprTests/<name>.cfc`),
-/// and `recoveredOperators.cfc`, written here: operators after a recovered
-/// region.
+/// and three written here: `recoveredOperators.cfc` (operators after a
+/// recovered region), `destructuring.cfc` and `destructuringRejected.cfc`
+/// (the patterns Adobe ColdFusion runs, and the forms it rejects).
 pub fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
 }

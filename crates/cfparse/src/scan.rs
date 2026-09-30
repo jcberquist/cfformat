@@ -236,6 +236,49 @@ pub(crate) fn balanced_code(
     None
 }
 
+/// The end of the destructuring pattern whose `[` or `{` is at `at`, past
+/// its closer, as [`balanced_code`] finds it but over every bracket kind at
+/// once; `None` where the text cannot be one: a closer of the wrong kind, a
+/// `;` anywhere but inside a `{…}` nested in the pattern (a closure
+/// default's body), or the end of the source. The `;` bound is what keeps a
+/// run of unclosed `[` linear (`x = [;` on every line): each lookahead stops
+/// at its own statement's end instead of scanning to the end of the source.
+pub(crate) fn pattern_end(src: &str, at: usize, depth: u32) -> Option<usize> {
+    let mut open: Vec<u8> = Vec::new();
+    let mut i = at;
+    while i < src.len() {
+        let rest = &src[i..];
+        match rest.as_bytes()[0] {
+            b @ (b'[' | b'{' | b'(') => {
+                open.push(b);
+                i += 1;
+            }
+            b @ (b']' | b'}' | b')') => {
+                let opener = match b {
+                    b']' => b'[',
+                    b'}' => b'{',
+                    _ => b'(',
+                };
+                if open.pop() != Some(opener) {
+                    return None;
+                }
+                i += 1;
+                if open.is_empty() {
+                    return Some(i);
+                }
+            }
+            b';' if open.len() == 1 || open.last() != Some(&b'{') => return None,
+            b'\'' | b'"' => i = string_end(src, i, depth + 1),
+            b'/' if rest.starts_with("/*") || rest.starts_with("//") => {
+                i = comment_end(src, i);
+            }
+            b'<' if rest.starts_with("<!---") => i = tag_comment_end(src, i),
+            _ => i += char_len(src, i),
+        }
+    }
+    None
+}
+
 /// The text that ends the region a [`Bounded`] scan is finding, even
 /// inside a `#…#` left open.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -619,6 +662,24 @@ pub(crate) fn tag_marker(text: &str, which: Marker) -> Option<usize> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn pattern_end_stops_where_no_pattern_can_go_on() {
+        let end = |src: &str| pattern_end(src, 0, 0);
+        assert_eq!(end("[a, [b], {c}] = x"), Some(13));
+        assert_eq!(end("{a = \"}\", b} = x"), Some(12));
+        // A closure default's body holds `;`.
+        let src = "[a = function() { return 1; }] = x";
+        assert_eq!(end(src), Some(src.find(']').unwrap() + 1));
+        // A `;` directly inside, or inside `(` / `[`: a statement's end.
+        assert_eq!(end("[;\n[a] = x"), None);
+        assert_eq!(end("{ a = 1; }"), None);
+        assert_eq!(end("[(;\n)] = x"), None);
+        // A closer of the wrong kind.
+        assert_eq!(end("[)] = x"), None);
+        assert_eq!(end("{a]"), None);
+        assert_eq!(end("[a, b"), None);
+    }
 
     #[test]
     fn comment_end_skips_an_ignore_region_of_either_marker_in_any_case() {

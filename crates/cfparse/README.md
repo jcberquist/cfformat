@@ -140,7 +140,7 @@ is `ident.tag-name` whatever the tag).
 | `Ignore`, `Invalid`, `Other` | a `cfformat-ignore` region's text; text no rule read | the printer (as written), the recovery pass |
 
 Element kinds are the delimited forms (`struct`, `array`, `typed-array`,
-`call`, `parameters`, `block`, `group`, `brackets`, `string`,
+`pattern`, `call`, `parameters`, `block`, `group`, `brackets`, `string`,
 `template-expression`), the declaration headers and the statement and
 clause elements the script parser builds, comments, the tag elements
 (`cf-tag`, `html-tag`, `doctype`, `tag-body`, `island`, `tag-island`),
@@ -225,6 +225,31 @@ the text alone; a caller with a file name resolves the mode first with
   (`islands.rs`, over `scan.rs`). Each region goes to
   `script::parse_fragment` and its nodes are spliced in.
 
+A destructuring pattern is a `pattern` element (`array` for `[…]`, JSON
+`"array": true`), a delimited element with its own item reader, never a
+literal. It is read after `var` (a `for (var … in` header included), at a
+parameter's start (an arrow's too), and in operand position when
+`pattern_ahead` holds: the `[` or `{` closes (`scan::pattern_end`), then
+come trivia and `=` (not `==` or `=>`) or the word `in`. The operand rule
+covers a statement start (`[a, b] = [b, a];`, and `final [a, b] = x;` after
+its modifier), a group (`({a, b} = x)`) and a `for` header without `var`,
+which `for_is_in` tells from `for (;;)` by the same balance. A statement
+starting with `{` (also after `static`) is checked first, so `{a, b} = x;`
+is no block. Anything else is what it was: `[1, 2].each(f)`, `[a][1] = x`,
+`[1, 2] == x`, `x = [1, 2]`. An item is a name (`ident.variable`, in a
+parameter's pattern too: whether the engine binds those names as arguments
+is not known), a nested pattern, or a struct pattern's `ident.struct-key`,
+`punct.key-value ":"` and either; each with `op.assign "="` and a default
+(an `assignment` once the expression pass runs); `op.spread "..."` and its
+target (a `unary`); or nothing, the skip of `[a, , c]`. A pattern is never
+a key-value list: the pass that makes a struct literal's `n = 1` a member
+does not run on it. It is an operand to the expression pass, so `[a, b] =
+x` is `assignment { pattern, =, x }` in an `assignment` statement. Parsed,
+though no engine runs them: the bare `{a, b} = x;` (Adobe ColdFusion needs
+the parentheses), an array pattern as a parameter, and `required` or a type
+before a pattern parameter (`string {a}` reads `string` as a parameter's
+name and the pattern after it).
+
 ### The tag front end
 
 `src/tags/` is a hand-written, dependency-free byte scanner over the whole
@@ -253,7 +278,11 @@ and runs past the end of the line it holds the boundary on. Failed
 constructs are remembered, a `#…#` fails at `MAX_DEPTH`, and a budget of 32
 reads per byte stops what those miss, so the retries stay linear. The same
 module holds what the script parser's lookaheads use — `balanced_code` (the
-arrow and `for-in` lookaheads), `java_literal_end` (a `type="java"` body) —
+arrow and `for-in` lookaheads), `pattern_end` (a pattern's: every bracket
+kind at once, and no pattern at a closer of the wrong kind or at a `;`
+outside a nested `{…}`, so a line of `x = [;` after another costs one
+statement each, not the rest of the file), `java_literal_end` (a
+`type="java"` body) —
 `closes_tag` (`</name\s*>`, any case, every CF closing-tag check) and the
 ignore markers every reader of script or tags goes through: `script_marker`
 (`//`, spaces or tabs, the word, spaces or tabs and the line's newline; or
@@ -278,10 +307,10 @@ if`, `while`, `for`, `do`), labels and statements directly in a `switch`
 block; the tag scanner counts content runs and every CF tag an island body
 opens (`<cfquery>` in `<cfquery>`); a fragment one front end hands the other
 starts at its caller's depth. The `scan.rs` scanners (`hash_end`,
-`bracket_end`, `string_end`, `balanced_code`) take the
+`bracket_end`, `string_end`, `balanced_code`, `pattern_end`) take the
 caller's depth and, at the bound, scan flat to their own closer (brackets
 by counting their own pair, a `#`, quote or other bracket then a plain
-character). A statement that reads on after `abort` or `cffile(…)` without
+character; `pattern_end` is flat at any depth, its brackets on a stack). A statement that reads on after `abort` or `cffile(…)` without
 a `;` (neither ends its statement) does so in a loop, into
 the same element, so a run of them takes no depth. The expression post-pass collects a prefix chain in a loop and
 folds an assignment chain from the right, and leaves a run flat — a

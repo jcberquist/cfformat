@@ -1,6 +1,6 @@
 //! The inspect JSON (no spans) of every fixture source (`tests/fixtures`,
-//! copied from commandbox-cfformat, and `recoveredOperators`). This is the parse
-//! contract; regenerate with `UPDATE_SNAPSHOTS=1 cargo test -p cfparse
+//! copied from commandbox-cfformat, and the three written here). This is the
+//! parse contract; regenerate with `UPDATE_SNAPSHOTS=1 cargo test -p cfparse
 //! --test snapshots` and review the diff.
 
 mod common;
@@ -21,7 +21,7 @@ fn fixture_snapshots() {
     std::fs::create_dir_all(&dir).unwrap();
 
     let fixtures = common::fixtures();
-    assert_eq!(fixtures.len(), 129, "121 fixtures + 8 exprTests expected");
+    assert_eq!(fixtures.len(), 131, "123 fixtures + 8 exprTests expected");
     // A deleted fixture must take its snapshot with it.
     for entry in std::fs::read_dir(&dir).unwrap() {
         let path = entry.unwrap().path();

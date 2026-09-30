@@ -652,6 +652,29 @@ impl Printer<'_> {
         )
     }
 
+    /// A destructuring pattern, on one line: its delimiters, items and
+    /// separators in source order through [`Printer::sequence`], so one space
+    /// between parts and none after the opener or before a comma or the
+    /// closer (`var {p, q : {r, s = 1}, ...t}`, `[a,, c]`).
+    pub(crate) fn pattern(&self, e: &Element) -> Doc {
+        let delimiters: Vec<Node> = e
+            .open
+            .iter()
+            .chain(e.items.iter().filter_map(|i| i.separator.as_ref()))
+            .chain(e.close.iter())
+            .map(|t| Node::Token(t.clone()))
+            .collect();
+        let mut nodes: Vec<&Node> = e
+            .items
+            .iter()
+            .flat_map(Item::nodes)
+            .chain(&e.children)
+            .chain(&delimiters)
+            .collect();
+        nodes.sort_by_key(|n| n.span().start);
+        Doc::Concat(self.sequence(nodes))
+    }
+
     /// `a[expr]`'s brackets: padded with `brackets.padding` while flat
     /// (`a[ 1 ]`), the expression indented on its own line when it does not
     /// fit. A number literal alone never breaks (`a[ 1 ]`, Prettier's

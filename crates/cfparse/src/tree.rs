@@ -699,6 +699,13 @@ pub enum ElementKind {
     /// An Adobe typed array literal, `['string']['a', 'b']`: the type's
     /// [`Brackets`](ElementKind::Brackets), then the [`Array`](ElementKind::Array).
     TypedArray,
+    /// A destructuring pattern, `[a, , ...r]` (`array`) or `{a, b: c, d = 1}`:
+    /// a binding target after `var`, before `=` or `in`, or as a parameter.
+    /// An item is a name, a nested pattern, `key : target` (struct only),
+    /// either with `= default`, `...name`, or nothing (a skip).
+    Pattern {
+        array: bool,
+    },
     /// Arguments of a call; the callee tokens are siblings before it. What
     /// is called is the callee's: [`Ident::Builtin`] for a built-in
     /// function, [`Ident::Call`] for a user-defined one or a method.
@@ -1127,6 +1134,7 @@ impl ElementKind {
             ElementKind::Struct { .. } => "struct",
             ElementKind::Array => "array",
             ElementKind::TypedArray => "typed-array",
+            ElementKind::Pattern { .. } => "pattern",
             ElementKind::Call => "call",
             ElementKind::Parameters => "parameters",
             ElementKind::Block(_) => "block",

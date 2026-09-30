@@ -45,6 +45,7 @@ impl Dumper<'_> {
                 let _ = write!(out, " {}", mode.as_str());
             }
             ElementKind::Struct { ordered: true } => out.push_str(" ordered"),
+            ElementKind::Pattern { array: true } => out.push_str(" array"),
             ElementKind::Block(k) => {
                 let _ = write!(out, " {}", k.name());
             }

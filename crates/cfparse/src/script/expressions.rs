@@ -160,6 +160,12 @@ impl Parser<'_> {
                 self.function_declaration_and_body(out);
                 return true;
             }
+            // A pattern assigned to or iterated (`[a, b] = x`, `({a} = x)`,
+            // `for ([k, v] in x)`), before the literals it looks like.
+            if matches!(c, '[' | '{') && self.pattern_ahead(at) {
+                self.binding_pattern(out);
+                return true;
+            }
             if c == '{' {
                 let s = self.struct_literal(false);
                 self.finish_into(out, s);
@@ -1211,8 +1217,13 @@ impl Parser<'_> {
         )
     }
 
-    /// One parameter: `required`? `type`? `name` `= default`? attributes.
+    /// One parameter: `required`? `type`? `name` `= default`? attributes; or
+    /// a destructuring pattern.
     fn function_parameter(&mut self, out: &mut Vec<Node>) {
+        if matches!(self.peek(), Some('[' | '{')) {
+            self.binding_pattern(out);
+            return self.parameter_tail(out);
+        }
         if self.at_word("required") {
             self.emit_len(out, 8, TokenKind::Keyword(Keyword::Required));
             return;
@@ -1226,10 +1237,12 @@ impl Parser<'_> {
         }
         let at = self.at();
         let Some(first) = lexer::dot_path(self.src, at) else {
-            // No rule matches: skip to where one can.
+            // No rule matches: skip to where one can, an operator at a time
+            // (`?.` is not `?` then `.`, where the run would stop).
             let mut end = at;
             while end < self.src.len() {
-                end += self.src[end..].chars().next().unwrap().len_utf8();
+                end += lexer::operator_len(self.src, end)
+                    .unwrap_or_else(|| self.src[end..].chars().next().unwrap().len_utf8());
                 if self.src[end..].starts_with([')', ',', '.'])
                     || lexer::dot_path(self.src, end).is_some()
                 {
@@ -1468,71 +1481,79 @@ impl Parser<'_> {
         }
     }
 
-    /// A destructuring pattern (`[a, b]`, `{a, b: c}`): flat tokens, no
-    /// element around them. None in the test corpora.
+    /// A destructuring pattern at the `[` or `{` here (`[a, , c]`,
+    /// `{a, b: {c}, d = 1, ...r}`), as a `Pattern` element finished into
+    /// `out`. A nested pattern counts against the depth bound.
     pub(super) fn binding_pattern(&mut self, out: &mut Vec<Node>) {
         if self.too_deep(out) {
             return;
         }
         self.depth += 1;
-        self.binding_pattern_inner(out);
+        let array = self.peek() == Some('[');
+        let (open, closers): (_, &[char]) = if array {
+            (Delim::Bracket, &[']', '}', ')', ';'])
+        } else {
+            (Delim::Brace, &['}', ']', ')', ';'])
+        };
+        let pattern = self.delimited(
+            ElementKind::Pattern { array },
+            open,
+            closers,
+            None,
+            |p, nodes| p.pattern_item(nodes, array),
+        );
+        self.finish_into(out, pattern);
         self.depth -= 1;
     }
 
-    fn binding_pattern_inner(&mut self, out: &mut Vec<Node>) {
-        let array = self.peek() == Some('[');
-        let (open, close) = if array {
-            (Delim::Bracket, ']')
-        } else {
-            (Delim::Brace, '}')
-        };
-        self.emit_len(out, 1, TokenKind::Punct(Punct::Open(open)));
-        loop {
+    /// One step of a pattern's item: `...` and its target, or a struct
+    /// pattern's `key :` and its target, or the target alone; then `=` and a
+    /// default. A target is a nested pattern or a variable name. A skipped
+    /// element (`[a, , c]`) is an item with nothing in it. Never a
+    /// key-value: the rename's `:` is read here, and the default's `=` stays
+    /// an assignment's.
+    fn pattern_item(&mut self, out: &mut Vec<Node>, array: bool) {
+        if self.at_str("...") {
+            self.emit_len(out, 3, TokenKind::Operator(Operator::Spread));
             self.trivia(out);
-            match self.peek() {
-                None => return,
-                Some(c) if c == close => {
-                    self.emit_len(out, 1, TokenKind::Punct(Punct::Close(open)));
-                    return;
+        } else if !array {
+            if let Some(end) = lexer::identifier(self.src, self.at()) {
+                if self.src[skip_spaces(self.src, end)..].starts_with(':') {
+                    self.emit(out, end, TokenKind::Ident(Ident::StructKey));
+                    self.whitespace_only(out);
+                    self.emit_len(out, 1, TokenKind::Punct(Punct::KeyValue));
+                    self.trivia(out);
                 }
-                Some(',') => {
-                    self.emit_len(out, 1, TokenKind::Punct(Punct::Comma));
-                    continue;
-                }
-                _ => {}
-            }
-            if self.at_str("...") {
-                self.emit_len(out, 3, TokenKind::Operator(Operator::Spread));
-                self.trivia(out);
-            }
-            let before = self.pos;
-            if !array {
-                // A struct pattern's key, then `: pattern` as an alias.
-                if let Some(end) = lexer::identifier(self.src, self.at()) {
-                    let colon = skip_spaces(self.src, end);
-                    if self.src[colon..].starts_with(':') {
-                        self.emit(out, end, TokenKind::Ident(Ident::StructKey));
-                        self.whitespace_only(out);
-                        self.emit_len(out, 1, TokenKind::Punct(Punct::KeyValue));
-                        self.trivia(out);
-                    }
-                }
-            }
-            if matches!(self.peek(), Some('[' | '{')) {
-                self.binding_pattern(out);
-            } else if let Some(end) = self.binding_name(self.at()) {
-                let at = self.at();
-                self.literal_variable_base(out, at, end);
-            }
-            self.trivia(out);
-            if self.peek() == Some('=') && !self.at_str("==") && !self.at_str("=>") {
-                self.emit_len(out, 1, TokenKind::Operator(Operator::Assign));
-                self.expression(out, Stop::NO_COMMA);
-            }
-            if self.pos == before {
-                self.skip_one(out);
             }
         }
+        if matches!(self.peek(), Some('[' | '{')) {
+            self.binding_pattern(out);
+        } else if let Some(end) = self.binding_name(self.at()) {
+            let at = self.at();
+            self.literal_variable_base(out, at, end);
+        } else {
+            return;
+        }
+        self.trivia(out);
+        if self.peek() == Some('=') && !self.at_str("==") && !self.at_str("=>") {
+            self.emit_len(out, 1, TokenKind::Operator(Operator::Assign));
+            self.expression(out, Stop::NO_COMMA);
+        }
+    }
+
+    /// Whether the `[` or `{` at `at` opens a destructuring pattern rather
+    /// than a literal or a block: after its balanced closer
+    /// ([`scan::pattern_end`]) come `=` (not `==` or `=>`) or the word `in`.
+    /// So `[a, b] = x`, `({a} = x)` and `for ([k, v] in x)` are patterns, and
+    /// `[1, 2].each(f)`, `[a][1] = x` and `[1, 2] == x` are not.
+    pub(super) fn pattern_ahead(&self, at: usize) -> bool {
+        let Some(end) = scan::pattern_end(self.src, at, self.depth) else {
+            return false;
+        };
+        let next = skip_trivia(self.src, end, Comments::All);
+        let rest = &self.src[next..];
+        (rest.starts_with('=') && !rest.starts_with("==") && !rest.starts_with("=>"))
+            || lexer::keyword_at(self.src, next, "in")
     }
 
     // -----------------------------------------------------------------------

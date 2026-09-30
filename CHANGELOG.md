@@ -3,11 +3,29 @@
 ## Unreleased
 
 **Fixed.** A region printed as written could end inside a two-character
-operator: in `g = ({a,b}) => a+b;`, which the parser does not read yet, the
-region ended after the `=` of `=>`, the `>` started the next statement on a
-line of its own, and `cfformat -w` wrote a file no engine parses. The same
-held for `+=` and `-=` after a region, printed as `+ =`. An operator after a
-region is now one token and prints whole.
+operator: in an arrow function whose parameters the parser gave up on
+(`g = ({a,b}) => a+b;` until the fix below), the region ended after the `=`
+of `=>`, the `>` started the next statement on a line of its own, and
+`cfformat -w` wrote a file no engine parses. The same held for `+=` and
+`-=` after a region, printed as `+ =`. An operator after a region is now
+one token and prints whole.
+
+**Fixed.** Destructuring (Adobe ColdFusion) is read as a pattern wherever it
+can stand, not as a literal or as text the parser gave up on. A struct
+pattern as a parameter of a function, closure or arrow (Adobe ColdFusion
+2025: `function f({a, b = 2}, c) {}`, `({a, b}) => a + b`) printed as
+written with a warning, and the function's body brace still moved to a line
+of its own. Two forms printed changed what the code does: a default inside
+a parenthesised struct pattern became a rename (`({m, n = 1} = st);`
+printed `( { m, n: 1 } = st );`), and a skipped element of an array pattern
+was dropped (`[a, , c] = x;` printed `[ a, c ] = x;`, `c` then taking the
+second element; the same in `for ([k, , v] in x)`). `{a, b} = x;`, which no
+engine runs, printed as a block and then `= x;` with no warning, and
+`static {a, b} = x;` as a static block. A pattern now prints on one line,
+spaced as a `var` pattern already was: `[a,, c] = x;`,
+`( {m, n = 1} = st );`, `var {p, q : {r}} = st;`. It loses the array
+literal's padding it had when read as one (`[ a, b ] = x;` is now
+`[a, b] = x;`), takes no setting and does not break yet.
 
 ## 0.1.0 — 2026-09-29
 

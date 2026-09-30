@@ -594,6 +594,11 @@ impl Parser<'_> {
                 return self.expression_statement(el);
             }
         }
+        // A struct pattern assigned to (`{a, b} = x;`) is no block. No engine
+        // runs the bare form, but it is read as the assignment it would be.
+        if self.peek() == Some('{') && self.pattern_ahead(self.at()) {
+            return self.expression_statement(el);
+        }
         if let Some(kind) = self.component_declaration(el) {
             return kind;
         }
@@ -787,6 +792,10 @@ impl Parser<'_> {
         let after = self.at() + "static".len();
         let after = skip_spaces(self.src, after);
         if !matches!(self.src[after..].chars().next(), Some('\n' | '{')) {
+            return None;
+        }
+        // `static {a, b} = x;` declares a pattern: no block.
+        if self.src[after..].starts_with('{') && self.pattern_ahead(after) {
             return None;
         }
         let out = &mut el.children;
@@ -1400,7 +1409,9 @@ impl Parser<'_> {
         if self.for_is_in() {
             // `for (x in y)`: `var`? binding `in` expression, one item. After
             // `var` the binding is a variable name, so a scope name there
-            // (`var local in …`) is an ordinary `Ident::Variable`.
+            // (`var local in …`) is an ordinary `Ident::Variable`, or a
+            // pattern; without `var`, a pattern is the expression's operand
+            // (`pattern_ahead`).
             let item = el.items.last_mut().unwrap();
             let mut nodes = std::mem::take(&mut item.children);
             self.trivia(&mut nodes);

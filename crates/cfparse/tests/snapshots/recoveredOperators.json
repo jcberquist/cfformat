@@ -7,7 +7,7 @@
     "children": [
       {
         "kind": "recovered",
-        "reason": "unmatched",
+        "reason": "unclosed",
         "children": [
           {
             "kind": "statement",
@@ -26,14 +26,7 @@
                     "items": [
                       {
                         "children": [
-                          { "k": "other", "t": "{" },
                           { "k": "ident.parameter", "t": "a" }
-                        ],
-                        "sep": ","
-                      },
-                      {
-                        "children": [
-                          { "k": "ident.parameter", "t": "b" }
                         ]
                       }
                     ]
@@ -271,12 +264,12 @@
     ]
   },
   "recoveries": [
-    { "reason": "unmatched", "span": [0, 14] },
-    { "reason": "stray-closer", "span": [20, 26] },
-    { "reason": "stray-closer", "span": [34, 40] },
-    { "reason": "stray-closer", "span": [47, 56] },
-    { "reason": "stray-closer", "span": [63, 69] },
-    { "reason": "stray-closer", "span": [75, 81] },
-    { "reason": "stray-closer", "span": [88, 94] }
+    { "reason": "unclosed", "span": [0, 11] },
+    { "reason": "stray-closer", "span": [17, 23] },
+    { "reason": "stray-closer", "span": [31, 37] },
+    { "reason": "stray-closer", "span": [44, 53] },
+    { "reason": "stray-closer", "span": [60, 66] },
+    { "reason": "stray-closer", "span": [72, 78] },
+    { "reason": "stray-closer", "span": [85, 91] }
   ]
 }

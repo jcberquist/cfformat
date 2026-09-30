@@ -1,0 +1,1571 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "pattern",
+                "array": true,
+                "open": "[",
+                "close": "]",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "b" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "x" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "pattern",
+                "array": true,
+                "open": "[",
+                "close": "]",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "c" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "x" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "pattern",
+                "array": true,
+                "open": "[",
+                "close": "]",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "unary",
+                        "children": [
+                          { "k": "op.spread", "t": "..." },
+                          { "k": "ident.variable", "t": "r" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "x" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "pattern",
+                "array": true,
+                "open": "[",
+                "close": "]",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "pattern",
+                        "array": true,
+                        "open": "[",
+                        "close": "]",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "ident.variable", "t": "b" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "ws", "t": " " },
+                              { "k": "ident.variable", "t": "c" }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "pattern",
+                        "open": "{",
+                        "close": "}",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "ident.variable", "t": "d" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "x" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "pattern",
+                "array": true,
+                "open": "[",
+                "close": "]",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "assignment",
+                        "children": [
+                          { "k": "ident.variable", "t": "b" },
+                          { "k": "ws", "t": " " },
+                          { "k": "op.assign", "t": "=" },
+                          { "k": "ws", "t": " " },
+                          { "k": "lit.number", "t": "9" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "x" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "pattern",
+                "array": true,
+                "open": "[",
+                "close": "]",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "b" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "array",
+                "open": "[",
+                "close": "]",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "b" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "a" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "group",
+            "open": "(",
+            "close": ")",
+            "children": [
+              {
+                "kind": "assignment",
+                "children": [
+                  {
+                    "kind": "pattern",
+                    "open": "{",
+                    "close": "}",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "ident.variable", "t": "a" }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.struct-key", "t": "b" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.variable", "t": "c" }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "assignment",
+                            "children": [
+                              { "k": "ident.variable", "t": "d" },
+                              { "k": "ws", "t": " " },
+                              { "k": "op.assign", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              { "k": "lit.number", "t": "1" }
+                            ]
+                          }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.struct-key", "t": "e" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "assignment",
+                            "children": [
+                              { "k": "ident.variable", "t": "f" },
+                              { "k": "ws", "t": " " },
+                              { "k": "op.assign", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              { "k": "lit.number", "t": "2" }
+                            ]
+                          }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "unary",
+                            "children": [
+                              { "k": "op.spread", "t": "..." },
+                              { "k": "ident.variable", "t": "r" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  { "k": "op.assign", "t": "=" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.variable", "t": "x" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "group",
+            "open": "(",
+            "close": ")",
+            "children": [
+              {
+                "kind": "assignment",
+                "children": [
+                  {
+                    "kind": "pattern",
+                    "open": "{",
+                    "close": "}",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "ident.struct-key", "t": "p" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "pattern",
+                            "open": "{",
+                            "close": "}",
+                            "items": [
+                              {
+                                "children": [
+                                  { "k": "ident.variable", "t": "q" }
+                                ],
+                                "sep": ","
+                              },
+                              {
+                                "children": [
+                                  { "k": "ws", "t": " " },
+                                  { "k": "ident.struct-key", "t": "r" },
+                                  { "k": "punct.key-value", "t": ":" },
+                                  { "k": "ws", "t": " " },
+                                  {
+                                    "kind": "pattern",
+                                    "array": true,
+                                    "open": "[",
+                                    "close": "]",
+                                    "items": [
+                                      {
+                                        "children": [
+                                          { "k": "ident.variable", "t": "s" }
+                                        ],
+                                        "sep": ","
+                                      },
+                                      {
+                                        "children": [
+                                          { "k": "ws", "t": " " },
+                                          { "k": "ident.variable", "t": "t" }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  { "k": "op.assign", "t": "=" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.variable", "t": "x" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "group",
+            "open": "(",
+            "close": ")",
+            "children": [
+              {
+                "kind": "assignment",
+                "children": [
+                  {
+                    "kind": "pattern",
+                    "open": "{",
+                    "close": "}",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "ident.variable", "t": "a" }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.variable", "t": "b" }
+                        ],
+                        "sep": ","
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  { "k": "op.assign", "t": "=" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.variable", "t": "x" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "pattern",
+                "array": true,
+                "open": "[",
+                "close": "]",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "b" }
+                    ],
+                    "sep": ","
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "x" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.var", "t": "var" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "pattern",
+                "array": true,
+                "open": "[",
+                "close": "]",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "c" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "x" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "terminator": ";",
+        "children": [
+          { "k": "kw.var", "t": "var" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "pattern",
+                "open": "{",
+                "close": "}",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "p" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.struct-key", "t": "q" },
+                      { "k": "punct.key-value", "t": ":" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "pattern",
+                        "open": "{",
+                        "close": "}",
+                        "items": [
+                          {
+                            "children": [
+                              { "k": "ident.variable", "t": "r" }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "ws", "t": " " },
+                              {
+                                "kind": "assignment",
+                                "children": [
+                                  { "k": "ident.variable", "t": "s" },
+                                  { "k": "ws", "t": " " },
+                                  { "k": "op.assign", "t": "=" },
+                                  { "k": "ws", "t": " " },
+                                  { "k": "lit.number", "t": "1" }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "unary",
+                        "children": [
+                          { "k": "op.spread", "t": "..." },
+                          { "k": "ident.variable", "t": "t" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "st" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "terminator": ";",
+        "children": [
+          { "k": "storage.modifier", "t": "final" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "pattern",
+                "array": true,
+                "open": "[",
+                "close": "]",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "b" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "x" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "declaration",
+        "terminator": ";",
+        "children": [
+          { "k": "storage.modifier", "t": "static" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "assignment",
+            "children": [
+              {
+                "kind": "pattern",
+                "open": "{",
+                "close": "}",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ],
+                    "sep": ","
+                  },
+                  {
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      { "k": "ident.variable", "t": "b" }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "x" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "for",
+            "children": [
+              { "k": "kw.for", "t": "for" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "prec": "comparison",
+                        "children": [
+                          {
+                            "kind": "pattern",
+                            "array": true,
+                            "open": "[",
+                            "close": "]",
+                            "items": [
+                              {
+                                "children": [
+                                  { "k": "ident.variable", "t": "k" }
+                                ],
+                                "sep": ","
+                              },
+                              {
+                                "children": [
+                                  { "k": "ws", "t": " " },
+                                  { "k": "ident.variable", "t": "v" }
+                                ]
+                              }
+                            ]
+                          },
+                          { "k": "ws", "t": " " },
+                          { "k": "op.in", "t": "in" },
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.variable", "t": "pairs" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "for",
+            "children": [
+              { "k": "kw.for", "t": "for" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "prec": "comparison",
+                        "children": [
+                          {
+                            "kind": "pattern",
+                            "open": "{",
+                            "close": "}",
+                            "items": [
+                              {
+                                "children": [
+                                  { "k": "ident.variable", "t": "a" }
+                                ],
+                                "sep": ","
+                              },
+                              {
+                                "children": [
+                                  { "k": "ws", "t": " " },
+                                  { "k": "ident.variable", "t": "b" }
+                                ]
+                              }
+                            ]
+                          },
+                          { "k": "ws", "t": " " },
+                          { "k": "op.in", "t": "in" },
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.variable", "t": "structs" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "for",
+            "children": [
+              { "k": "kw.for", "t": "for" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "kw.var", "t": "var" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "binary",
+                        "prec": "comparison",
+                        "children": [
+                          {
+                            "kind": "pattern",
+                            "array": true,
+                            "open": "[",
+                            "close": "]",
+                            "items": [
+                              {
+                                "children": [
+                                  { "k": "ident.variable", "t": "k" }
+                                ],
+                                "sep": ","
+                              },
+                              {
+                                "children": [
+                                  { "k": "ws", "t": " " },
+                                  { "k": "ident.variable", "t": "v" }
+                                ]
+                              }
+                            ]
+                          },
+                          { "k": "ws", "t": " " },
+                          { "k": "op.in", "t": "in" },
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.variable", "t": "pairs" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "keyword",
+        "children": [
+          {
+            "kind": "for",
+            "children": [
+              { "k": "kw.for", "t": "for" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "group",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "kw.var", "t": "var" },
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "binary",
+                        "prec": "comparison",
+                        "children": [
+                          {
+                            "kind": "pattern",
+                            "open": "{",
+                            "close": "}",
+                            "items": [
+                              {
+                                "children": [
+                                  { "k": "ident.variable", "t": "a" }
+                                ],
+                                "sep": ","
+                              },
+                              {
+                                "children": [
+                                  { "k": "ws", "t": " " },
+                                  { "k": "ident.variable", "t": "b" }
+                                ]
+                              }
+                            ]
+                          },
+                          { "k": "ws", "t": " " },
+                          { "k": "op.in", "t": "in" },
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.variable", "t": "structs" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              { "k": "ws", "t": " " },
+              { "kind": "block", "block": "plain", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "group",
+            "open": "(",
+            "close": ")",
+            "children": [
+              {
+                "kind": "assignment",
+                "children": [
+                  {
+                    "kind": "pattern",
+                    "open": "{",
+                    "close": "}",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "nl", "t": "\n" },
+                          { "k": "ws", "t": "    " },
+                          { "k": "ident.variable", "t": "a" }
+                        ],
+                        "trailing": [
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "line-comment",
+                            "open": "//",
+                            "children": [
+                              { "k": "comment", "t": " first" }
+                            ]
+                          },
+                          { "k": "nl", "t": "\n" }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ws", "t": "    " },
+                          { "k": "ident.struct-key", "t": "b" },
+                          { "k": "punct.key-value", "t": ":" },
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.variable", "t": "c" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "block-comment",
+                            "open": "/*",
+                            "close": "*/",
+                            "children": [
+                              { "k": "comment", "t": " renamed " }
+                            ]
+                          }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "nl", "t": "\n" },
+                          { "k": "ws", "t": "    " },
+                          {
+                            "kind": "assignment",
+                            "children": [
+                              { "k": "ident.variable", "t": "d" },
+                              { "k": "ws", "t": " " },
+                              { "k": "op.assign", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              { "k": "lit.number", "t": "1" }
+                            ]
+                          },
+                          { "k": "nl", "t": "\n" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  { "k": "op.assign", "t": "=" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.variable", "t": "x" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "function",
+        "children": [
+          {
+            "kind": "function",
+            "children": [
+              {
+                "kind": "function-decl",
+                "children": [
+                  { "k": "kw.function", "t": "function" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.function-name", "t": "f" },
+                  {
+                    "kind": "parameters",
+                    "open": "(",
+                    "close": ")",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "ident.parameter", "t": "x" }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "pattern",
+                            "open": "{",
+                            "close": "}",
+                            "items": [
+                              {
+                                "children": [
+                                  { "k": "ident.variable", "t": "a" }
+                                ],
+                                "sep": ","
+                              },
+                              {
+                                "children": [
+                                  { "k": "ws", "t": " " },
+                                  {
+                                    "kind": "assignment",
+                                    "children": [
+                                      { "k": "ident.variable", "t": "b" },
+                                      { "k": "ws", "t": " " },
+                                      { "k": "op.assign", "t": "=" },
+                                      { "k": "ws", "t": " " },
+                                      { "k": "lit.number", "t": "9" }
+                                    ]
+                                  }
+                                ],
+                                "sep": ","
+                              },
+                              {
+                                "children": [
+                                  { "k": "ws", "t": " " },
+                                  { "k": "ident.struct-key", "t": "p" },
+                                  { "k": "punct.key-value", "t": ":" },
+                                  { "k": "ws", "t": " " },
+                                  {
+                                    "kind": "pattern",
+                                    "open": "{",
+                                    "close": "}",
+                                    "items": [
+                                      {
+                                        "children": [
+                                          { "k": "ident.variable", "t": "q" }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "sep": ","
+                              },
+                              {
+                                "children": [
+                                  { "k": "ws", "t": " " },
+                                  {
+                                    "kind": "unary",
+                                    "children": [
+                                      { "k": "op.spread", "t": "..." },
+                                      { "k": "ident.variable", "t": "r" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "pattern",
+                            "open": "{",
+                            "close": "}",
+                            "items": [
+                              {
+                                "children": [
+                                  { "k": "ident.variable", "t": "c" }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              { "kind": "block", "block": "function", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "function",
+        "children": [
+          {
+            "kind": "function",
+            "children": [
+              {
+                "kind": "function-decl",
+                "children": [
+                  { "k": "kw.function", "t": "function" },
+                  { "k": "ws", "t": " " },
+                  { "k": "ident.function-name", "t": "g" },
+                  {
+                    "kind": "parameters",
+                    "open": "(",
+                    "close": ")",
+                    "items": [
+                      {
+                        "children": [
+                          {
+                            "kind": "assignment",
+                            "children": [
+                              {
+                                "kind": "pattern",
+                                "open": "{",
+                                "close": "}",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "ident.variable", "t": "a" }
+                                    ],
+                                    "sep": ","
+                                  },
+                                  {
+                                    "children": [
+                                      { "k": "ws", "t": " " },
+                                      { "k": "ident.struct-key", "t": "b" },
+                                      { "k": "punct.key-value", "t": ":" },
+                                      { "k": "ws", "t": " " },
+                                      {
+                                        "kind": "pattern",
+                                        "array": true,
+                                        "open": "[",
+                                        "close": "]",
+                                        "items": [
+                                          {
+                                            "children": [
+                                              { "k": "ident.variable", "t": "c" }
+                                            ],
+                                            "sep": ","
+                                          },
+                                          {
+                                            "children": [
+                                              { "k": "ws", "t": " " },
+                                              { "k": "ident.variable", "t": "d" }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              { "k": "ws", "t": " " },
+                              { "k": "op.assign", "t": "=" },
+                              { "k": "ws", "t": " " },
+                              { "kind": "struct", "open": "{", "close": "}" }
+                            ]
+                          }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.parameter", "t": "y" }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " }
+                ]
+              },
+              { "kind": "block", "block": "function", "open": "{", "close": "}" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "h" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "function",
+                "children": [
+                  {
+                    "kind": "function-decl",
+                    "children": [
+                      { "k": "kw.function", "t": "function" },
+                      {
+                        "kind": "parameters",
+                        "open": "(",
+                        "close": ")",
+                        "items": [
+                          {
+                            "children": [
+                              {
+                                "kind": "pattern",
+                                "open": "{",
+                                "close": "}",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "ident.variable", "t": "a" }
+                                    ],
+                                    "sep": ","
+                                  },
+                                  {
+                                    "children": [
+                                      { "k": "ws", "t": " " },
+                                      { "k": "ident.variable", "t": "b" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "ws", "t": " " }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "block": "function",
+                    "open": "{",
+                    "close": "}",
+                    "children": [
+                      { "k": "nl", "t": "\n" },
+                      { "k": "ws", "t": "    " },
+                      {
+                        "kind": "statement",
+                        "stmt": "flow",
+                        "terminator": ";",
+                        "children": [
+                          { "k": "kw.return", "t": "return" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "binary",
+                            "prec": "additive",
+                            "children": [
+                              { "k": "ident.variable", "t": "a" },
+                              { "k": "ws", "t": " " },
+                              { "k": "op.additive", "t": "+" },
+                              { "k": "ws", "t": " " },
+                              { "k": "ident.variable", "t": "b" }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "nl", "t": "\n" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "k" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "function",
+                "arrow": true,
+                "children": [
+                  {
+                    "kind": "arrow-function",
+                    "children": [
+                      {
+                        "kind": "parameters",
+                        "open": "(",
+                        "close": ")",
+                        "items": [
+                          {
+                            "children": [
+                              {
+                                "kind": "pattern",
+                                "open": "{",
+                                "close": "}",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "ident.variable", "t": "a" }
+                                    ],
+                                    "sep": ","
+                                  },
+                                  {
+                                    "children": [
+                                      { "k": "ws", "t": " " },
+                                      { "k": "ident.variable", "t": "b" }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  { "k": "kw.arrow", "t": "=>" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "block",
+                    "block": "function",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "prec": "additive",
+                        "children": [
+                          { "k": "ident.variable", "t": "a" },
+                          { "k": "ws", "t": " " },
+                          { "k": "op.additive", "t": "+" },
+                          { "k": "ws", "t": " " },
+                          { "k": "ident.variable", "t": "b" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "statement",
+        "stmt": "assignment",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "assignment",
+            "children": [
+              { "k": "ident.variable", "t": "m" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "function",
+                "arrow": true,
+                "children": [
+                  {
+                    "kind": "arrow-function",
+                    "children": [
+                      {
+                        "kind": "parameters",
+                        "open": "(",
+                        "close": ")",
+                        "items": [
+                          {
+                            "children": [
+                              {
+                                "kind": "pattern",
+                                "open": "{",
+                                "close": "}",
+                                "items": [
+                                  {
+                                    "children": [
+                                      { "k": "ident.variable", "t": "a" }
+                                    ],
+                                    "sep": ","
+                                  },
+                                  {
+                                    "children": [
+                                      { "k": "ws", "t": " " },
+                                      {
+                                        "kind": "assignment",
+                                        "children": [
+                                          { "k": "ident.variable", "t": "b" },
+                                          { "k": "ws", "t": " " },
+                                          { "k": "op.assign", "t": "=" },
+                                          { "k": "ws", "t": " " },
+                                          { "k": "lit.number", "t": "2" }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ],
+                            "sep": ","
+                          },
+                          {
+                            "children": [
+                              { "k": "ws", "t": " " },
+                              { "k": "ident.parameter", "t": "c" }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "k": "ws", "t": " " },
+                  { "k": "kw.arrow", "t": "=>" },
+                  { "k": "ws", "t": " " },
+                  {
+                    "kind": "block",
+                    "block": "function",
+                    "open": "{",
+                    "close": "}",
+                    "children": [
+                      { "k": "ws", "t": " " },
+                      {
+                        "kind": "statement",
+                        "stmt": "flow",
+                        "terminator": ";",
+                        "children": [
+                          { "k": "kw.return", "t": "return" },
+                          { "k": "ws", "t": " " },
+                          {
+                            "kind": "binary",
+                            "prec": "additive",
+                            "children": [
+                              { "k": "ident.variable", "t": "a" },
+                              { "k": "ws", "t": " " },
+                              { "k": "op.additive", "t": "+" },
+                              { "k": "ws", "t": " " },
+                              { "k": "ident.variable", "t": "b" },
+                              { "k": "ws", "t": " " },
+                              { "k": "op.additive", "t": "+" },
+                              { "k": "ws", "t": " " },
+                              { "k": "ident.variable", "t": "c" }
+                            ]
+                          }
+                        ]
+                      },
+                      { "k": "ws", "t": " " }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  }
+}

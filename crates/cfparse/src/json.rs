@@ -85,6 +85,9 @@ impl Writer<'_> {
             ElementKind::Struct { ordered: true } => {
                 m.insert("ordered".into(), true.into());
             }
+            ElementKind::Pattern { array: true } => {
+                m.insert("array".into(), true.into());
+            }
             ElementKind::Block(k) => {
                 m.insert("block".into(), k.name().into());
             }

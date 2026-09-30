@@ -243,6 +243,7 @@ impl<'a> Printer<'a> {
             }
             ElementKind::Brackets => self.brackets(e),
             ElementKind::TypedArray => self.typed_array(e),
+            ElementKind::Pattern { .. } => self.pattern(e),
             ElementKind::Call => self.call_args(e),
             // Reached through a declaration header's printer, which picks the
             // declaration or anonymous style; alone, the declaration style.

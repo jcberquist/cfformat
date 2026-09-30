@@ -13,9 +13,9 @@
 //! names, and every element that is not an operand (statements, keyword
 //! elements, blocks, parameters, key-values, tags, islands). Operands are
 //! identifier and literal tokens and the `String`, `Struct`, `Array`,
-//! `TypedArray`, `Group`, `Function` and `TemplateExpression` elements;
-//! postfix parts are `Call` and `Brackets` elements, accessor tokens with the
-//! name after them, and `op.postfix`.
+//! `TypedArray`, `Pattern`, `Group`, `Function` and `TemplateExpression`
+//! elements; postfix parts are `Call` and `Brackets` elements, accessor
+//! tokens with the name after them, and `op.postfix`.
 //!
 //! A run is parsed as a sequence of expressions (`a b` is two lone operands).
 //! If any of them fails — an operator with no operand, a `Call` with no
@@ -261,6 +261,8 @@ fn classify(node: &Node) -> Class {
             | ElementKind::Struct { .. }
             | ElementKind::Array
             | ElementKind::TypedArray
+            // A pattern is the target of the assignment it heads.
+            | ElementKind::Pattern { .. }
             | ElementKind::Group
             | ElementKind::Function { .. }
             | ElementKind::TemplateExpression
