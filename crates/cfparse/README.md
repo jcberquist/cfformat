@@ -322,7 +322,12 @@ the parse gave up in (in script; it takes in, on its line, an unterminated
 statement before it and a lone `;` after it: `b = @;` is one region), the
 innermost tag body around the problem (in tag mode), or — outside any — the
 run, the tag or the unclosed element itself; an unclosed tag outside any
-body runs to the end of its list. A region inside another is folded into
+body runs to the end of its list. A region never ends inside a symbol
+operator: an unmatched run starts on a whole operator token (the list is
+`operator_len` in `src/script/lexer.rs`, built from the operator tables), and a prefix
+operator is not read where a longer operator starts (`+=` is not a sign and
+an `=`), so the text after a region never begins with an operator's
+remainder. A region inside another is folded into
 the outer one, which takes `TooDeep` when the inner had it. The post-passes
 do not build inside a region, though what the front ends built as they
 read it (key-values, declarations) is there; `debug` prints `recovered <reason>`, the JSON

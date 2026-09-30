@@ -133,7 +133,11 @@ impl Parser<'_> {
                 self.emit_len(out, 3, TokenKind::Operator(Operator::Not { word: true }));
                 continue;
             }
-            if let Some((end, kind)) = match_op(self.src, at, lexer::PREFIX_OPERATORS) {
+            // Not the start of a longer operator: `+=` is never a sign and
+            // an `=`, which would print apart.
+            if let Some((end, kind)) = match_op(self.src, at, lexer::PREFIX_OPERATORS)
+                .filter(|&(end, _)| lexer::operator_len(self.src, at) == Some(end - at))
+            {
                 self.emit(out, end, kind);
                 continue;
             }

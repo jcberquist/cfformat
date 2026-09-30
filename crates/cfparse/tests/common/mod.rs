@@ -27,7 +27,9 @@ pub fn commandbox_dir() -> Option<PathBuf> {
 }
 
 /// Vendored copies of `commandbox-cfformat/tests/data/*/source.cfc`
-/// (`<name>.cfc`) and `tests/data/exprTests/*.cfc` (`exprTests/<name>.cfc`).
+/// (`<name>.cfc`) and `tests/data/exprTests/*.cfc` (`exprTests/<name>.cfc`),
+/// and `recoveredOperators.cfc`, written here: operators after a recovered
+/// region.
 pub fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
 }

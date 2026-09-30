@@ -1,0 +1,282 @@
+{
+  "mode": "script",
+  "bom": false,
+  "newline": "lf",
+  "root": {
+    "kind": "root",
+    "children": [
+      {
+        "kind": "recovered",
+        "reason": "unmatched",
+        "children": [
+          {
+            "kind": "statement",
+            "stmt": "expression",
+            "children": [
+              { "k": "ident.variable", "t": "g" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              {
+                "kind": "arrow-function",
+                "children": [
+                  {
+                    "kind": "parameters",
+                    "open": "(",
+                    "items": [
+                      {
+                        "children": [
+                          { "k": "other", "t": "{" },
+                          { "k": "ident.parameter", "t": "a" }
+                        ],
+                        "sep": ","
+                      },
+                      {
+                        "children": [
+                          { "k": "ident.parameter", "t": "b" }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          { "k": "invalid", "t": "}" },
+          { "k": "invalid", "t": ")" },
+          { "k": "ws", "t": " " },
+          {
+            "kind": "statement",
+            "stmt": "expression",
+            "children": [
+              { "k": "other", "t": "=>" }
+            ]
+          }
+        ]
+      },
+      { "k": "ws", "t": " " },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "binary",
+            "prec": "additive",
+            "children": [
+              { "k": "ident.variable", "t": "a" },
+              { "k": "op.additive", "t": "+" },
+              { "k": "ident.variable", "t": "b" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "recovered",
+        "reason": "stray-closer",
+        "children": [
+          {
+            "kind": "statement",
+            "stmt": "expression",
+            "children": [
+              { "k": "ident.variable", "t": "x" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "a" }
+            ]
+          },
+          { "k": "invalid", "t": ")" }
+        ]
+      },
+      { "k": "ws", "t": " " },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          { "k": "op.comparison", "t": "===" },
+          { "k": "ws", "t": " " },
+          { "k": "ident.variable", "t": "b" }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "recovered",
+        "reason": "stray-closer",
+        "children": [
+          {
+            "kind": "statement",
+            "stmt": "expression",
+            "children": [
+              { "k": "ident.variable", "t": "y" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "a" }
+            ]
+          },
+          { "k": "invalid", "t": ")" }
+        ]
+      },
+      { "k": "ws", "t": " " },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          { "k": "op.elvis", "t": "?:" },
+          { "k": "ws", "t": " " },
+          { "k": "ident.variable", "t": "c" }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "recovered",
+        "reason": "stray-closer",
+        "children": [
+          {
+            "kind": "statement",
+            "stmt": "expression",
+            "children": [
+              { "k": "ident.variable", "t": "z" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.call", "t": "g" },
+              {
+                "kind": "call",
+                "open": "(",
+                "close": ")",
+                "items": [
+                  {
+                    "children": [
+                      { "k": "ident.variable", "t": "a" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          { "k": "invalid", "t": ")" }
+        ]
+      },
+      { "k": "ws", "t": " " },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          {
+            "kind": "unary",
+            "children": [
+              { "k": "op.spread", "t": "..." },
+              { "k": "ident.variable", "t": "d" }
+            ]
+          }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "recovered",
+        "reason": "stray-closer",
+        "children": [
+          {
+            "kind": "statement",
+            "stmt": "expression",
+            "children": [
+              { "k": "ident.variable", "t": "w" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "a" }
+            ]
+          },
+          { "k": "invalid", "t": ")" }
+        ]
+      },
+      { "k": "ws", "t": " " },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          { "k": "punct.safe-accessor", "t": "?." },
+          { "k": "ident.property-name", "t": "e" }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "recovered",
+        "reason": "stray-closer",
+        "children": [
+          {
+            "kind": "statement",
+            "stmt": "expression",
+            "children": [
+              { "k": "ident.variable", "t": "v" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "a" }
+            ]
+          },
+          { "k": "invalid", "t": ")" }
+        ]
+      },
+      { "k": "ws", "t": " " },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          { "k": "op.aug-assign", "t": "+=" },
+          { "k": "ws", "t": " " },
+          { "k": "lit.number", "t": "1" }
+        ]
+      },
+      { "k": "nl", "t": "\n" },
+      {
+        "kind": "recovered",
+        "reason": "stray-closer",
+        "children": [
+          {
+            "kind": "statement",
+            "stmt": "expression",
+            "children": [
+              { "k": "ident.variable", "t": "u" },
+              { "k": "ws", "t": " " },
+              { "k": "op.assign", "t": "=" },
+              { "k": "ws", "t": " " },
+              { "k": "ident.variable", "t": "a" }
+            ]
+          },
+          { "k": "invalid", "t": ")" }
+        ]
+      },
+      { "k": "ws", "t": " " },
+      {
+        "kind": "statement",
+        "stmt": "expression",
+        "terminator": ";",
+        "children": [
+          { "k": "punct.static-accessor", "t": "::" },
+          { "k": "ws", "t": " " },
+          { "k": "ident.call", "t": "f" },
+          { "kind": "call", "open": "(", "close": ")" }
+        ]
+      },
+      { "k": "nl", "t": "\n" }
+    ]
+  },
+  "recoveries": [
+    { "reason": "unmatched", "span": [0, 14] },
+    { "reason": "stray-closer", "span": [20, 26] },
+    { "reason": "stray-closer", "span": [34, 40] },
+    { "reason": "stray-closer", "span": [47, 56] },
+    { "reason": "stray-closer", "span": [63, 69] },
+    { "reason": "stray-closer", "span": [75, 81] },
+    { "reason": "stray-closer", "span": [88, 94] }
+  ]
+}

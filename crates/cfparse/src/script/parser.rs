@@ -297,11 +297,14 @@ impl<'a> Parser<'a> {
     /// expression the run is a single `Other` token; elsewhere it splits at
     /// its whitespace ([`Parser::emit_unmatched`]).
     pub(super) fn skip_one(&mut self, out: &mut Vec<Node>) {
-        // At least the character here, then everything after it no rule can
-        // start on. The run always ends past this offset, so the caller makes
-        // progress.
+        // At least the operator or the character here, then everything after
+        // it no rule can start on. The run always ends past this offset, so
+        // the caller makes progress; it never ends inside an operator, whose
+        // remainder would start the next statement.
         let from = self.at();
-        let mut end = from + self.src[from..].chars().next().map_or(1, char::len_utf8);
+        let mut end = from
+            + lexer::operator_len(self.src, from)
+                .unwrap_or_else(|| self.src[from..].chars().next().map_or(1, char::len_utf8));
         // To the end of the line at most, the newline included; the line's
         // end is not looked up first (that is quadratic on a long line).
         let first_newline = self.src.as_bytes()[from] == b'\n';

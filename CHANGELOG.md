@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+**Fixed.** A region printed as written could end inside a two-character
+operator: in `g = ({a,b}) => a+b;`, which the parser does not read yet, the
+region ended after the `=` of `=>`, the `>` started the next statement on a
+line of its own, and `cfformat -w` wrote a file no engine parses. The same
+held for `+=` and `-=` after a region, printed as `+ =`. An operator after a
+region is now one token and prints whole.
+
 ## 0.1.0 — 2026-09-29
 
 The first release: a CFML formatter in one binary, a rewrite in Rust of the

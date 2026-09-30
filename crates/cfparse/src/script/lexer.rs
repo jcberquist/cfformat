@@ -451,6 +451,30 @@ pub(crate) const PREFIX_OPERATORS: &[Op] = &[
     sym("-", TokenKind::Operator(Operator::Sign)),
 ];
 
+/// Symbol operators the parser matches by hand rather than from a table: the
+/// arrow, the Elvis operator, safe navigation and the static member access.
+const PARSER_OPERATORS: &[&str] = &["=>", "?:", "?.", "::"];
+
+/// The length of the longest symbol operator starting at `at`: every symbol
+/// row of [`BINARY_OPERATORS`] and [`PREFIX_OPERATORS`], and
+/// [`PARSER_OPERATORS`]. An unmatched run takes this as its first unit, so a
+/// recovered region never ends inside an operator: a region ending after the
+/// `=` of `=>` would leave `>` to start the next statement, and printing that
+/// on its own line changes what the file means. Word operators need nothing
+/// here: an unmatched run takes a whole identifier already.
+pub(crate) fn operator_len(src: &str, at: usize) -> Option<usize> {
+    let rest = &src[at..];
+    BINARY_OPERATORS
+        .iter()
+        .chain(PREFIX_OPERATORS)
+        .filter(|op| !op.word)
+        .map(|op| op.text)
+        .chain(PARSER_OPERATORS.iter().copied())
+        .filter(|text| rest.starts_with(text))
+        .map(str::len)
+        .max()
+}
+
 /// One row of an operator table at `at`: the end of the match.
 pub(crate) fn op_at(src: &str, at: usize, op: &Op) -> Option<usize> {
     let end = at + op.text.len();
@@ -619,6 +643,25 @@ mod tests {
         assert!(special_name("NULL").is_some());
         assert!(continues_statement("and b", 0));
         assert!(continues_statement("AND b", 0));
+    }
+
+    /// Generated from the tables: every symbol operator is its own longest
+    /// match (`===` over `==`, `!==` over `!=`, `+=` over `+`).
+    #[test]
+    fn operator_len_takes_the_longest_operator() {
+        let ops: Vec<&str> = BINARY_OPERATORS
+            .iter()
+            .chain(PREFIX_OPERATORS)
+            .filter(|op| !op.word)
+            .map(|op| op.text)
+            .chain(PARSER_OPERATORS.iter().copied())
+            .collect();
+        for op in ops {
+            let src = format!("{op} a");
+            assert_eq!(operator_len(&src, 0), Some(op.len()), "{op}");
+        }
+        assert_eq!(operator_len("a", 0), None);
+        assert_eq!(operator_len("and", 0), None);
     }
 
     /// The statement count and the significant tokens of a script.
