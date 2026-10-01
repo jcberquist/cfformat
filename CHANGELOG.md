@@ -1,16 +1,6 @@
 # Changelog
 
-## Unreleased
-
-**`cfvet`.** `missing-var` reads destructuring patterns (Adobe ColdFusion).
-Before, a pattern's names were not writes (`[a, b] = x;` in a function was
-silent, though `a` and `b` land in the variables scope) while its defaults
-were (`var [p, q = 1] = x;` reported `q`, which `var` declares). Now a
-pattern writes every name it binds, `var` declares every name its pattern
-binds, a default's value is read, and a destructuring parameter
-(`function f({a, b = 1})`, Adobe ColdFusion 2025) is reported name by name
-with a message of its own: the engine binds those names in the variables
-scope on every call, not as arguments.
+## 0.2.0 — 2026-09-30
 
 **Fixed.** A region printed as written could end inside a two-character
 operator: in an arrow function whose parameters the parser gave up on
@@ -32,9 +22,8 @@ was dropped (`[a, , c] = x;` printed `[ a, c ] = x;`, `c` then taking the
 second element; the same in `for ([k, , v] in x)`). `{a, b} = x;`, which no
 engine runs, printed as a block and then `= x;` with no warning, and
 `static {a, b} = x;` (which none runs either) as a static block. A pattern
-now prints and breaks
-like the literal it resembles, under that literal's settings
-(`struct.padding` / `array.padding`, the empty padding, the
+now prints and breaks like the literal it resembles, under that literal's
+settings (`struct.padding` / `array.padding`, the empty padding, the
 `*.multiline.*` thresholds, `multiline.comma`), as Prettier prints
 patterns: `[a, , c] = x;` keeps its skip, `({m, n = 1} = st);` its
 default, a comma after a rest item is never written, and the rename is
@@ -43,6 +32,16 @@ print `q : {r}`), whatever `struct.separator` and `struct.quote_keys` say. A
 sole pattern parameter hugs the parentheses and breaks inside itself
 (`function f({` ends the first line, `}) {` starts the last), and a struct
 pattern that renames to a nested pattern breaks where it is assigned to.
+
+**`cfvet`.** `missing-var` reads destructuring patterns (Adobe ColdFusion).
+Before, a pattern's names were not writes (`[a, b] = x;` in a function was
+silent, though `a` and `b` land in the variables scope) while its defaults
+were (`var [p, q = 1] = x;` reported `q`, which `var` declares). Now a
+pattern writes every name it binds, `var` declares every name its pattern
+binds, a default's value is read, and a destructuring parameter
+(`function f({a, b = 1})`, Adobe ColdFusion 2025) is reported name by name
+with a message of its own: the engine binds those names in the variables
+scope on every call, not as arguments.
 
 ## 0.1.0 — 2026-09-29
 

@@ -6,7 +6,7 @@ members = ["crates/*"]
 # One version for the workspace: the two binaries — `cfformat` (the
 # `cfformat-cli` package; the `cfformat` package is the library) and
 # `cfvet` — release together from one tag, and both print it.
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 license = "MIT"
 authors = ["John Berquist <jcberquist@gmail.com>"]

@@ -124,14 +124,14 @@ dependencies = [
 
 [[package]]
 name = "cfcli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "ignore",
 ]
 
 [[package]]
 name = "cfdoc"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "criterion",
  "serde_json",
@@ -140,7 +140,7 @@ dependencies = [
 
 [[package]]
 name = "cfformat"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "cfdoc",
  "cfparse",
@@ -161,7 +161,7 @@ dependencies = [
 
 [[package]]
 name = "cfformat-cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "cfcli",
  "cfformat",
@@ -180,7 +180,7 @@ checksum = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
 
 [[package]]
 name = "cfparse"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "cfformat",
  "criterion",
@@ -189,7 +189,7 @@ dependencies = [
 
 [[package]]
 name = "cfvet"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "cfcli",
  "cfparse",

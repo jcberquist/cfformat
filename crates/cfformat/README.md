@@ -427,7 +427,7 @@ cfformat arrange [PATHS...] [-w|--write] [--check] [--diff] [--stdin]
          [--stdin-filepath PATH] [--files-from FILE|-]
          [--git staged|unstaged|all] [-j N] [--quiet]
          [--script|--tags] [--properties] [--first NAMES]
-cfformat --version                   # cfformat 0.1.0
+cfformat --version                   # cfformat 0.2.0
 ```
 
 **Inputs.** A PATH is a file (taken as given, any extension, ignored or
