@@ -296,7 +296,9 @@ pub(crate) fn arrow_breaks_after(body: &Element) -> bool {
 
 /// The one parameter of a parenthesised list that hugs its parentheses: a
 /// pattern, or a pattern whose default is a name, `{}` or `[]`, with no
-/// comment on it and no comma after it.
+/// comment on it. A comma after it is the list's trailing comma, dropped as
+/// a flat list drops it: refusing the hug for it would print the list
+/// unhugged once and hugged on the next run.
 fn hugged_parameter(params: &Element) -> Option<&Item> {
     if params.open.is_none() || params.close.is_none() {
         return None;
@@ -304,7 +306,7 @@ fn hugged_parameter(params: &Element) -> Option<&Item> {
     let [only] = printable_items(params)[..] else {
         return None;
     };
-    if has_comments(only) || only.separator.is_some() {
+    if has_comments(only) {
         return None;
     }
     let mut sig = only.significant();

@@ -2170,10 +2170,31 @@ fn a_sole_pattern_parameter_with_a_default_hugs_as_prettier_does() {
         fmt_with("function f([alpha, beta]) {}", narrow),
         "function f([\n    alpha,\n    beta\n]) {\n}\n"
     );
-    // A comment on the parameter, or a comma after it: no hug.
+    // A comment on the parameter: no hug.
     assert_eq!(
         fmt("function f(/* c */ {a}) {}"),
         "function f(/* c */ {a}) {\n}\n"
     );
-    assert_eq!(fmt("function f({a},) {}"), "function f({a}) {\n}\n");
+    // A comma after it is the list's trailing comma, dropped: the hug does
+    // not depend on it, or the first run (no hug, comma dropped) and the
+    // second (hug) would differ.
+    assert_eq!(
+        fmt_with("function f({alpha, beta},) {}", narrow),
+        "function f({\n    alpha,\n    beta\n}) {\n}\n"
+    );
+    assert_eq!(
+        fmt_with("k = ({alpha, beta},) => alpha;", narrow),
+        "k = ({\n    alpha,\n    beta\n}) => alpha;\n"
+    );
+}
+
+#[test]
+fn a_skipped_element_counts_toward_the_array_threshold() {
+    // `[, , c]` is three elements: with `array.multiline.element_count` 2
+    // it breaks as `[a, , c]` does.
+    let two = r#"{"newline": "\n", "array.multiline.element_count": 2, "array.multiline.min_item_length": 0}"#;
+    assert_eq!(
+        fmt_with("[, , c] = x;", two),
+        "[\n    ,\n    ,\n    c\n] = x;\n"
+    );
 }

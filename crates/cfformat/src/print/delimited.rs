@@ -719,9 +719,10 @@ impl Printer<'_> {
     /// `array.*` for `[…]`, `multiline.comma` as for literals. Unlike a
     /// literal it keeps every item: an empty one (`[a, , c]`, a skipped
     /// element) prints its comma alone, flat `, ,`, broken on a line of its
-    /// own. The last item takes the dangling comma a literal's would, except
-    /// a rest item (`...r,` is a syntax error), and an empty last item (`[a,
-    /// ,]`, a hole before a trailing comma) always prints its comma. A
+    /// own, and counts as an element of width 0 toward the threshold. The
+    /// last item takes the dangling comma a literal's would, except a rest
+    /// item (`...r,` is a syntax error), and an empty last item (`[a, ,]`, a
+    /// hole before a trailing comma) always prints its comma. A
     /// struct pattern holding a rename whose target is a pattern breaks
     /// (Prettier's `ObjectPattern` rule) when `nested_breaks`, which is false
     /// for a function's parameter and for a default's target.
@@ -759,8 +760,13 @@ impl Printer<'_> {
         // so it joins the next item's line: `, b`.
         let mut prefix: Option<Doc> = None;
         for (i, item) in items.iter().enumerate() {
-            let widths = measure.then_some(&mut widths);
+            let mut widths = measure.then_some(&mut widths);
             let doc = if is_hole(item) {
+                // A skipped element is an element: it counts toward
+                // `element_count`, and its width is nothing.
+                if let Some(w) = widths.as_mut() {
+                    w.push(FlatWidth::Finite(0));
+                }
                 let before = if i == first {
                     None
                 } else {
