@@ -94,11 +94,46 @@ fn visit<'a>(
             continue;
         }
         let own = opens_block(tree, parent, el).unwrap_or_else(|| block.clone());
+        if matches!(el.kind, ElementKind::Pattern { .. }) {
+            visit_pattern(tree, el, &own, f);
+            continue;
+        }
         f(el, &own);
         if matches!(el.kind, ElementKind::TagBody { .. }) {
             tag_body(tree, el, &own, f);
         } else {
             visit(tree, el, el.nodes(), &own, f);
+        }
+    }
+}
+
+/// A destructuring pattern's names are written by the assignment,
+/// declaration or parameter list holding it, not by the `assignment`
+/// elements holding its defaults, so inside a pattern only each default's
+/// value is walked (a nested pattern the same way).
+fn visit_pattern<'a>(
+    tree: &'a Tree,
+    pattern: &'a Element,
+    block: &Range<u32>,
+    f: &mut dyn FnMut(&'a Element, &Range<u32>),
+) {
+    for item in &pattern.items {
+        for node in &item.children {
+            let Node::Element(el) = node else { continue };
+            match el.kind {
+                ElementKind::Pattern { .. } => visit_pattern(tree, el, block, f),
+                ElementKind::Assignment => {
+                    if let Some(a) = el.as_assignment() {
+                        if let Node::Element(target) = a.target() {
+                            if matches!(target.kind, ElementKind::Pattern { .. }) {
+                                visit_pattern(tree, target, block, f);
+                            }
+                        }
+                        visit(tree, el, std::iter::once(a.value()), block, f);
+                    }
+                }
+                _ => {}
+            }
         }
     }
 }

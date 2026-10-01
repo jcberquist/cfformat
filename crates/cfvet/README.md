@@ -24,9 +24,14 @@ the tag creates: `<cfquery name="q">`, `http result="r";`,
 variable="s">` and the rest of the table in
 [`src/rules/result_attributes.rs`](src/rules/result_attributes.rs). The
 name written is what the target starts with, up to its first `.` or `[`.
+A destructuring pattern (Adobe ColdFusion: `[a, b] = x`, `({a, b: c, d =
+1, ...r} = x)`, `for ([k, v] in …)`) writes every name it binds — a
+rename's target, a default's target (its value is read, not written), a
+rest's name, a nested pattern's names — at each name.
 
 A name is **declared** in a function by `var x` (a `for (var …)`, `<cfset
-var x = …>` and Lucee's `var x.y = …` included), by a write to `local.x` or
+var x = …>` and Lucee's `var x.y = …` included; `var [a, b = 1] = x` and
+`var {a, b: c} = x` declare every name the pattern binds), by a write to `local.x` or
 `local["x"]` (an attribute value `local.x` too), by a parameter or
 `<cfargument name="x">` (an unscoped write to a parameter's name sets the
 argument), or as a `catch` variable. Names compare without case.
@@ -100,7 +105,19 @@ at run time; both are reported, and a single `var` above the `if` or the
 loop fixes both the report and the Lucee edge.
 
 Parameters and `<cfargument>` names exist on entry, wherever the tag
-stands. A `catch` variable exists in its catch block only. A closure sees
+stands. A **destructuring parameter** (`function f({a, b = 1})`, `({a}) =>
+…`, Adobe ColdFusion 2025) declares nothing: the engine binds its names in
+the `variables` scope on every call, and `arguments` holds one generated
+entry in their place (checked on Adobe ColdFusion 2025 on 2026-09-30), so
+each name is reported with a message of its own, and an unscoped write to
+the name afterwards is reported as any other:
+
+```text
+models/Report.cfc:8:16: missing-var: `rows` is bound by a destructuring parameter of function `build`; the engine puts it in the variables scope
+```
+
+No `var` fixes it; the fix is a plain parameter destructured with `var` in
+the body. A `catch` variable exists in its catch block only. A closure sees
 every name its enclosing function declares, wherever it is declared: it
 runs when it is called, after the enclosing function's declarations.
 

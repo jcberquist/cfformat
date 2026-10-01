@@ -14,6 +14,13 @@
 //! whose name the function declares only where it does not cover the write
 //! gets a message of its own, since the fix is to move the `var` up and
 //! out.
+//!
+//! A destructuring pattern writes every name it binds (`[a, b] = x` writes
+//! `a` and `b`; a default's target, a rest's name and a nested pattern's
+//! names included), as the assignment, declaration or `for` header holding
+//! it does: `var [a, b] = x` declares both. A pattern parameter's names are
+//! not arguments: Adobe ColdFusion 2025 binds them in the `variables` scope
+//! on every call, so each is reported with a message of its own.
 
 use std::collections::HashMap;
 use std::ops::Range;
@@ -36,6 +43,9 @@ pub const RULE: &str = "missing-var";
 pub(crate) enum Head<'a> {
     /// A name with no scope: `x`, `x.y`, `x[1]`. The offset is the name's.
     Unscoped { name: &'a str, offset: u32 },
+    /// A name a pattern parameter binds (`function f({x})`), which the
+    /// engine puts in the `variables` scope. The offset is the name's.
+    PatternParameter { name: &'a str, offset: u32 },
     /// The `local` scope, and the member it writes when that is a literal
     /// name (`local.x`, `local["x"]`). The offset is `local`'s.
     Local {
@@ -130,6 +140,22 @@ pub(crate) fn check(tree: &Tree, units: &[Unit<'_>]) -> Vec<Report> {
         }
         scope::walk(tree, unit, &mut |el, _| {
             for head in writes(tree, el) {
+                if let Head::PatternParameter { name, offset } = head {
+                    let (line, column) = crate::position(tree, offset);
+                    reports.push(Report {
+                        line,
+                        column,
+                        rule: RULE,
+                        name: name.to_owned(),
+                        var_not_run: false,
+                        message: format!(
+                            "`{name}` is bound by a destructuring parameter of function `{}`; \
+                             the engine puts it in the variables scope",
+                            unit.name
+                        ),
+                    });
+                    continue;
+                }
                 let Head::Unscoped { name, offset } = head else {
                     continue;
                 };
@@ -240,8 +266,10 @@ fn var_declarations<'a>(tree: &'a Tree, nodes: &'a [Node], out: &mut dyn FnMut(&
             None => None,
         }
         .unwrap_or(declared);
-        if let Head::Unscoped { name, .. } = head_of(tree, target) {
-            out(name, node.span().start);
+        for head in heads_of(tree, target) {
+            if let Head::Unscoped { name, .. } = head {
+                out(name, node.span().start);
+            }
         }
     }
 }
@@ -275,7 +303,29 @@ pub(crate) fn writes<'a>(tree: &'a Tree, el: &'a Element) -> Vec<Head<'a>> {
     match el.kind {
         ElementKind::Assignment => {
             if let Some(a) = el.as_assignment() {
-                out.push(head_of(tree, a.target()));
+                out.extend(heads_of(tree, a.target()));
+            }
+        }
+        // `function f({x, y = 1})`: the pattern's names are written on
+        // entry, into the `variables` scope.
+        ElementKind::Parameters => {
+            for item in &el.items {
+                let target = match item.significant().next() {
+                    Some(Node::Element(a)) if a.kind == ElementKind::Assignment => {
+                        a.as_assignment().map(|a| a.target())
+                    }
+                    node => node,
+                };
+                if let Some(Node::Element(p)) = target {
+                    if matches!(p.kind, ElementKind::Pattern { .. }) {
+                        pattern_names(p, &mut |t| {
+                            out.push(Head::PatternParameter {
+                                name: tree.text(t),
+                                offset: t.span.start,
+                            });
+                        });
+                    }
+                }
             }
         }
         ElementKind::Unary { .. } => {
@@ -304,7 +354,7 @@ pub(crate) fn writes<'a>(tree: &'a Tree, el: &'a Element) -> Vec<Head<'a>> {
                         matches!(op, Node::Token(t) if t.kind == TokenKind::Operator(Operator::In))
                     });
                 if let (true, Some(operand)) = (is_in, binary.operands().next()) {
-                    out.push(head_of(tree, operand));
+                    out.extend(heads_of(tree, operand));
                 }
             }
         }
@@ -336,6 +386,55 @@ pub(crate) fn writes<'a>(tree: &'a Tree, el: &'a Element) -> Vec<Head<'a>> {
         }
     }
     out
+}
+
+/// The heads a write target node writes: every name a destructuring
+/// pattern binds, else the one [`head_of`].
+fn heads_of<'a>(tree: &'a Tree, node: &'a Node) -> Vec<Head<'a>> {
+    match node {
+        Node::Element(p) if matches!(p.kind, ElementKind::Pattern { .. }) => {
+            let mut out = Vec::new();
+            pattern_names(p, &mut |t| {
+                out.push(Head::Unscoped {
+                    name: tree.text(t),
+                    offset: t.span.start,
+                });
+            });
+            out
+        }
+        node => vec![head_of(tree, node)],
+    }
+}
+
+/// The name tokens a pattern binds: each item's name, a default's target
+/// (never its value), a rest's name, a nested pattern's names; not a
+/// rename's key.
+fn pattern_names<'a>(pattern: &'a Element, out: &mut dyn FnMut(&'a Token)) {
+    fn names<'a>(node: &'a Node, out: &mut dyn FnMut(&'a Token)) {
+        match node {
+            Node::Token(t) if t.kind == TokenKind::Ident(Ident::Variable) => out(t),
+            Node::Token(_) => {}
+            Node::Element(e) => match e.kind {
+                ElementKind::Pattern { .. } => pattern_names(e, out),
+                ElementKind::Assignment => {
+                    if let Some(a) = e.as_assignment() {
+                        names(a.target(), out);
+                    }
+                }
+                ElementKind::Unary { .. } => {
+                    if let Some(u) = e.as_unary() {
+                        names(u.operand(), out);
+                    }
+                }
+                _ => {}
+            },
+        }
+    }
+    for item in &pattern.items {
+        for node in &item.children {
+            names(node, out);
+        }
+    }
 }
 
 /// The head of a write target node.
@@ -1029,5 +1128,77 @@ mod tests {
         let src = "<cffunction name=\"f\">\n<cfscript>\nvar a = 1;\nb = 2;\n</cfscript>\n\
                    <cfset a = 3>\n</cffunction>\n";
         assert_eq!(found(src), at(&[(4, 1, "b")]));
+    }
+
+    #[test]
+    fn a_pattern_writes_every_name() {
+        let src =
+            script("[p, q = 1, ...r] = x;\n({d, e: f = 2, ...g} = x);\n[, [h], {i: {j}}] = x;");
+        assert_eq!(
+            found(&src),
+            at(&[
+                (3, 2, "p"),
+                (3, 5, "q"),
+                (3, 15, "r"),
+                (4, 3, "d"),
+                (4, 9, "f"),
+                (4, 19, "g"),
+                (5, 5, "h"),
+                (5, 14, "j"),
+            ])
+        );
+    }
+
+    #[test]
+    fn a_var_pattern_declares() {
+        let src = script(
+            "var [p, q = 1, [r]] = x;\nvar {s, t: u = 2, ...v} = x;\nfor (var [k, l] in x) {}\n\
+             p = 1; q = 1; r = 1; s = 1; u = 1; v = 1; k = 1; l = 1;\nt = 1;",
+        );
+        assert_eq!(found(&src), at(&[(7, 1, "t")]));
+        let src = tags("<cfset var [p, q] = x>\n<cfset p = 1>\n<cfset q = 1>");
+        assert_eq!(found(&src), at(&[]));
+    }
+
+    #[test]
+    fn a_for_pattern_writes() {
+        let src = script("for ([k, v] in x) {}\nfor ({m, n: o} in x) {}");
+        assert_eq!(
+            found(&src),
+            at(&[(3, 7, "k"), (3, 10, "v"), (4, 7, "m"), (4, 13, "o")])
+        );
+    }
+
+    #[test]
+    fn a_pattern_default_is_no_write() {
+        // The value of a default is read; a write inside it is a write.
+        let src = script("var [p = q] = x;\nvar [r = (s = 1)] = x;");
+        assert_eq!(found(&src), at(&[(4, 11, "s")]));
+    }
+
+    #[test]
+    fn a_write_before_its_var_pattern_reports() {
+        let src = script("p = 1;\nvar [p] = x;");
+        assert_eq!(var_not_run(&src), at(&[(3, 1, "p")]));
+    }
+
+    #[test]
+    fn a_pattern_parameter_is_reported() {
+        // The engine binds a pattern parameter's names in `variables`, not
+        // in `arguments`: a write to one afterwards is unscoped too.
+        let src = "component {\nfunction f({a, b = 1, p: {c}}, d, {e} = {}) {\na = 1;\nd = 1;\n}\n\
+                   function g() {\nvar h = ({i}) => i;\nvar j = function({k = 2}) {};\n}\n}\n";
+        assert_eq!(
+            found(src),
+            at(&[
+                (2, 13, "a"),
+                (2, 16, "b"),
+                (2, 27, "c"),
+                (2, 36, "e"),
+                (3, 1, "a"),
+                (7, 11, "i"),
+                (8, 19, "k"),
+            ])
+        );
     }
 }

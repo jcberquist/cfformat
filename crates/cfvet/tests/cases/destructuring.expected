@@ -1,0 +1,16 @@
+cases/destructuring.cfc:6:10: missing-var: `a` is written without `var` or a scope in function `statements`; it lands in the variables scope
+cases/destructuring.cfc:6:13: missing-var: `b` is written without `var` or a scope in function `statements`; it lands in the variables scope
+cases/destructuring.cfc:6:23: missing-var: `c` is written without `var` or a scope in function `statements`; it lands in the variables scope
+cases/destructuring.cfc:7:11: missing-var: `d` is written without `var` or a scope in function `statements`; it lands in the variables scope
+cases/destructuring.cfc:7:17: missing-var: `f` is written without `var` or a scope in function `statements`; it lands in the variables scope
+cases/destructuring.cfc:7:27: missing-var: `g` is written without `var` or a scope in function `statements`; it lands in the variables scope
+cases/destructuring.cfc:9:15: missing-var: `m` is written without `var` or a scope in function `statements`; it lands in the variables scope
+cases/destructuring.cfc:9:18: missing-var: `n` is written without `var` or a scope in function `statements`; it lands in the variables scope
+cases/destructuring.cfc:10:19: missing-var: `leak` is written without `var` or a scope in function `statements`; it lands in the variables scope
+cases/destructuring.cfc:15:26: missing-var: `a` is bound by a destructuring parameter of function `parameters`; the engine puts it in the variables scope
+cases/destructuring.cfc:15:29: missing-var: `b` is bound by a destructuring parameter of function `parameters`; the engine puts it in the variables scope
+cases/destructuring.cfc:15:40: missing-var: `c` is bound by a destructuring parameter of function `parameters`; the engine puts it in the variables scope
+cases/destructuring.cfc:15:49: missing-var: `e` is bound by a destructuring parameter of function `parameters`; the engine puts it in the variables scope
+cases/destructuring.cfc:16:9: missing-var: `a` is written without `var` or a scope in function `parameters`; it lands in the variables scope
+cases/destructuring.cfc:22:19: missing-var: `i` is bound by a destructuring parameter of function `(closure)`; the engine puts it in the variables scope
+cases/destructuring.cfc:23:27: missing-var: `k` is bound by a destructuring parameter of function `(closure)`; the engine puts it in the variables scope

@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+**`cfvet`.** `missing-var` reads destructuring patterns (Adobe ColdFusion).
+Before, a pattern's names were not writes (`[a, b] = x;` in a function was
+silent, though `a` and `b` land in the variables scope) while its defaults
+were (`var [p, q = 1] = x;` reported `q`, which `var` declares). Now a
+pattern writes every name it binds, `var` declares every name its pattern
+binds, a default's value is read, and a destructuring parameter
+(`function f({a, b = 1})`, Adobe ColdFusion 2025) is reported name by name
+with a message of its own: the engine binds those names in the variables
+scope on every call, not as arguments.
+
 **Fixed.** A region printed as written could end inside a two-character
 operator: in an arrow function whose parameters the parser gave up on
 (`g = ({a,b}) => a+b;` until the fix below), the region ended after the `=`

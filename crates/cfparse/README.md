@@ -237,8 +237,8 @@ which `for_is_in` tells from `for (;;)` by the same balance. A statement
 starting with `{` (also after `static`) is checked first, so `{a, b} = x;`
 is no block. Anything else is what it was: `[1, 2].each(f)`, `[a][1] = x`,
 `[1, 2] == x`, `x = [1, 2]`. An item is a name (`ident.variable`, in a
-parameter's pattern too: whether the engine binds those names as arguments
-is not known), a nested pattern, or a struct pattern's `ident.struct-key`,
+parameter's pattern too, where Adobe ColdFusion 2025 binds them in the
+`variables` scope, not as arguments), a nested pattern, or a struct pattern's `ident.struct-key`,
 `punct.key-value ":"` and either; each with `op.assign "="` and a default
 (an `assignment` once the expression pass runs); `op.spread "..."` and its
 target (a `unary`); or nothing, the skip of `[a, , c]`. A pattern is never
