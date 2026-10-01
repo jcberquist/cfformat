@@ -21,7 +21,8 @@ printed `( { m, n: 1 } = st );`), and a skipped element of an array pattern
 was dropped (`[a, , c] = x;` printed `[ a, c ] = x;`, `c` then taking the
 second element; the same in `for ([k, , v] in x)`). `{a, b} = x;`, which no
 engine runs, printed as a block and then `= x;` with no warning, and
-`static {a, b} = x;` as a static block. A pattern now prints and breaks
+`static {a, b} = x;` (which none runs either) as a static block. A pattern
+now prints and breaks
 like the literal it resembles, under that literal's settings
 (`struct.padding` / `array.padding`, the empty padding, the
 `*.multiline.*` thresholds, `multiline.comma`), as Prettier prints

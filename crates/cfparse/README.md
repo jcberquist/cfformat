@@ -246,9 +246,13 @@ a key-value list: the pass that makes a struct literal's `n = 1` a member
 does not run on it. It is an operand to the expression pass, so `[a, b] =
 x` is `assignment { pattern, =, x }` in an `assignment` statement. Parsed,
 though no engine runs them: the bare `{a, b} = x;` (Adobe ColdFusion needs
-the parentheses), an array pattern as a parameter, and `required` or a type
-before a pattern parameter (`string {a}` reads `string` as a parameter's
-name and the pattern after it).
+the parentheses), an array pattern as a parameter, a pattern after `static`
+(Adobe ColdFusion has no `static name = value;` declaration, and Lucee,
+which has, rejects every pattern), a pattern beside another parameter of an
+arrow (Adobe ColdFusion 2025 runs `({a, b}) => …`, not `({a, b}, c) => …`;
+a closure or a named function mixes them), and `required` or a type before
+a pattern parameter (`string {a}` reads `string` as a parameter's name and
+the pattern after it).
 
 ### The tag front end
 
