@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+**Builtins.** `configImport`, `dbPoolClear`, `isInThread` and `queryLazy`
+(Lucee), which cfdocs now lists, are builtins. Their calls are cased by
+`function_call.casing.builtin` instead of `.userdefined`: with the default
+`"cfdocs"`, `QUERYLAZY(…)` prints as `queryLazy(…)`.
+
 ## 0.2.0 — 2026-09-30
 
 **Fixed.** A region printed as written could end inside a two-character

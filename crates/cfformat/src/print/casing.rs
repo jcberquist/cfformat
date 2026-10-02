@@ -72,7 +72,7 @@ mod tests {
 
     #[test]
     fn builtin_casing() {
-        assert_eq!(builtins().len(), 798);
+        assert_eq!(builtins().len(), 802);
         assert_eq!(builtin("ARRAYAPPEND", BuiltinCasing::Cfdocs), "arrayAppend");
         assert_eq!(builtin("arrayappend", BuiltinCasing::Pascal), "ArrayAppend");
         assert_eq!(
