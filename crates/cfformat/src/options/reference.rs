@@ -735,8 +735,8 @@ const REFERENCE: &[OptionInfo] = &[
          inside a template literal, a continued string or a raw block comment keep their \
          source columns, a body printed byte for byte (one that may hold a string spanning \
          lines, or of no language) is not moved, and the closing tag stays at the tag's \
-         indent. `<cfquery>` and `<cfjava>` bodies, islands in attribute values and bodies \
-         inside a code fence are not affected, and `tags.body.indent` does not apply to these \
+         indent. `<cfquery>` and `<cfjava>` bodies, islands in attribute values and a \
+         `<script>` / `<style>` inside a code fence are not affected, and `tags.body.indent` does not apply to these \
          three bodies. Turning it from true to false \
          returns `<cfscript>` bodies and formatted islands to the tag's indent, but a verbatim \
          island that was raised stays where it is.",

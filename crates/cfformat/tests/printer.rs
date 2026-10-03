@@ -1649,6 +1649,27 @@ fn script_and_style_indent_round_trips() {
 }
 
 #[test]
+fn a_cfscript_in_a_code_fence_follows_script_and_style_indent() {
+    // The fence's tags are laid out by the doc printer at the fence's own
+    // indentation, so a `<cfscript>` body there indents like any other.
+    let src = "{\n```\n<cfif a>\n<cfscript>\nx = 1;\n</cfscript>\n</cfif>\n```\n}";
+    assert_eq!(
+        fmt(src),
+        concat!(
+            "{\n    ```\n    <cfif a>\n        <cfscript>\n            x = 1;\n",
+            "        </cfscript>\n    </cfif>\n    ```\n}\n"
+        )
+    );
+    assert_eq!(
+        fmt_with(src, FLUSH),
+        concat!(
+            "{\n    ```\n    <cfif a>\n        <cfscript>\n        x = 1;\n",
+            "        </cfscript>\n    </cfif>\n    ```\n}\n"
+        )
+    );
+}
+
+#[test]
 fn tag_body_lines_lose_their_edges_and_cap_blank_lines() {
     assert_eq!(
         tag("<div>\n\n\n  a  \n\n\n\n  b\n\n</div>\n"),

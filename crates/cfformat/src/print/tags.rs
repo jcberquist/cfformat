@@ -607,13 +607,14 @@ impl Printer<'_> {
     /// or `<style>` body is one level inside its tag under
     /// `tags.script_and_style.indent` (the default) and at the tag's own
     /// indent otherwise; a `<cfquery>` or `<cfjava>` body always is at the
-    /// tag's. Inside a code fence (`rooted` false) every body keeps the tag's
-    /// context: an island there keeps its source columns.
+    /// tag's. Inside a code fence (`rooted` false) an island keeps the tag's
+    /// context, since it keeps its source columns there; a `<cfscript>`
+    /// body, laid out by the doc printer, is one level in there too.
     pub(crate) fn body_floor(&self, e: &Element, name: &str, ctx: TagCtx) -> TagCtx {
-        let script_or_style = e.cf_kind() == Some(CfKind::Script)
-            || (e.kind == (ElementKind::TagBody { cf: false })
-                && (name.eq_ignore_ascii_case("script") || name.eq_ignore_ascii_case("style")));
-        if script_or_style && ctx.rooted && self.opts.tags_script_and_style_indent {
+        let script = e.cf_kind() == Some(CfKind::Script);
+        let island = e.kind == (ElementKind::TagBody { cf: false })
+            && (name.eq_ignore_ascii_case("script") || name.eq_ignore_ascii_case("style"));
+        if self.opts.tags_script_and_style_indent && (script || (island && ctx.rooted)) {
             ctx.deeper()
         } else {
             ctx
