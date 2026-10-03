@@ -1,7 +1,7 @@
 <div>
     <div>
         <script>
-        var a = 1;
+            var a = 1;
         </script>
     </div>
 </div>
@@ -9,7 +9,7 @@
 <div>
     <div>
         <script>
-        var a = 1;
+            var a = 1;
         </script>
     </div>
 </div>
@@ -17,7 +17,7 @@
 <div>
     <div>
         <script>
-        var a = 1;
+            var a = 1;
         </script>
     </div>
 </div>

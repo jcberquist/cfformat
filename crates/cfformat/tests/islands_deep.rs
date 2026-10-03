@@ -284,9 +284,9 @@ fn longest(shape: &Shape) -> usize {
 }
 
 /// Formats `page` as a tag-mode file with the default options (except that
-/// the newline is `"\n"` whatever the platform's, so a body printed as
-/// written is byte for byte the body) and a cache of its own, on a 2 MB
-/// thread.
+/// the newline is `"\n"` whatever the platform's and the island's body sits
+/// at the tag's indent, column 0, so a body printed as written is byte for
+/// byte the body) and a cache of its own, on a 2 MB thread.
 fn format(page: String) -> Formatted {
     std::thread::Builder::new()
         .name("islands_deep".into())
@@ -299,6 +299,7 @@ fn format(page: String) -> Formatted {
             };
             let opts = Options {
                 newline: cfformat::options::NewlineStyle::Lf,
+                tags_script_and_style_indent: false,
                 ..Options::default()
             };
             cfformat::format_with(&page, Mode::Tags, &opts, &ctx)

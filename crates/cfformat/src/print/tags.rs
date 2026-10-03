@@ -33,7 +33,8 @@ use crate::options::TagBodyIndent;
 pub(crate) enum Verbatim {
     /// Every line keeps its indentation relative to the others and loses
     /// its trailing whitespace; the island is shifted right as a whole when
-    /// it sits left of the tag.
+    /// it sits left of its floor ([`Printer::body_floor`]: the tag's indent,
+    /// or one level inside it for a `<script>` / `<style>`), and never left.
     Shift,
     /// Byte for byte: the island's text may hold a string or literal
     /// spanning lines ([`crate::islands::keeps_literal_text`]), so no line
@@ -110,9 +111,10 @@ impl TagCtx {
         }
     }
 
-    /// The least indentation an island line may have, in columns: the
-    /// node's own depth when it counts from column 0, else none (inside a
-    /// code fence an island keeps its source columns).
+    /// The least indentation an island line may have, in columns: this
+    /// context's depth when it counts from column 0, else none (inside a
+    /// code fence an island keeps its source columns). For an island the
+    /// context is its body's floor ([`Printer::body_floor`]).
     pub(crate) fn least_columns(self, indent_size: usize) -> usize {
         if self.rooted {
             self.depth * indent_size
@@ -420,10 +422,10 @@ impl Printer<'_> {
     /// newline, and stays on the open tag's line otherwise. Under
     /// `tags.body.indent: "cfml"` a broken paired CF tag body that starts with
     /// HTML (its first non-trivia node is not a CF tag) sits at the tag's own
-    /// indent instead. A `<cfscript>` body is a script statement list at the
-    /// tag's own indent; a body holding an island is verbatim
-    /// ([`Printer::island_body`]); a body inside an island keeps its own
-    /// lines.
+    /// indent instead. A `<cfscript>` body is a script statement list and a
+    /// body holding an island is printed by [`Printer::island_body`], each at
+    /// the floor [`Printer::body_floor`] gives it; a body inside an island
+    /// keeps its own lines.
     pub(crate) fn tag_body(&self, e: &Element, ctx: TagCtx) -> Doc {
         let (Some(open), Some(close)) = (e.open_tag(), e.close_tag()) else {
             return self.as_written(e);
@@ -439,7 +441,8 @@ impl Printer<'_> {
             .iter()
             .any(|n| n.as_element().is_some_and(|c| owns_island(e, name, c)))
         {
-            return self.island_body(open_doc, body, close_doc, ctx);
+            let floor = self.body_floor(e, name, ctx);
+            return self.island_body(open_doc, body, close_doc, ctx, floor);
         }
         if is_preformatted(e, name) {
             // The browser shows a `<pre>` body's whitespace and submits a
@@ -473,18 +476,28 @@ impl Printer<'_> {
             return self.as_written(e);
         }
         if e.cf_kind() == Some(CfKind::Script) {
-            // The statements sit at the tag's indent, not one deeper: a
-            // `<cfscript>` block is a script file inside the template, and its
-            // code should read like one. A `<!--- --->` in there is
-            // verbatim, as it is in a script file.
-            let stmts = self.at_indent(ctx.depth, || {
-                self.with_tag_ctx(TagCtx { tags: false, ..ctx }, || self.statements(body))
+            // The statements sit at the body's floor: one level in by
+            // default, the tag's own indent under
+            // `tags.script_and_style.indent: false`. The statement printers'
+            // own count of the indentation (`at_indent`) is the floor's too,
+            // so whatever reads it (the attribute alignment) agrees with what
+            // prints. A `<!--- --->` in there is verbatim, as it is in a
+            // script file.
+            let floor = self.body_floor(e, name, ctx);
+            let stmts = self.at_indent(floor.depth, || {
+                self.with_tag_ctx(
+                    TagCtx {
+                        tags: false,
+                        ..floor
+                    },
+                    || self.statements(body),
+                )
             });
-            let mut parts = vec![open_doc, hardline()];
+            let mut parts = vec![open_doc];
             if !stmts.is_empty() {
-                parts.push(stmts);
-                parts.push(hardline());
+                parts.push(indent_to(ctx, floor, vec![hardline(), stmts]));
             }
+            parts.push(hardline());
             parts.push(close_doc);
             return Doc::Concat(parts);
         }
@@ -584,6 +597,27 @@ impl Printer<'_> {
         }
         parts.push(close_doc);
         Doc::Concat(parts)
+    }
+
+    /// The context the body of `e`, a paired tag named `name` printed in
+    /// `ctx`, sits at when that body is a `<cfscript>` statement list or an
+    /// island ([`Printer::island_body`]): the depth its lines are indented
+    /// to, the floor of a verbatim island's shift and what the width handed
+    /// to the island formatter is measured from. A `<cfscript>`, `<script>`
+    /// or `<style>` body is one level inside its tag under
+    /// `tags.script_and_style.indent` (the default) and at the tag's own
+    /// indent otherwise; a `<cfquery>` or `<cfjava>` body always is at the
+    /// tag's. Inside a code fence (`rooted` false) every body keeps the tag's
+    /// context: an island there keeps its source columns.
+    pub(crate) fn body_floor(&self, e: &Element, name: &str, ctx: TagCtx) -> TagCtx {
+        let script_or_style = e.cf_kind() == Some(CfKind::Script)
+            || (e.kind == (ElementKind::TagBody { cf: false })
+                && (name.eq_ignore_ascii_case("script") || name.eq_ignore_ascii_case("style")));
+        if script_or_style && ctx.rooted && self.opts.tags_script_and_style_indent {
+            ctx.deeper()
+        } else {
+            ctx
+        }
     }
 
     /// A body split at its bare `<cfelse>` / `<cfelseif>` tags; the first
@@ -859,6 +893,16 @@ impl Printer<'_> {
         }
         parts.push(hardline());
         parts.push(fence);
+        Doc::Concat(parts)
+    }
+}
+
+/// `parts` under one `indent` when `floor`, a body's context, is deeper than
+/// `ctx`, its tag's ([`Printer::body_floor`]); as they are otherwise.
+pub(crate) fn indent_to(ctx: TagCtx, floor: TagCtx, parts: Vec<Doc>) -> Doc {
+    if floor.depth > ctx.depth {
+        indent(parts)
+    } else {
         Doc::Concat(parts)
     }
 }

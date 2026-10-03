@@ -3,13 +3,15 @@
 //! `<cfquery>` SQL, `<script>` JS, `<style>` CSS and `<cfjava>` print as they
 //! are: every line keeps its indentation relative to the others, blank lines
 //! survive and nothing is re-wrapped. The one change is that an island whose
-//! least-indented line sits left of the owning tag is shifted right as a whole
-//! until that line reaches the tag's indent (the least leading indent of the
-//! non-blank lines), measured in columns with a tab counting `indent_size` and
-//! re-emitted by [`Printer::indent_to_column`]: whole indents as tabs under
-//! `tab_indent`, the remainder as spaces. That shift, the per-line trim and
-//! the re-rendering are safe only when no string spans a line; an island whose
-//! text may hold one ([`keeps_literal_text`]: a JS backtick or `\`-continued
+//! least-indented line sits left of its floor — the owning tag's indent, or
+//! one level inside it for a `<script>` / `<style>` under
+//! `tags.script_and_style.indent` ([`Printer::body_floor`]) — is shifted
+//! right as a whole until that line reaches the floor (the least leading
+//! indent of the non-blank lines), measured in columns with a tab counting
+//! `indent_size` and re-emitted by [`Printer::indent_to_column`]: whole
+//! indents as tabs under `tab_indent`, the remainder as spaces. That shift,
+//! the per-line trim and the re-rendering are safe only when no string spans
+//! a line; an island whose text may hold one ([`keeps_literal_text`]: a JS backtick or `\`-continued
 //! line, a CSS `\`-continued line, a SQL string, quoted identifier or dollar
 //! quote spanning a line, a Java `"""`) prints byte for byte instead
 //! ([`Verbatim::Raw`]): every line as written, only its CFML tags formatted. A
@@ -31,7 +33,7 @@ use cfdoc::builders::{hardline, literalline};
 use cfdoc::Doc;
 use cfparse::{Element, ElementKind, Lang, Node, TokenKind};
 
-use super::tags::{TagCtx, Verbatim};
+use super::tags::{indent_to, TagCtx, Verbatim};
 use super::Printer;
 use crate::islands::{
     dispatch, hand_off_text, keeps_literal_text, FormattedIsland, IslandRequest, Refused,
@@ -148,19 +150,35 @@ impl Printer<'_> {
 
     /// A tag body whose content is an island (`<cfquery>`, `<script>`,
     /// `<style>`, `<cfjava>`): the preserved lines between the two tags. The
-    /// closing tag starts its own line at the tag's indent when the island
-    /// holds a newline or a tag; otherwise everything stays on one line.
+    /// closing tag starts its own line at the tag's indent (`ctx`) when the
+    /// island holds a newline or a tag; otherwise everything stays on one
+    /// line. `floor` is the body's context ([`Printer::body_floor`]): `ctx`
+    /// one level deeper for a `<script>` / `<style>` under
+    /// `tags.script_and_style.indent`, else `ctx` itself.
     ///
     /// A pure island whose `islands.*` option is not `"off"` is formatted
-    /// first ([`Printer::formatted_island`]); its lines then sit at the tag's
-    /// indent and the closing tag always starts its own line. An island
+    /// first ([`Printer::formatted_island`]); its lines then sit at the
+    /// floor and the closing tag always starts its own line. An island
     /// printed here whose text may hold a string spanning lines
     /// ([`keeps_literal_text`]) prints byte for byte ([`Verbatim::Raw`]); one
     /// of no language prints exactly, the closing tag directly after it
-    /// ([`Verbatim::Exact`]).
-    pub(crate) fn island_body(&self, open: Doc, body: &[Node], close: Doc, ctx: TagCtx) -> Doc {
-        if let Some(lines) = self.formatted_island(body, ctx) {
-            return Doc::Concat(vec![open, lines, hardline(), close]);
+    /// ([`Verbatim::Exact`]); any other is raised to the floor
+    /// ([`Verbatim::Shift`]).
+    pub(crate) fn island_body(
+        &self,
+        open: Doc,
+        body: &[Node],
+        close: Doc,
+        ctx: TagCtx,
+        floor: TagCtx,
+    ) -> Doc {
+        if let Some(lines) = self.formatted_island(body, floor) {
+            return Doc::Concat(vec![
+                open,
+                indent_to(ctx, floor, vec![lines]),
+                hardline(),
+                close,
+            ]);
         }
         let verbatim = match island_lang(body) {
             Some(Lang::Unknown) => Verbatim::Exact,
@@ -170,7 +188,7 @@ impl Printer<'_> {
         let ctx = TagCtx {
             island: true,
             verbatim,
-            ..ctx
+            ..floor
         };
         let (lines, tags) = self.island_lines(body, ctx);
         let multi = (lines.len() > 1 || tags) && verbatim != Verbatim::Exact;
@@ -191,12 +209,13 @@ impl Printer<'_> {
     /// prints verbatim.
     ///
     /// The formatter is handed the island's text as written
-    /// ([`hand_off_text`]) and its output is spliced line by line under the
-    /// doc's own indentation, which inside a tag body is the island's
-    /// (`least`): each line follows a `hardline` and loses its trailing
-    /// whitespace, except a line that starts inside literal text (a
-    /// template literal, a continued string, a raw block comment: the
-    /// result carries them, [`FormattedIsland::literal_lines`], and a text
+    /// ([`hand_off_text`]), with `max_columns` less the floor's columns
+    /// (`ctx`, the body's floor: [`Printer::body_floor`]) as its width, and
+    /// its output is spliced line by line under the doc's own indentation,
+    /// which [`Printer::island_body`] sets to that floor: each line follows
+    /// a `hardline` and loses its trailing whitespace, except a line that
+    /// starts inside literal text (a template literal, a continued string,
+    /// a raw block comment: the result carries them, [`FormattedIsland::literal_lines`], and a text
     /// whose lines cannot be found is a refusal), which follows a
     /// `literalline` and prints as written, so its columns are the
     /// source's (and the line before one keeps its trailing whitespace,
@@ -409,8 +428,9 @@ impl Printer<'_> {
     /// The lines of an island: the first continues the opening tag's line,
     /// every other one is a `literalline` plus its own indentation shifted by
     /// `least - min` (`min` being the least indentation of the non-blank lines
-    /// after the first, `least` the tag's), so the island keeps its shape and
-    /// no line sits left of the tag. Trailing blank lines are dropped.
+    /// after the first, `least` the floor's: `ctx` is the body's floor,
+    /// [`Printer::body_floor`]), so the island keeps its shape and no line
+    /// sits left of the floor. Trailing blank lines are dropped.
     ///
     /// Under [`Verbatim::Raw`] every line is as written instead: its own
     /// leading and trailing whitespace, no shift, nothing re-rendered, a
@@ -443,7 +463,7 @@ impl Printer<'_> {
             return Doc::Concat(parts);
         }
         // Every line after the first moves right by the same amount, so the
-        // least-indented one lands on the tag's indent and the rest keep their
+        // least-indented one lands on the floor and the rest keep their
         // indentation relative to it. Nothing is ever lowered.
         let least = ctx.least_columns(self.opts.indent_size);
         let min = lines

@@ -423,12 +423,13 @@ const REFERENCE: &[OptionInfo] = &[
          `.prettierrc` (see `islands.config`): nothing needs to be installed. The island's text \
          is handed over as written (blank lines before and after dropped), the indentation \
          comes from `tab_indent` and `indent_size`, the width is `max_columns` less the \
-         island's indentation, at least 40, and the output is printed at the tag's indent — \
+         island's indentation, at least 40, and the output is printed one level inside the \
+         tag (at the tag's indent under `tags.script_and_style.indent: false`) — \
          except a line inside a template literal, a continued string or a block comment oxc \
          prints raw, which keeps its source columns and its trailing whitespace: formatting \
          never changes a string. An island that does not parse is a warning and prints as it \
          is. \"off\" prints the island as it is, shifted as a whole so that no line sits left \
-         of the tag, or byte for byte, not shifted at all, when it holds a backtick or a line \
+         of that indentation, or byte for byte, not shifted at all, when it holds a backtick or a line \
          ending in `\\`; an impure island and one inside a code fence always print that way. \
          A `type` holding CFML (`type=\"#kind#\"`) names no language: the body is text.",
         "<div>\n<script>\nvar a = 1;\nif (a) {\n  b();\n}\n</script>\n</div>\n",
@@ -720,6 +721,26 @@ const REFERENCE: &[OptionInfo] = &[
         "When true, tag names are lowercased. If false, tag name case is left as is. Attribute \
          names are never changed, and `<!DOCTYPE …>` keeps its case either way.",
         "<CFIF a EQ b>\n<DIV CLASS=\"x\"></DIV>\n</CFIF>\n",
+    ),
+    tag_ex(
+        "tags.script_and_style.indent",
+        Kind::Bool,
+        "true",
+        "When true, the body of a paired `<cfscript>`, `<script>` or `<style>` tag is indented \
+         one level inside the tag, as prettier indents a `<script>` / `<style>` body; when \
+         false, it prints at the tag's own indent. A `<cfscript>` body's statements, a \
+         formatted island (whose width is `max_columns` less that indentation, at least 40) \
+         and a verbatim `<script>` / `<style>` island all follow it: a verbatim island is \
+         raised as a whole so that no line sits left of that indent, and never lowered. Lines \
+         inside a template literal, a continued string or a raw block comment keep their \
+         source columns, a body printed byte for byte (one that may hold a string spanning \
+         lines, or of no language) is not moved, and the closing tag stays at the tag's \
+         indent. `<cfquery>` and `<cfjava>` bodies, islands in attribute values and bodies \
+         inside a code fence are not affected, and `tags.body.indent` does not apply to these \
+         three bodies. Turning it from true to false \
+         returns `<cfscript>` bodies and formatted islands to the tag's indent, but a verbatim \
+         island that was raised stays where it is.",
+        "<div>\n<cfscript>\nx = 1;\n</cfscript>\n<script>\nvar a = 1;\n</script>\n</div>\n",
     ),
 ];
 

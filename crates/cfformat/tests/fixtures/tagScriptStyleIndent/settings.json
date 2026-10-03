@@ -1,0 +1,16 @@
+[
+    {},
+    {
+        "tags.script_and_style.indent": false
+    },
+    {
+        "tab_indent": true
+    },
+    {
+        "tags.body.indent": "cfml"
+    },
+    {
+        "islands.js": "off",
+        "islands.css": "off"
+    }
+]

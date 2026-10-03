@@ -5,5 +5,9 @@
     },
     {
         "alignment.consecutive.params": true
+    },
+    {
+        "alignment.consecutive.params": true,
+        "max_columns": 46
     }
 ]

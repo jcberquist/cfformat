@@ -7,11 +7,11 @@
 </cfoutput>
 <script type="#kind#">hello</script>
 <script type="">
-hello;
+    hello;
 </script>
 <script type>
-hello;
+    hello;
 </script>
 <script>
-hello;
+    hello;
 </script>

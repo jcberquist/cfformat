@@ -5,7 +5,7 @@
     <script defer #attrs#>hello</script>
     <script src=#url#>hello</script>
     <script src="#url#">
-    hello;
+        hello;
     </script>
     <style type="#t#">a{color:red}</style>
 </cfoutput>

@@ -87,6 +87,11 @@ const WIDE: &[(&str, usize, &str)] = &[
         4,
         "no break point: a `<cfoutput>` attribute entry at 51 columns",
     ),
+    (
+        "tagScriptStyleIndent[4]",
+        23,
+        "island line: a verbatim island is raised as a whole, never re-wrapped",
+    ),
     ("structMultilineMaxCol[1]", 3, "string at 20 columns"),
 ];
 

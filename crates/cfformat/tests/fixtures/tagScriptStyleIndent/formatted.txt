@@ -1,0 +1,575 @@
+<cfscript>
+    top = 1;
+    if (top) {
+        writeOutput('top');
+    }
+</cfscript>
+<cfscript>
+</cfscript>
+<cfscript>
+    one = 1;
+</cfscript>
+<html>
+    <head>
+        <script>
+            var a = 1;
+            if (a) {
+                b();
+            }
+            var t = `line one
+  line two`;
+        </script>
+        <script>
+            var long = computeSomethingElse(
+                argumentNumberOne,
+                argumentNumberTwo,
+                argumentNumberThree,
+                argumentNumberFour,
+            );
+        </script>
+        <style>
+            .a {
+                color: red;
+            }
+            .b {
+                color: blue;
+            }
+        </style>
+        <script type="application/json">
+            { "a": 1, "b": [1, 2] }
+        </script>
+        <script type="text/template">
+  <b>x</b>
+</script>
+        <script>
+            <cfif useAnalytics>track();</cfif>
+            var later = 1;
+        </script>
+        <script type="text/html">
+<cfif x>
+<b>#x#</b>
+</cfif>
+</script>
+    </head>
+    <body>
+        <cfoutput>
+            <script>
+                var user = "#user.name#";
+                <cfif admin>
+                showAdmin();
+                </cfif>
+            </script>
+            <script>
+                    var id = #user.id#;
+                    <cfif admin>
+                      showAdmin(id);
+                    </cfif>
+            </script>
+        </cfoutput>
+        <div>
+            <cfscript>
+                // A comment.
+                x = 1;
+                for (i = 1; i <= 3; i++) {
+                    writeOutput(i);
+                }
+                s = 'a string
+  over two lines';
+                /*
+                 * a block comment
+                 */
+                result = someFunctionNamed(
+                    argumentNumberOne,
+                    argumentNumberTwo,
+                    argumentNumberThree,
+                    argumentNumberFour
+                );
+                ```
+                <cfoutput>#x#</cfoutput>
+                ```
+            </cfscript>
+            <cfif x>
+                <cfscript>
+                    y = 2;
+                </cfscript>
+            </cfif>
+            <cfquery name="flush">
+            SELECT a
+            FROM t
+            WHERE b = <cfqueryparam value="#b#">
+            </cfquery>
+            <cfquery name="indented">
+                SELECT a
+                FROM t
+            </cfquery>
+        </div>
+    </body>
+</html>
+<cfcomponent>
+    <cfscript>
+        property name="p";
+        this.x = 1;
+    </cfscript>
+    <cffunction name="f">
+        <cfscript>
+            return x;
+        </cfscript>
+    </cffunction>
+</cfcomponent>
+~
+<cfscript>
+top = 1;
+if (top) {
+    writeOutput('top');
+}
+</cfscript>
+<cfscript>
+</cfscript>
+<cfscript>
+one = 1;
+</cfscript>
+<html>
+    <head>
+        <script>
+        var a = 1;
+        if (a) {
+            b();
+        }
+        var t = `line one
+  line two`;
+        </script>
+        <script>
+        var long = computeSomethingElse(argumentNumberOne, argumentNumberTwo, argumentNumberThree, argumentNumberFour);
+        </script>
+        <style>
+        .a {
+            color: red;
+        }
+        .b {
+            color: blue;
+        }
+        </style>
+        <script type="application/json">
+        { "a": 1, "b": [1, 2] }
+        </script>
+        <script type="text/template">
+  <b>x</b>
+</script>
+        <script>
+        <cfif useAnalytics>track();</cfif>
+        var later = 1;
+        </script>
+        <script type="text/html">
+<cfif x>
+<b>#x#</b>
+</cfif>
+</script>
+    </head>
+    <body>
+        <cfoutput>
+            <script>
+            var user = "#user.name#";
+            <cfif admin>
+            showAdmin();
+            </cfif>
+            </script>
+            <script>
+                    var id = #user.id#;
+                    <cfif admin>
+                      showAdmin(id);
+                    </cfif>
+            </script>
+        </cfoutput>
+        <div>
+            <cfscript>
+            // A comment.
+            x = 1;
+            for (i = 1; i <= 3; i++) {
+                writeOutput(i);
+            }
+            s = 'a string
+  over two lines';
+            /*
+             * a block comment
+             */
+            result = someFunctionNamed(argumentNumberOne, argumentNumberTwo, argumentNumberThree, argumentNumberFour);
+            ```
+            <cfoutput>#x#</cfoutput>
+            ```
+            </cfscript>
+            <cfif x>
+                <cfscript>
+                y = 2;
+                </cfscript>
+            </cfif>
+            <cfquery name="flush">
+            SELECT a
+            FROM t
+            WHERE b = <cfqueryparam value="#b#">
+            </cfquery>
+            <cfquery name="indented">
+                SELECT a
+                FROM t
+            </cfquery>
+        </div>
+    </body>
+</html>
+<cfcomponent>
+    <cfscript>
+    property name="p";
+    this.x = 1;
+    </cfscript>
+    <cffunction name="f">
+        <cfscript>
+        return x;
+        </cfscript>
+    </cffunction>
+</cfcomponent>
+~
+<cfscript>
+	top = 1;
+	if (top) {
+		writeOutput('top');
+	}
+</cfscript>
+<cfscript>
+</cfscript>
+<cfscript>
+	one = 1;
+</cfscript>
+<html>
+	<head>
+		<script>
+			var a = 1;
+			if (a) {
+				b();
+			}
+			var t = `line one
+  line two`;
+		</script>
+		<script>
+			var long = computeSomethingElse(
+				argumentNumberOne,
+				argumentNumberTwo,
+				argumentNumberThree,
+				argumentNumberFour,
+			);
+		</script>
+		<style>
+			.a {
+				color: red;
+			}
+			.b {
+				color: blue;
+			}
+		</style>
+		<script type="application/json">
+			{ "a": 1, "b": [1, 2] }
+		</script>
+		<script type="text/template">
+  <b>x</b>
+</script>
+		<script>
+			<cfif useAnalytics>track();</cfif>
+			var later = 1;
+		</script>
+		<script type="text/html">
+<cfif x>
+<b>#x#</b>
+</cfif>
+</script>
+	</head>
+	<body>
+		<cfoutput>
+			<script>
+				var user = "#user.name#";
+				<cfif admin>
+				showAdmin();
+				</cfif>
+			</script>
+			<script>
+					var id = #user.id#;
+					<cfif admin>
+					  showAdmin(id);
+					</cfif>
+			</script>
+		</cfoutput>
+		<div>
+			<cfscript>
+				// A comment.
+				x = 1;
+				for (i = 1; i <= 3; i++) {
+					writeOutput(i);
+				}
+				s = 'a string
+  over two lines';
+				/*
+				 * a block comment
+				 */
+				result = someFunctionNamed(
+					argumentNumberOne,
+					argumentNumberTwo,
+					argumentNumberThree,
+					argumentNumberFour
+				);
+				```
+				<cfoutput>#x#</cfoutput>
+				```
+			</cfscript>
+			<cfif x>
+				<cfscript>
+					y = 2;
+				</cfscript>
+			</cfif>
+			<cfquery name="flush">
+			SELECT a
+			FROM t
+			WHERE b = <cfqueryparam value="#b#">
+			</cfquery>
+			<cfquery name="indented">
+				SELECT a
+				FROM t
+			</cfquery>
+		</div>
+	</body>
+</html>
+<cfcomponent>
+	<cfscript>
+		property name="p";
+		this.x = 1;
+	</cfscript>
+	<cffunction name="f">
+		<cfscript>
+			return x;
+		</cfscript>
+	</cffunction>
+</cfcomponent>
+~
+<cfscript>
+    top = 1;
+    if (top) {
+        writeOutput('top');
+    }
+</cfscript>
+<cfscript>
+</cfscript>
+<cfscript>
+    one = 1;
+</cfscript>
+<html>
+    <head>
+        <script>
+            var a = 1;
+            if (a) {
+                b();
+            }
+            var t = `line one
+  line two`;
+        </script>
+        <script>
+            var long = computeSomethingElse(
+                argumentNumberOne,
+                argumentNumberTwo,
+                argumentNumberThree,
+                argumentNumberFour,
+            );
+        </script>
+        <style>
+            .a {
+                color: red;
+            }
+            .b {
+                color: blue;
+            }
+        </style>
+        <script type="application/json">
+            { "a": 1, "b": [1, 2] }
+        </script>
+        <script type="text/template">
+  <b>x</b>
+</script>
+        <script>
+            <cfif useAnalytics>track();</cfif>
+            var later = 1;
+        </script>
+        <script type="text/html">
+<cfif x>
+<b>#x#</b>
+</cfif>
+</script>
+    </head>
+    <body>
+        <cfoutput>
+        <script>
+            var user = "#user.name#";
+            <cfif admin>
+            showAdmin();
+            </cfif>
+        </script>
+        <script>
+                    var id = #user.id#;
+                    <cfif admin>
+                      showAdmin(id);
+                    </cfif>
+        </script>
+        </cfoutput>
+        <div>
+            <cfscript>
+                // A comment.
+                x = 1;
+                for (i = 1; i <= 3; i++) {
+                    writeOutput(i);
+                }
+                s = 'a string
+  over two lines';
+                /*
+                 * a block comment
+                 */
+                result = someFunctionNamed(
+                    argumentNumberOne,
+                    argumentNumberTwo,
+                    argumentNumberThree,
+                    argumentNumberFour
+                );
+                ```
+                <cfoutput>#x#</cfoutput>
+                ```
+            </cfscript>
+            <cfif x>
+                <cfscript>
+                    y = 2;
+                </cfscript>
+            </cfif>
+            <cfquery name="flush">
+            SELECT a
+            FROM t
+            WHERE b = <cfqueryparam value="#b#">
+            </cfquery>
+            <cfquery name="indented">
+                SELECT a
+                FROM t
+            </cfquery>
+        </div>
+    </body>
+</html>
+<cfcomponent>
+    <cfscript>
+        property name="p";
+        this.x = 1;
+    </cfscript>
+    <cffunction name="f">
+        <cfscript>
+            return x;
+        </cfscript>
+    </cffunction>
+</cfcomponent>
+~
+<cfscript>
+    top = 1;
+    if (top) {
+        writeOutput('top');
+    }
+</cfscript>
+<cfscript>
+</cfscript>
+<cfscript>
+    one = 1;
+</cfscript>
+<html>
+    <head>
+        <script>
+var a = 1;
+if (a) {
+  b();
+}
+var t = `line one
+  line two`;
+        </script>
+        <script>
+            var long = computeSomethingElse(argumentNumberOne, argumentNumberTwo, argumentNumberThree, argumentNumberFour);
+        </script>
+        <style>
+            .a { color: red; }
+              .b { color: blue; }
+        </style>
+        <script type="application/json">
+            { "a": 1, "b": [1, 2] }
+        </script>
+        <script type="text/template">
+  <b>x</b>
+</script>
+        <script>
+            <cfif useAnalytics>track();</cfif>
+            var later = 1;
+        </script>
+        <script type="text/html">
+<cfif x>
+<b>#x#</b>
+</cfif>
+</script>
+    </head>
+    <body>
+        <cfoutput>
+            <script>
+                var user = "#user.name#";
+                <cfif admin>
+                showAdmin();
+                </cfif>
+            </script>
+            <script>
+                    var id = #user.id#;
+                    <cfif admin>
+                      showAdmin(id);
+                    </cfif>
+            </script>
+        </cfoutput>
+        <div>
+            <cfscript>
+                // A comment.
+                x = 1;
+                for (i = 1; i <= 3; i++) {
+                    writeOutput(i);
+                }
+                s = 'a string
+  over two lines';
+                /*
+                 * a block comment
+                 */
+                result = someFunctionNamed(
+                    argumentNumberOne,
+                    argumentNumberTwo,
+                    argumentNumberThree,
+                    argumentNumberFour
+                );
+                ```
+                <cfoutput>#x#</cfoutput>
+                ```
+            </cfscript>
+            <cfif x>
+                <cfscript>
+                    y = 2;
+                </cfscript>
+            </cfif>
+            <cfquery name="flush">
+            SELECT a
+            FROM t
+            WHERE b = <cfqueryparam value="#b#">
+            </cfquery>
+            <cfquery name="indented">
+                SELECT a
+                FROM t
+            </cfquery>
+        </div>
+    </body>
+</html>
+<cfcomponent>
+    <cfscript>
+        property name="p";
+        this.x = 1;
+    </cfscript>
+    <cffunction name="f">
+        <cfscript>
+            return x;
+        </cfscript>
+    </cffunction>
+</cfcomponent>

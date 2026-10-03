@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+**Changed.** The body of a `<cfscript>`, `<script>` or `<style>` tag is
+indented one level inside the tag, as Prettier indents a `<script>` or
+`<style>` body; it used to print at the tag's own indent. This changes the
+output of every template that holds one of these tags. Before:
+`<script>` ⏎ `var a = 1;` ⏎ `</script>`, the statement at the tag's
+column; now: `<script>` ⏎ `    var a = 1;` ⏎ `</script>`, one indent in,
+the closing tag where it was. A `<cfscript>` body's statements move the
+same way, those of a top-level `<cfscript>` too. A formatted
+block is handed to the formatter with that much less width, so a line that
+just fitted may now break. A block printed as written (holding CFML,
+refused, or under `"islands.*": "off"`) is raised as a whole until no line
+sits left of the new indent, and never moved left. What does not move:
+lines inside a template literal or another string spanning lines, a block
+that keeps its text line for line, and `<cfquery>` and `<cfjava>` bodies.
+The new key `tags.script_and_style.indent` (default `true`) set to `false`
+gives back the previous layout, byte for byte; on a file already formatted
+with `true` it brings `<cfscript>` bodies and formatted blocks back to the
+tag's indent, but leaves a raised block as written where it is.
+
 **Builtins.** `configImport`, `dbPoolClear`, `isInThread` and `queryLazy`
 (Lucee), which cfdocs now lists, are builtins. Their calls are cased by
 `function_call.casing.builtin` instead of `.userdefined`: with the default

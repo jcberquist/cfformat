@@ -4,10 +4,10 @@
 url="example.com">
 <!--- @formatter:on --->
 <cfscript>
-// @formatter:off
+    // @formatter:off
 k = {a:1,   b:2};
 // @formatter:on
-j = {a: 1, b: 2};
+    j = {a: 1, b: 2};
 </cfscript>
 <!--- CFFORMAT-IGNORE-START --->
 <cfif   x><td>#a#</td></cfif>

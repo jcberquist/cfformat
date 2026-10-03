@@ -17,15 +17,15 @@ function f() {
 <div>
     <div>
         <script>
-        var t = `
+            var t = `
 line one
     line two
 `;
-        function f() {
-            return `
+            function f() {
+                return `
   a
   `;
-        }
+            }
         </script>
     </div>
 </div>

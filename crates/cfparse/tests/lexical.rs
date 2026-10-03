@@ -82,7 +82,7 @@ fn utf8_edge_cases() {
     assert_fmt(
         "<script>éé</script>",
         Mode::Tags,
-        "<script>\néé;\n</script>",
+        "<script>\n    éé;\n</script>",
     );
     assert_fmt(
         "include \"123456é.cfm\";",

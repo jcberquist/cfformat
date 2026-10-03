@@ -238,13 +238,18 @@ the first three.
 - **The layout is Prettier's**, with no setting: call arguments hug a trailing
   function or struct, and a broken binary expression, ternary or `for`
   header breaks as Prettier's does.
+- **`<cfscript>`, `<script>` and `<style>` bodies are indented one level
+  inside their tag**, as Prettier indents `<script>` and `<style>`.
+  CommandBox printed these bodies at the tag's own indent;
+  `"tags.script_and_style.indent": false` keeps that.
 - **A run of blank lines prints as one**, in script as in tags; CommandBox
   kept every blank line between statements.
 - **Templates are formatted in full.** `cfformat` formats the CF and HTML tags
   of any template, and the `<script>` and `<style>` blocks in it with
-  Prettier's rules. A new key, `tags.body.indent`, chooses how CF tag
-  bodies indent, and `"islands.js"`, `"islands.css"` and
-  `"islands.json": "off"` leave those blocks as written.
+  Prettier's rules. Two new keys choose how tag bodies indent:
+  `tags.body.indent` for CF tag bodies, and `tags.script_and_style.indent`
+  for the bodies of `<cfscript>`, `<script>` and `<style>`; `"islands.js"`,
+  `"islands.css"` and `"islands.json": "off"` leave those blocks as written.
 
 ## Ignoring a region
 
@@ -446,7 +451,10 @@ block`, `a stray closer`, `an unmatched run`, `nesting past the limit`).
   line that starts inside a multi-line string: in a formatted `<script>`,
   the lines inside a template literal or a string continued with `\` keep
   their columns. A block printed as written is otherwise shifted as a whole
-  to the tag's indent, except:
+  so that no line sits left of where its body belongs (one level inside a
+  `<script>` / `<style>` tag, or at the tag's indent with
+  `"tags.script_and_style.indent": false` and for a `<cfquery>`), and never
+  to the left, except:
   - a `<script>` / `<style>` whose `type` the formatter does not know
     (`text/plain`, `text/x-template`), holds CFML (`type="#kind#"`), or
     whose attributes CFML can emit (`<script #attrs#>`) is data: every line

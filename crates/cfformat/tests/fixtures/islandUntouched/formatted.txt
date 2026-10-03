@@ -2,12 +2,12 @@
 <b>x</b>
 </script>
 <script>
-var a;
-<cfif x>b();</cfif>
+    var a;
+    <cfif x>b();</cfif>
 </script>
 <cfoutput>
     <script>
-    var a = "#x#";
+        var a = "#x#";
     </script>
 </cfoutput>
 <div>
@@ -22,12 +22,12 @@ var a;
 <b>x</b>
 </script>
 <script>
-var a;
-<cfif x>b();</cfif>
+    var a;
+    <cfif x>b();</cfif>
 </script>
 <cfoutput>
     <script>
-    var a = "#x#";
+        var a = "#x#";
     </script>
 </cfoutput>
 <div>

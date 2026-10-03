@@ -8,8 +8,8 @@
 <cfset x = 1>
 <cfset y = x + 1>
 <cfscript>
-param name="p" default="1";
-cfhttp(url = "x", method = "get");
+    param name="p" default="1";
+    cfhttp(url = "x", method = "get");
 </cfscript>
 ~
 <cfparam name='url.page' default='1'>
@@ -22,6 +22,6 @@ cfhttp(url = "x", method = "get");
 <cfset x = 1>
 <cfset y = x + 1>
 <cfscript>
-param name = 'p' default = '1';
-cfhttp(url = 'x', method = 'get');
+    param name = 'p' default = '1';
+    cfhttp(url = 'x', method = 'get');
 </cfscript>

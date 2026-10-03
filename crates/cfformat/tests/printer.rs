@@ -1563,16 +1563,89 @@ fn tags_body_indent_cfml_keeps_a_cf_body_that_starts_with_html_flush() {
         tag_with("<div>\n<p>x</p>\n</div>\n", CFML),
         "<div>\n    <p>x</p>\n</div>\n"
     );
-    // The island's least column is the flush body's: 0 here, 4 by default.
+    // A `<script>` in the flush body sits at its indent, 0 here (4 by
+    // default), and its island one level inside it whatever this key says.
     let src = "<cfif a>\n<script>\nvar b = 1;\n</script>\n</cfif>\n";
     assert_eq!(
         tag_with(src, CFML),
-        "<cfif a>\n<script>\nvar b = 1;\n</script>\n</cfif>\n"
+        "<cfif a>\n<script>\n    var b = 1;\n</script>\n</cfif>\n"
     );
     assert_eq!(
         tag_with(src, ISLANDS_OFF),
-        "<cfif a>\n    <script>\n    var b = 1;\n    </script>\n</cfif>\n"
+        "<cfif a>\n    <script>\n        var b = 1;\n    </script>\n</cfif>\n"
     );
+}
+
+/// `tags.script_and_style.indent: false`.
+const FLUSH: &str = r#"{"newline": "\n", "tags.script_and_style.indent": false}"#;
+
+#[test]
+fn a_verbatim_script_or_style_body_is_raised_to_one_level_in_never_lowered() {
+    // A `#expr#` in `<cfoutput>` makes the island impure: verbatim, shifted.
+    let flush = "<cfoutput>\n<script>\nvar a = #x#;\nif (a) {\n  b();\n}\n</script>\n</cfoutput>\n";
+    let raised = concat!(
+        "<cfoutput>\n    <script>\n",
+        "        var a = #x#;\n        if (a) {\n          b();\n        }\n",
+        "    </script>\n</cfoutput>\n"
+    );
+    // `tag` checks that a second run changes nothing.
+    assert_eq!(tag(flush), raised);
+    // Written deeper than the floor: kept where it is.
+    let deeper = concat!(
+        "<cfoutput>\n    <script>\n",
+        "              var a = #x#;\n              if (a) {\n                b();\n              }\n",
+        "    </script>\n</cfoutput>\n"
+    );
+    assert_eq!(tag(deeper), deeper);
+    // Under `false` the floor is the tag's indent, and a body already raised
+    // stays raised: nothing is ever lowered.
+    assert_eq!(
+        tag_with(flush, FLUSH),
+        concat!(
+            "<cfoutput>\n    <script>\n",
+            "    var a = #x#;\n    if (a) {\n      b();\n    }\n",
+            "    </script>\n</cfoutput>\n"
+        )
+    );
+    assert_eq!(tag_with(raised, FLUSH), raised);
+    // A body on the tag's own line stays there.
+    let inline = "<cfoutput>\n    <script>var a = #x#;</script>\n</cfoutput>\n";
+    assert_eq!(tag(inline), inline);
+    // A `<cfquery>` keeps the tag's indent as its floor.
+    assert_eq!(
+        tag("<div>\n<cfquery name=\"q\">\nSELECT 1\n</cfquery>\n</div>\n"),
+        "<div>\n    <cfquery name=\"q\">\n    SELECT 1\n    </cfquery>\n</div>\n"
+    );
+}
+
+#[test]
+fn script_and_style_indent_round_trips() {
+    let src = concat!(
+        "<div>\n<cfscript>\nif (a) {\nb = 1;\n}\n</cfscript>\n",
+        "<script>\nvar t = `x\n  y`;\nif (t) {go()}\n</script>\n",
+        "<style>\n.a{color:red}\n</style>\n</div>\n"
+    );
+    let indented = concat!(
+        "<div>\n    <cfscript>\n        if (a) {\n            b = 1;\n        }\n    </cfscript>\n",
+        "    <script>\n        var t = `x\n  y`;\n        if (t) {\n            go();\n        }\n    </script>\n",
+        "    <style>\n        .a {\n            color: red;\n        }\n    </style>\n</div>\n"
+    );
+    let flush = concat!(
+        "<div>\n    <cfscript>\n    if (a) {\n        b = 1;\n    }\n    </cfscript>\n",
+        "    <script>\n    var t = `x\n  y`;\n    if (t) {\n        go();\n    }\n    </script>\n",
+        "    <style>\n    .a {\n        color: red;\n    }\n    </style>\n</div>\n"
+    );
+    assert_eq!(tag(src), indented);
+    // A template literal's lines keep their source columns either way.
+    assert_eq!(tag_with(indented, FLUSH), flush);
+    assert_eq!(tag(flush), indented);
+    // An empty `<cfscript>` is the two tags on two lines either way.
+    for settings in [r#"{"newline": "\n"}"#, FLUSH] {
+        assert_eq!(
+            tag_with("<cfscript></cfscript>\n", settings),
+            "<cfscript>\n</cfscript>\n"
+        );
+    }
 }
 
 #[test]
@@ -1778,8 +1851,9 @@ fn a_tag_comment_outside_tag_mode_stays_verbatim() {
         .replace("/*", "<!---")
         .replace(" */", " --->");
     assert_eq!(fmt(&banner), banner);
-    // Inside a `<cfscript>` body too.
-    let script = "<cfscript>\n<!---\n * a\n *\n --->\nx = 1;\n</cfscript>\n";
+    // Inside a `<cfscript>` body too: its first line at the body's indent,
+    // the others as written.
+    let script = "<cfscript>\n    <!---\n * a\n *\n --->\n    x = 1;\n</cfscript>\n";
     assert_eq!(tag(script), script);
     // In a tag body it is a tag comment, and re-flows.
     assert_eq!(
@@ -1791,8 +1865,8 @@ fn a_tag_comment_outside_tag_mode_stays_verbatim() {
 #[test]
 fn islands_keep_their_shape() {
     // With `islands.*` "off", a `<script>` at depth 2 with column-0 JS moves
-    // right as a whole: the least-indented line lands on the tag's indent
-    // and `b();` stays two columns deeper than `if`.
+    // right as a whole: the least-indented line lands one level inside the
+    // tag and `b();` stays two columns deeper than `if`.
     assert_eq!(
         tag_with(
             "<div>\n<div>\n<script>\nvar a = 1;\nif (a) {\n  b();\n}\n</script>\n</div>\n</div>\n",
@@ -1800,17 +1874,17 @@ fn islands_keep_their_shape() {
         ),
         concat!(
             "<div>\n    <div>\n        <script>\n",
-            "        var a = 1;\n        if (a) {\n          b();\n        }\n",
+            "            var a = 1;\n            if (a) {\n              b();\n            }\n",
             "        </script>\n    </div>\n</div>\n"
         )
     );
-    // Lines partly under the tag's indent shift by the same amount.
+    // Lines partly under that indent shift by the same amount.
     assert_eq!(
         tag_with(
             "<div>\n<p>\n<script>\nlet a = 1;\n  if (a) {\n            b();\n  }\n</script>\n</p>\n</div>\n",
             ISLANDS_OFF
         ),
-        "<div>\n    <p>\n        <script>\n        let a = 1;\n          if (a) {\n                    b();\n          }\n        </script>\n    </p>\n</div>\n"
+        "<div>\n    <p>\n        <script>\n            let a = 1;\n              if (a) {\n                        b();\n              }\n        </script>\n    </p>\n</div>\n"
     );
     // A `<style>` is verbatim too (CommandBox re-indents it).
     assert_eq!(
@@ -1818,7 +1892,7 @@ fn islands_keep_their_shape() {
             "<div>\n<style>\n.a { color: red; }\n</style>\n</div>\n",
             ISLANDS_OFF
         ),
-        "<div>\n    <style>\n    .a { color: red; }\n    </style>\n</div>\n"
+        "<div>\n    <style>\n        .a { color: red; }\n    </style>\n</div>\n"
     );
     // An empty island keeps the two tags together.
     assert_eq!(tag("<script></script>\n"), "<script></script>\n");
@@ -1886,16 +1960,16 @@ fn a_query_inside_a_function_keeps_its_sql() {
 }
 
 #[test]
-fn a_cfscript_body_is_a_statement_list_at_the_tag_indent() {
+fn a_cfscript_body_is_a_statement_list_one_level_in() {
     assert_eq!(
         tag("<div>\n<cfscript>\nx = 1;\n\ny = 2;\n</cfscript>\n</div>\n"),
-        "<div>\n    <cfscript>\n    x = 1;\n\n    y = 2;\n    </cfscript>\n</div>\n"
+        "<div>\n    <cfscript>\n        x = 1;\n\n        y = 2;\n    </cfscript>\n</div>\n"
     );
     // The block-comment rule of `a_block_comment_keeps_the_line_breaks_after_it`
     // holds inside a `<cfscript>` body too.
     assert_eq!(
         tag("<cfscript>\n/* c */\n\n's';\n</cfscript>\n"),
-        "<cfscript>\n/* c */\n\n's';\n</cfscript>\n"
+        "<cfscript>\n    /* c */\n\n    's';\n</cfscript>\n"
     );
 }
 
@@ -1921,15 +1995,15 @@ fn a_code_fence_prints_its_tags_at_the_fence_indent() {
 const OXC: &str = r#"{"newline": "\n", "islands.js": "oxc", "islands.css": "oxc", "islands.json": "oxc", "islands.config": "off"}"#;
 
 #[test]
-fn oxc_formats_a_pure_island_at_the_tag_indent() {
+fn oxc_formats_a_pure_island_one_level_inside_the_tag() {
     assert_eq!(
         tag_with(
             "<div>\n<script>\nvar x = {a:1}\nif(x){go()}\n</script>\n<style>\n.a{color:red}\n</style>\n</div>\n",
             OXC
         ),
         concat!(
-            "<div>\n    <script>\n    var x = { a: 1 };\n    if (x) {\n        go();\n    }\n",
-            "    </script>\n    <style>\n    .a {\n        color: red;\n    }\n    </style>\n</div>\n"
+            "<div>\n    <script>\n        var x = { a: 1 };\n        if (x) {\n            go();\n        }\n",
+            "    </script>\n    <style>\n        .a {\n            color: red;\n        }\n    </style>\n</div>\n"
         )
     );
 }
@@ -1940,13 +2014,14 @@ fn oxc_leaves_a_body_that_is_not_one_island_as_written() {
     // hold: it is a `text` token outside the island, so the body is not an
     // island and trivia, and prints as written (`scriptIslandLeadingTag`).
     let src = "<div>\n<script>\n<!--\nlegacy();\n-->\n</script>\n</div>\n";
-    let verbatim = "<div>\n    <script>\n    <!--\n    legacy();\n    -->\n    </script>\n</div>\n";
+    let verbatim =
+        "<div>\n    <script>\n        <!--\n        legacy();\n        -->\n    </script>\n</div>\n";
     assert_eq!(tag_with(src, OXC), verbatim);
     assert_eq!(tag(src), verbatim);
     // `//-->` is a line comment inside the island: formatted.
     assert_eq!(
         tag_with("<script>\n<!--\nlegacy()\n//-->\n</script>\n", OXC),
-        "<script>\n<!--\nlegacy();\n//-->\n</script>\n"
+        "<script>\n    <!--\n    legacy();\n    //-->\n</script>\n"
     );
 }
 
@@ -1966,7 +2041,7 @@ fn oxc_refusal_prints_the_island_verbatim_with_a_warning() {
     );
     assert_eq!(
         out.text,
-        "<div>\n    <script>\n    SYNTAX ERROR\n    </script>\n</div>\n"
+        "<div>\n    <script>\n        SYNTAX ERROR\n    </script>\n</div>\n"
     );
     let warnings: Vec<String> = out.warnings.iter().map(|w| w.to_string()).collect();
     assert_eq!(
@@ -2007,7 +2082,7 @@ fn a_failed_literal_walk_prints_the_island_verbatim_with_a_warning() {
     );
     assert_eq!(
         out.text,
-        "<div>\n    <script>\n    var a = 1\n    </script>\n</div>\n"
+        "<div>\n    <script>\n        var a = 1\n    </script>\n</div>\n"
     );
     let warnings: Vec<String> = out.warnings.iter().map(|w| w.to_string()).collect();
     assert_eq!(
@@ -2045,10 +2120,11 @@ fn oxc_leaves_the_islands_the_hand_off_does_not_take_alone() {
         format_source(fence, Mode::Script, &opts),
         "{\n    ```\n    <script>\nvar a;\n    </script>\n    ```\n}\n"
     );
-    // `islands: None` (`--no-islands`) prints verbatim whatever the options say.
+    // `islands: None` (`--no-islands`) prints verbatim whatever the options
+    // say, raised to the body's indent.
     let src = "<style>\n.a{color:red}\n</style>\n";
     let out = format_with(src, Mode::Auto, &opts, &FormatCtx::default());
-    assert_eq!(out.text, src);
+    assert_eq!(out.text, "<style>\n    .a{color:red}\n</style>\n");
 }
 
 /// A recovered region prints as written wherever it sits: its first
@@ -2096,7 +2172,7 @@ fn an_unclosed_hash_leaves_the_rest_formatted() {
     for (src, text, warning) in [
         (
             "<cfscript> x = \"price #\"; y=1; </cfscript><p>ok</p>\n",
-            "<cfscript>\nx = \"price #\"; y=1;\n</cfscript>\n<p>ok</p>\n",
+            "<cfscript>\n    x = \"price #\"; y=1;\n</cfscript>\n<p>ok</p>\n",
             "1:not formatted: an unclosed block",
         ),
         (
@@ -2106,18 +2182,18 @@ fn an_unclosed_hash_leaves_the_rest_formatted() {
         ),
         (
             "<cfscript> x = #; y=1; </cfscript><p>ok</p>\n",
-            "<cfscript>\nx = #; y=1;\n</cfscript>\n<p>ok</p>\n",
+            "<cfscript>\n    x = #; y=1;\n</cfscript>\n<p>ok</p>\n",
             "1:not formatted: an unmatched run",
         ),
         (
             "<cfscript> x = 1 # 2; y=1; </cfscript><p>ok</p>\n",
-            "<cfscript>\nx = 1 # 2; y=1;\n</cfscript>\n<p>ok</p>\n",
+            "<cfscript>\n    x = 1 # 2; y=1;\n</cfscript>\n<p>ok</p>\n",
             "1:not formatted: an unmatched run",
         ),
         // The statements before the broken one are formatted too.
         (
             "<cfscript>\nz=2;\nx = \"price #\";\n</cfscript>\n<p class=\"a\">#y#</p>\n",
-            "<cfscript>\nz = 2;\nx = \"price #\";\n</cfscript>\n<p class=\"a\">#y#</p>\n",
+            "<cfscript>\n    z = 2;\n    x = \"price #\";\n</cfscript>\n<p class=\"a\">#y#</p>\n",
             "3:not formatted: an unclosed block",
         ),
     ] {
@@ -2131,11 +2207,11 @@ fn an_unclosed_hash_leaves_the_rest_formatted() {
     for (src, text) in [
         (
             "<cfscript> x = \"price\"; y=1; </cfscript><p>ok</p>\n",
-            "<cfscript>\nx = 'price';\ny = 1;\n</cfscript>\n<p>ok</p>\n",
+            "<cfscript>\n    x = 'price';\n    y = 1;\n</cfscript>\n<p>ok</p>\n",
         ),
         (
             "<cfscript> x = \"price ##\"; y = \"hi #name#\"; z = \"a#f(\">\")#b\"; // #\n/* # */ w=1; </cfscript><p>ok</p>\n",
-            "<cfscript>\nx = 'price ##';\ny = 'hi #name#';\nz = 'a#f('>')#b'; // #\n/* # */ w = 1;\n</cfscript>\n<p>ok</p>\n",
+            "<cfscript>\n    x = 'price ##';\n    y = 'hi #name#';\n    z = 'a#f('>')#b'; // #\n    /* # */ w = 1;\n</cfscript>\n<p>ok</p>\n",
         ),
         (
             "<cfset x = \"#f(\">\")#\"><cfset y=1>\n",

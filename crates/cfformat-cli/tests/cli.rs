@@ -183,7 +183,7 @@ fn islands_are_formatted_by_default() {
     let src = "<script>var x = {a:1}</script>\n";
     let out = run(&["-", "--tags"], src);
     assert_eq!(out.status.code(), Some(0));
-    assert_eq!(stdout(&out), "<script>\nvar x = { a: 1 };\n</script>\n");
+    assert_eq!(stdout(&out), "<script>\n    var x = { a: 1 };\n</script>\n");
     assert_eq!(stderr(&out), "");
     for args in [
         &["-", "--tags", "--no-islands"][..],
@@ -215,7 +215,8 @@ fn islands_are_formatted_by_default() {
         )
     );
     assert!(
-        stdout(&out).contains("    <script>\n    SYNTAX ERROR\n      here\n    </script>\n"),
+        stdout(&out)
+            .contains("    <script>\n        SYNTAX ERROR\n          here\n    </script>\n"),
         "{}",
         stdout(&out)
     );
@@ -241,10 +242,11 @@ fn a_deep_or_large_island_is_refused_not_an_abort() {
             "</script>",
             "islands.js: nested 5000 levels deep, over the limit of 500",
         ),
-        // On lines of its own: a one-line page would change anyway, its
-        // tag's attribute broken onto a line to fit `max_columns`.
+        // On lines of its own, the body one level in where a verbatim body
+        // is raised to: a one-line page would change anyway, its tag's
+        // attribute broken onto a line to fit `max_columns`.
         (
-            "<script type=\"application/json\">\n",
+            "<script type=\"application/json\">\n    ",
             format!("{}0{}", "[".repeat(5_000), "]".repeat(5_000)),
             "\n</script>",
             "islands.json: nested 5000 levels deep, over the limit of 500",
@@ -278,7 +280,7 @@ fn a_deep_or_large_island_is_refused_not_an_abort() {
             "islands.css: nested 600 levels deep, over the limit of 500",
         ),
         (
-            "<script type=\"application/json\">\n",
+            "<script type=\"application/json\">\n    ",
             format!("{}0{}", "[\"]\",".repeat(600), "]".repeat(600)),
             "\n</script>",
             "islands.json: nested 600 levels deep, over the limit of 500",
@@ -325,8 +327,8 @@ fn oxc_formats_in_process_with_nothing_on_path() {
     s.write("site/page.cfm", page);
     let run = |args: &[&str]| s.command(&s.0, args).env("PATH", "").output().unwrap();
     let formatted = concat!(
-        "<div>\n    <script>\n    SYNTAX ERROR\n    </script>\n",
-        "    <script>\n    var a = { b: 1 };\n    </script>\n</div>\n"
+        "<div>\n    <script>\n        SYNTAX ERROR\n    </script>\n",
+        "    <script>\n        var a = { b: 1 };\n    </script>\n</div>\n"
     );
     let warning = "site/page.cfm:3: islands.js: Expected a semicolon or an implicit semicolon after a statement, but found none\n";
     let out = run(&["site/page.cfm", "--config", "oxc.json"]);
@@ -343,7 +345,7 @@ fn oxc_formats_in_process_with_nothing_on_path() {
     assert_eq!(out.status.code(), Some(0));
     assert_eq!(
         stdout(&out),
-        "<div>\n    <script>\n    SYNTAX ERROR\n    </script>\n    <script>\n    var a = {b:1}\n    </script>\n</div>\n"
+        "<div>\n    <script>\n        SYNTAX ERROR\n    </script>\n    <script>\n        var a = {b:1}\n    </script>\n</div>\n"
     );
     assert_eq!(stderr(&out), "");
     // `--timing`: two islands handed off, one refused, in-process time.
@@ -376,8 +378,8 @@ fn oxc_reads_the_project_prettierrc() {
     let page = "<script>var x = {\"a\": \"b\"};</script>\n";
     s.write("proj/site/page.cfm", page);
     s.write("proj/site/other.cfm", page);
-    let configured = "<script>\nvar x = { a: 'b' }\n</script>\n";
-    let defaults = "<script>\nvar x = { a: \"b\" };\n</script>\n";
+    let configured = "<script>\n    var x = { a: 'b' }\n</script>\n";
+    let defaults = "<script>\n    var x = { a: \"b\" };\n</script>\n";
     let out = s.run(&s.0, &["proj/site/page.cfm", "--tags"]);
     assert_eq!(out.status.code(), Some(0), "{}", stderr(&out));
     assert_eq!(
@@ -403,7 +405,10 @@ fn oxc_reads_the_project_prettierrc() {
         r#"{"name": "p", "prettier": {"semi": false}}"#,
     );
     let out = s.run(&s.0, &["proj/site/page.cfm", "--tags"]);
-    assert_eq!(stdout(&out), "<script>\nvar x = { a: \"b\" }\n</script>\n");
+    assert_eq!(
+        stdout(&out),
+        "<script>\n    var x = { a: \"b\" }\n</script>\n"
+    );
     std::fs::remove_file(s.0.join("proj/package.json")).unwrap();
 
     // A YAML file is not read: one warning per run, the defaults.
@@ -1103,8 +1108,8 @@ fn stdin_filepath_names_the_file_it_stands_for() {
     assert_eq!(
         stdout(&out),
         concat!(
-            "<div>\n  <script>\n  var a;\n  </script>\n",
-            "  <script>\n  SYNTAX ERROR\n  </script>\n</div>\n"
+            "<div>\n  <script>\n    var a;\n  </script>\n",
+            "  <script>\n    SYNTAX ERROR\n  </script>\n</div>\n"
         )
     );
     let refused = "islands.js: Expected a semicolon or an implicit semicolon after a statement, but found none";
@@ -1500,7 +1505,7 @@ fn settings_schema_describes_every_key() {
     keys.sort();
     default_keys.sort();
     assert_eq!(keys, default_keys);
-    assert_eq!(keys.len(), 47);
+    assert_eq!(keys.len(), 48);
     for (key, p) in properties {
         assert!(
             p["description"].as_str().is_some_and(|d| !d.is_empty()),

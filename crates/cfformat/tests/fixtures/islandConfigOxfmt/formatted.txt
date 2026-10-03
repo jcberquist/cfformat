@@ -1,21 +1,21 @@
 <div>
     <script>
-    var message = 'hello';
-    var total =
-        firstQuantityValue * unitPriceAmount
-        + shippingCostAmount
-        - discountAmountValue
-        + taxAmount;
+        var message = 'hello';
+        var total =
+            firstQuantityValue * unitPriceAmount
+            + shippingCostAmount
+            - discountAmountValue
+            + taxAmount;
     </script>
 </div>
 ~
 <div>
     <script>
-    var message = "hello";
-    var total =
-        firstQuantityValue * unitPriceAmount +
-        shippingCostAmount -
-        discountAmountValue +
-        taxAmount;
+        var message = "hello";
+        var total =
+            firstQuantityValue * unitPriceAmount +
+            shippingCostAmount -
+            discountAmountValue +
+            taxAmount;
     </script>
 </div>

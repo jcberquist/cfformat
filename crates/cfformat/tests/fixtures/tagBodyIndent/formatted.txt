@@ -61,12 +61,12 @@
 <cfif x>yes</cfif>
 <cfif withScript>
     <script>
-    var result = someFunction(
-        argumentNumberOne,
-        argumentNumberTwo,
-        argumentNumberThree,
-        argumentNumberFourAndFive1234567,
-    );
+        var result = someFunction(
+            argumentNumberOne,
+            argumentNumberTwo,
+            argumentNumberThree,
+            argumentNumberFourAndFive1234567,
+        );
     </script>
 </cfif>
 <ul>
@@ -136,7 +136,12 @@ welcome back.
 <cfif x>yes</cfif>
 <cfif withScript>
 <script>
-var result = someFunction(argumentNumberOne, argumentNumberTwo, argumentNumberThree, argumentNumberFourAndFive1234567);
+    var result = someFunction(
+        argumentNumberOne,
+        argumentNumberTwo,
+        argumentNumberThree,
+        argumentNumberFourAndFive1234567,
+    );
 </script>
 </cfif>
 <ul>
