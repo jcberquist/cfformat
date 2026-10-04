@@ -18,8 +18,8 @@
 //! one identifier to the formatter, anything at all on the page — with the
 //! same bytes around it: the same non-blank byte before it, the same after
 //! it (or a statement's `;`, or a property's trailing `,` before `}`, each
-//! added in front of what followed), as many parentheses directly around
-//! it, the same byte where it touched a word in the source, and no
+//! added in front of what followed), as many parentheses around it, the
+//! same byte where it touched a word in the source, and no
 //! operator newly against it (`- #x#` printed `-#x#`). Then each `#`
 //! becomes `##` again and each placeholder its hole's printed text. An
 //! island that fails a check is refused, and the printer prints it as
@@ -337,13 +337,41 @@ fn is_operator(c: char) -> bool {
     )
 }
 
-/// How many `paren` characters `chars` starts with, whitespace between
-/// them and before the first skipped.
-fn parens(chars: impl Iterator<Item = char>, paren: char) -> usize {
-    chars
-        .filter(|c| !c.is_ascii_whitespace())
-        .take_while(|&c| c == paren)
-        .count()
+/// The parentheses open in code at each of `at` (ascending), `regions`
+/// being `text`'s literal regions: a `(` or `)` inside a string, a comment,
+/// a template literal's text or a regular expression counts for nothing,
+/// and an unquoted `url(…)` body holds its function's `)`.
+fn depths(
+    text: &str,
+    regions: &[(Site, Range<usize>)],
+    at: impl Iterator<Item = usize>,
+) -> Vec<isize> {
+    let b = text.as_bytes();
+    let (mut depth, mut i, mut r) = (0_isize, 0, 0);
+    let mut out = Vec::new();
+    for to in at {
+        while i < to {
+            match regions.get(r) {
+                Some((site, range)) if range.start <= i => {
+                    if *site == Site::Url && b.get(range.end - 1) == Some(&b')') {
+                        depth -= 1;
+                    }
+                    i = range.end.max(i + 1);
+                    r += 1;
+                }
+                _ => {
+                    match b[i] {
+                        b'(' => depth += 1,
+                        b')' => depth -= 1,
+                        _ => {}
+                    }
+                    i += 1;
+                }
+            }
+        }
+        out.push(depth);
+    }
+    out
 }
 
 /// The nearest character before `at` that is not ASCII whitespace.
@@ -406,8 +434,16 @@ impl Interpolated {
             at.push(found[0]);
         }
         let regions = regions_of(out, self.lang);
-        for (h, &o) in self.holes.iter().zip(&at) {
-            self.check(h, out, o, site_at(&regions, o).0)?;
+        // The parentheses open at each hole, in the text handed off and in
+        // the output.
+        let was = depths(
+            &self.text,
+            &regions_of(&self.text, self.lang),
+            self.holes.iter().map(|h| h.at),
+        );
+        let is = depths(out, &regions, at.iter().copied());
+        for (i, (h, &o)) in self.holes.iter().zip(&at).enumerate() {
+            self.check(h, out, o, site_at(&regions, o).0, (was[i], is[i]))?;
         }
         let mut restored = String::with_capacity(out.len() + out.len() / 8);
         let mut from = 0;
@@ -421,8 +457,16 @@ impl Interpolated {
     }
 
     /// The checks on one hole: its site, then for a hole in code its
-    /// neighbours. `o` is its placeholder's position in `out`.
-    fn check(&self, h: &Placed, out: &str, o: usize, site: Site) -> Result<(), Refused> {
+    /// neighbours. `o` is its placeholder's position in `out`; `depth` the
+    /// parentheses open at it before and after ([`depths`]).
+    fn check(
+        &self,
+        h: &Placed,
+        out: &str,
+        o: usize,
+        site: Site,
+        depth: (isize, isize),
+    ) -> Result<(), Refused> {
         let line = h.hole.line;
         let refuse = |message: String| Err(Refused(message));
         if site != h.site {
@@ -473,19 +517,11 @@ impl Interpolated {
                 });
             }
         }
-        // Parentheses around it, the innermost of which the checks above
-        // see: `foo((#x#))` printed `foo(#x#)` passes them, and changes
-        // what `1, 2` means.
-        let (opens, closes) = (
-            parens(text[..h.at].chars().rev(), '('),
-            parens(text[h.at + len..].chars(), ')'),
-        );
-        if (opens, closes)
-            != (
-                parens(out[..o].chars().rev(), '('),
-                parens(out[o + len..].chars(), ')'),
-            )
-        {
+        // The parentheses around it, of which the checks above see only
+        // those against it: `foo((#x#))` printed `foo(#x#)`, or
+        // `(y + #x# + w) || z` printed `y + #x# + w || z`, passes them, and
+        // changes what an emitted `1, 2` means.
+        if depth.0 != depth.1 {
             return refuse(format!(
                 "the parentheses around the #…# on line {line} changed"
             ));
@@ -798,10 +834,25 @@ mod tests {
     #[test]
     fn a_hole_in_code_keeps_its_parentheses() {
         // The innermost pair is the neighbours' business; the others are
-        // counted.
+        // counted, wherever they are, and not those in literals.
         assert_eq!(
             round(&js("foo((#x#));"), |_| "foo(zq0_);\n".into()),
             Err("the parentheses around the #…# on line 1 changed".into())
+        );
+        assert_eq!(
+            round(&js("x = (y + #x# + w) || z;"), |_| {
+                "x = y + zq0_ + w || z;\n".into()
+            }),
+            Err("the parentheses around the #…# on line 1 changed".into())
+        );
+        assert!(round(&js("f(')', /(/, `(`); g(a)(#x#);"), |t| t
+            .replace("; ", ";\n"))
+        .is_ok());
+        assert!(round(&css("a { b: url(c.png) #x#; }"), |t| t.replace("{ ", "{\n")).is_ok());
+        assert_eq!(
+            round(&js("x = a && #x# || c;"), |_| "x = (a && zq0_) || c;\n"
+                .into()),
+            Err("what follows the #…# on line 1 changed from `|` to `)`".into())
         );
         assert_eq!(
             round(&js("foo(( #x# ));"), |_| "foo( ( zq0_ ) );\n".into()),

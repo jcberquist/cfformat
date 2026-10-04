@@ -2327,6 +2327,13 @@ fn an_island_whose_holes_do_not_come_back_is_refused_with_a_warning() {
     );
     assert_eq!(
         refused(
+            "<cfoutput><script>\nx = (y + #b# + w) || z;\n</script></cfoutput>\n",
+            None
+        ),
+        "<stdin>:2: islands.js: the parentheses around the #…# on line 2 changed"
+    );
+    assert_eq!(
+        refused(
             "<cfoutput><script>\nx = (y + #b#);\n</script></cfoutput>\n",
             None
         ),

@@ -712,9 +712,10 @@ before `}` (a property's trailing comma), each in front of what followed it
 (``what follows … changed from `)` to `;` ``: `x = (y + #b#);` printed
 `x = y + #b#;`; ``a `,` was added after the #…# on line 4, before `]` ``:
 an array of one `#…#` that emits an empty list would gain an element),
-when the number of parentheses directly around it changed (`the
+when the number of parentheses open at it, in code, changed (`the
 parentheses around the #…# on line 4 changed`: `foo((#a#))` printed
-`foo(#a#)` passes the other checks, and `1, 2` is then two arguments), when
+`foo(#a#)`, or `(y + #b# + w) || z` printed `y + #b# + w || z`, passes the
+other checks, and an emitted `1, 2` then means something else), when
 a word character it touched in the source (a letter, a digit, `_`, `$`,
 `-`, `%`, `.`, `#`, non-ASCII) no longer touches it (``the #…# on line 4
 is no longer joined to the `p` after it``), or when an operator character
