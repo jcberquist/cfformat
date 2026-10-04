@@ -29,6 +29,9 @@ pub struct Case {
 pub struct Fixture {
     pub name: String,
     pub dir: PathBuf,
+    /// The source file: `source.cfc`, or `source.cfm` for a template
+    /// fixture formatted as a `.cfm` is.
+    pub path: PathBuf,
     pub source: String,
     pub mode: Mode,
     pub cases: Vec<Case>,
@@ -36,7 +39,9 @@ pub struct Fixture {
 
 /// Every fixture under `tests/fixtures` (the `exprTests` sources are not
 /// fixtures: see [`expr_tests`]). Script fixtures (first line `//`) drop
-/// that line and parse as `Mode::Script`; tag fixtures parse as `Mode::Auto`.
+/// that line and parse as `Mode::Script`; tag fixtures parse as `Mode::Auto`,
+/// and a fixture whose source is `source.cfm` as `Mode::Tags`, as the CLI
+/// reads a `.cfm`.
 pub fn fixtures() -> Vec<Fixture> {
     let mut dirs: Vec<PathBuf> = std::fs::read_dir(fixtures_dir())
         .unwrap()
@@ -49,8 +54,19 @@ pub fn fixtures() -> Vec<Fixture> {
 
 fn load(dir: &Path) -> Fixture {
     let name = dir.file_name().unwrap().to_string_lossy().into_owned();
-    let raw = std::fs::read_to_string(dir.join("source.cfc")).unwrap();
-    let (source, mode) = split_source(&raw);
+    let cfm = dir.join("source.cfm");
+    let path = if cfm.is_file() {
+        cfm
+    } else {
+        dir.join("source.cfc")
+    };
+    let raw = std::fs::read_to_string(&path).unwrap();
+    let (source, mode) = match split_source(&raw) {
+        (source, Mode::Auto) if path.extension().is_some_and(|e| e == "cfm") => {
+            (source, Mode::Tags)
+        }
+        split => split,
+    };
     let settings: Value =
         serde_json::from_str(&std::fs::read_to_string(dir.join("settings.json")).unwrap())
             .unwrap_or_else(|e| panic!("{name}/settings.json: {e}"));
@@ -76,6 +92,7 @@ fn load(dir: &Path) -> Fixture {
     Fixture {
         name,
         dir: dir.to_path_buf(),
+        path,
         source,
         mode,
         cases,
@@ -104,14 +121,13 @@ fn options(name: &str, settings: Value) -> Options {
     Options::validate(&map).unwrap_or_else(|e| panic!("{name}: {e}"))
 }
 
-/// Formats `src` as the fixture's `source.cfc` (so an island's
+/// Formats `src` as the fixture's source file (so an island's
 /// configuration is looked up from the fixture directory), with a cache of
 /// its own.
 pub fn format_case(fixture: &Fixture, src: &str, opts: &Options) -> String {
-    let path = fixture.dir.join("source.cfc");
     let islands = cfformat::Islands::new();
     let ctx = cfformat::FormatCtx {
-        path: Some(&path),
+        path: Some(&fixture.path),
         islands: Some(&islands),
     };
     cfformat::format_with(src, fixture.mode, opts, &ctx).text
@@ -221,7 +237,10 @@ pub type Tok = (String, String);
 /// With islands on, an island oxc takes — pure, non-blank, outside a code
 /// fence, dispatched to an `islands.*` option that is not `"off"` — is one
 /// `island` entry naming its synthetic extension: its text is oxc's
-/// business.
+/// business. So is a JavaScript or CSS island holding only text, `##` and
+/// `#…#` ([`interpolated`]), whose `island` entry is followed by its `##`
+/// and `#…#` in order, each `#…#` streamed as any expression is: the
+/// formatter must give back every CF token and string of them, in order.
 pub fn token_stream(tree: &Tree, opts: &Options) -> Vec<Tok> {
     let mut out = Vec::new();
     stream_element(tree, opts, &tree.root, false, &mut out);
@@ -383,7 +402,8 @@ fn stream_host(
     }
 }
 
-/// The `islands.*` extension of an island oxc would take.
+/// The `islands.*` extension of an island oxc would take: a pure one, or
+/// one [`interpolated`].
 fn formatted_island(
     tree: &Tree,
     opts: &Options,
@@ -393,12 +413,57 @@ fn formatted_island(
     let ElementKind::Island(island) = &el.kind else {
         return None;
     };
-    if fenced || !el.is_pure_island() {
+    if fenced || !(el.is_pure_island() || interpolated(tree, el)) {
         return None;
     }
     let target = cfformat::islands::dispatch(island).filter(|t| t.enabled(opts))?;
+    if target.lang == Lang::Json && !el.is_pure_island() {
+        return None;
+    }
     let text = tree.slice(el.span.clone());
     (!text.trim().is_empty()).then_some(target.ext)
+}
+
+/// Whether `el`, an island that is not pure, holds only what the printer
+/// stands in for: text with no `#`, `##`, and `#…#` with both delimiters.
+/// Whether the printer then hands it off (its `#…#` on one line, text
+/// outside them) or prints it as written, the streams agree: either way
+/// its `##` and `#…#` are there, in order.
+fn interpolated(tree: &Tree, el: &Element) -> bool {
+    !el.is_pure_island()
+        && el.children.iter().all(|n| match n {
+            Node::Token(t) => match t.kind {
+                TokenKind::Literal(cfparse::Literal::EscapeHash) => true,
+                TokenKind::Text | TokenKind::Whitespace | TokenKind::Newline => {
+                    !tree.text(t).contains('#')
+                }
+                _ => false,
+            },
+            Node::Element(e) => {
+                e.kind == ElementKind::TemplateExpression && e.open.is_some() && e.close.is_some()
+            }
+        })
+}
+
+/// The text a test hands a parser for an [`interpolated`] island: each
+/// `##` as `#` and each `#…#` as `cfhole` and its number, the same for an
+/// input and its output whatever each `#…#` prints as.
+fn stand_in(tree: &Tree, el: &Element) -> String {
+    let mut out = String::new();
+    let mut holes = 0;
+    for n in &el.children {
+        match n {
+            Node::Token(t) if t.kind == TokenKind::Literal(cfparse::Literal::EscapeHash) => {
+                out.push('#')
+            }
+            Node::Token(t) => out.push_str(tree.text(t)),
+            Node::Element(_) => {
+                out.push_str(&format!("cfhole{holes}"));
+                holes += 1;
+            }
+        }
+    }
+    out
 }
 
 fn stream_element(tree: &Tree, opts: &Options, el: &Element, fenced: bool, out: &mut Vec<Tok>) {
@@ -416,6 +481,19 @@ fn stream_element(tree: &Tree, opts: &Options, el: &Element, fenced: bool, out: 
     }
     if let Some(ext) = formatted_island(tree, opts, el, fenced) {
         out.push(("island".into(), ext.into()));
+        if !el.is_pure_island() {
+            for n in &el.children {
+                match n {
+                    Node::Token(t)
+                        if t.kind == TokenKind::Literal(cfparse::Literal::EscapeHash) =>
+                    {
+                        stream_token(tree, opts, t, out)
+                    }
+                    Node::Token(_) => {}
+                    Node::Element(e) => stream_element(tree, opts, e, fenced, out),
+                }
+            }
+        }
         return;
     }
     let fenced = fenced || el.kind == ElementKind::TagIsland;
@@ -672,12 +750,15 @@ pub fn check_output(src: &str, out: &str, mode: Mode, opts: &Options) -> Vec<Str
 }
 
 /// The texts of the JavaScript islands of `tree` a formatter takes (pure,
-/// non-blank, outside a code fence, dispatched to an enabled `islands.js`),
-/// in source order.
+/// non-blank, outside a code fence, dispatched to an enabled `islands.js`;
+/// or holding `#…#`, as [`stand_in`] writes them), in source order.
 pub fn handed_off_js(tree: &Tree, opts: &Options) -> Vec<String> {
     fn walk(tree: &Tree, opts: &Options, el: &Element, fenced: bool, out: &mut Vec<String>) {
         if formatted_island(tree, opts, el, fenced).is_some_and(|ext| ext == "js" || ext == "mjs") {
-            out.push(tree.slice(el.span.clone()).to_owned());
+            out.push(match el.is_pure_island() {
+                true => tree.slice(el.span.clone()).to_owned(),
+                false => stand_in(tree, el),
+            });
             return;
         }
         let fenced = fenced || el.kind == ElementKind::TagIsland;
@@ -696,7 +777,9 @@ pub fn handed_off_js(tree: &Tree, opts: &Options) -> Vec<String> {
 /// handed off, in input and output order, the multiset of template-literal
 /// quasi texts is unchanged, and so is the multiset of block comments with
 /// each line's leading whitespace trimmed (the formatter re-aligns a JSDoc
-/// comment, not its text). Returns the islands checked and the problems.
+/// comment, not its text), and a JSDoc comment's trailing whitespace too
+/// (the formatter drops it, as prettier does). Returns the islands checked
+/// and the problems.
 pub fn check_literals(src: &str, out: &str, mode: Mode, opts: &Options) -> (usize, Vec<String>) {
     let before = handed_off_js(&cfparse::parse_source(src, mode), opts);
     let after = handed_off_js(&cfparse::parse_source(out, mode), opts);
@@ -725,12 +808,17 @@ pub fn check_literals(src: &str, out: &str, mode: Mode, opts: &Options) -> (usiz
             v.sort();
             v
         };
+        // A comment whose lines after the first all start with `*` is one
+        // the formatter re-aligns, as prettier does, trailing whitespace
+        // dropped with the leading; any other block comment prints raw, its
+        // lines' ends as written.
         let comments = |v: Vec<String>| {
             sorted(
                 v.iter()
                     .map(|c| {
+                        let aligned = c.lines().skip(1).all(|l| l.trim_start().starts_with('*'));
                         c.lines()
-                            .map(str::trim_start)
+                            .map(|l| if aligned { l.trim() } else { l.trim_start() })
                             .collect::<Vec<_>>()
                             .join("\n")
                     })

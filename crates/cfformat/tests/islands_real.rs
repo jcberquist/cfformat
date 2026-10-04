@@ -10,7 +10,7 @@
 //! - every case of the island fixtures (`islandScript`, `islandModule`,
 //!   `islandJson`, `islandStyle`, `islandTemplateLiteral`, `islandWidth`,
 //!   `islandLdJson`, `islandLiteralNested`, `islandDynamicType`,
-//!   `islandVerbatimLiterals`) with its own settings (`tab_indent`,
+//!   `islandVerbatimLiterals`, `islandInterpolated`) with its own settings (`tab_indent`,
 //!   `max_columns`, an `islands.*` key `"off"`);
 //! - every island fixture's source and every `../commandbox-cfformat` file
 //!   holding a `<script>` or `<style>`, with the default options.
@@ -40,13 +40,14 @@ const FIXTURES: &[&str] = &[
     "islandLiteralNested",
     "islandDynamicType",
     "islandVerbatimLiterals",
+    "islandInterpolated",
 ];
 
 fn sources() -> Vec<(PathBuf, String, Mode)> {
     let mut out: Vec<(PathBuf, String, Mode)> = common::fixtures()
         .into_iter()
         .filter(|f| f.name.starts_with("island") || f.name == "tagHTMLScriptIndent")
-        .map(|f| (f.dir.join("source.cfc"), f.source, f.mode))
+        .map(|f| (f.path, f.source, f.mode))
         .collect();
     out.extend(commandbox_sources());
     out
@@ -179,7 +180,7 @@ fn real_island_formatters() {
         if !FIXTURES.contains(&fixture.name.as_str()) {
             continue;
         }
-        let path = fixture.dir.join("source.cfc");
+        let path = fixture.path.clone();
         for (i, case) in fixture.cases.iter().enumerate() {
             cases.check(
                 &format!("{tool}: {}[{i}]", fixture.name),

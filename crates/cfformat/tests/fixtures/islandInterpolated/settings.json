@@ -1,0 +1,16 @@
+[
+    {},
+    {
+        "tab_indent": true
+    },
+    {
+        "islands.js": "off",
+        "islands.css": "off"
+    },
+    {
+        "tags.islands.indent": false
+    },
+    {
+        "islands.config": "auto"
+    }
+]

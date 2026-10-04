@@ -13,9 +13,9 @@ select 'a
 <cfoutput>
     <div>
         <script>
-const s = `#name#
+            const s = `#name#
   says hi`;
-    go(s);
+            go(s);
         </script>
     </div>
 </cfoutput>
@@ -61,9 +61,9 @@ select 'a
 <cfoutput>
 	<div>
 		<script>
-const s = `#name#
+			const s = `#name#
   says hi`;
-    go(s);
+			go(s);
 		</script>
 	</div>
 </cfoutput>

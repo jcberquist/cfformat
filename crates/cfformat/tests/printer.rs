@@ -1581,11 +1581,11 @@ const FLUSH: &str = r#"{"newline": "\n", "tags.islands.indent": false}"#;
 
 #[test]
 fn a_verbatim_island_body_is_raised_to_one_level_in_never_lowered() {
-    // A `#expr#` in `<cfoutput>` makes the island impure: verbatim, shifted.
-    let flush = "<cfoutput>\n<script>\nvar a = #x#;\nif (a) {\n  b();\n}\n</script>\n</cfoutput>\n";
+    // A tag comment makes the island impure: verbatim, shifted.
+    let flush = "<cfoutput>\n<script>\nvar a = 1; <!--- c --->\nif (a) {\n  b();\n}\n</script>\n</cfoutput>\n";
     let raised = concat!(
         "<cfoutput>\n    <script>\n",
-        "        var a = #x#;\n        if (a) {\n          b();\n        }\n",
+        "        var a = 1; <!--- c --->\n        if (a) {\n          b();\n        }\n",
         "    </script>\n</cfoutput>\n"
     );
     // `tag` checks that a second run changes nothing.
@@ -1593,7 +1593,7 @@ fn a_verbatim_island_body_is_raised_to_one_level_in_never_lowered() {
     // Written deeper than the floor: kept where it is.
     let deeper = concat!(
         "<cfoutput>\n    <script>\n",
-        "              var a = #x#;\n              if (a) {\n                b();\n              }\n",
+        "              var a = 1; <!--- c --->\n              if (a) {\n                b();\n              }\n",
         "    </script>\n</cfoutput>\n"
     );
     assert_eq!(tag(deeper), deeper);
@@ -1603,13 +1603,13 @@ fn a_verbatim_island_body_is_raised_to_one_level_in_never_lowered() {
         tag_with(flush, FLUSH),
         concat!(
             "<cfoutput>\n    <script>\n",
-            "    var a = #x#;\n    if (a) {\n      b();\n    }\n",
+            "    var a = 1; <!--- c --->\n    if (a) {\n      b();\n    }\n",
             "    </script>\n</cfoutput>\n"
         )
     );
     assert_eq!(tag_with(raised, FLUSH), raised);
     // A body on the tag's own line stays there.
-    let inline = "<cfoutput>\n    <script>var a = #x#;</script>\n</cfoutput>\n";
+    let inline = "<cfoutput>\n    <script>var a = 1; <!--- c ---></script>\n</cfoutput>\n";
     assert_eq!(tag(inline), inline);
     // A `<cfquery>` and a `<cfjava>` body have the same floor.
     let query = "<div>\n<cfquery name=\"q\">\nSELECT 1\n</cfquery>\n</div>\n";
@@ -2135,10 +2135,17 @@ fn oxc_leaves_the_islands_the_hand_off_does_not_take_alone() {
         // An empty island, a blank one.
         "<script></script>\n",
         "<script>\n\n</script>\n",
-        // A type no formatter takes; an impure island; `#x#` in `<cfoutput>`.
+        // A type no formatter takes; an island holding a CF tag or a tag
+        // comment; in `<cfoutput>`, a JSON island holding `#x#` or `##`, a
+        // body that is only `#x#`, a `#x#` that prints over lines.
         "<script type=\"text/template\">\n<b>x</b>\n</script>\n",
         "<script>\nvar a;\n<cfif x>b();</cfif>\n</script>\n",
-        "<cfoutput><script>\nvar a = #x#;\n</script></cfoutput>\n",
+        "<cfoutput><script>\nvar a;   <!--- c --->\n</script></cfoutput>\n",
+        "<cfoutput><script type=\"application/json\">\n{\"a\":#x#}\n</script></cfoutput>\n",
+        "<cfoutput><script type=\"application/json\">\n{\"a\":\"##\"}\n</script></cfoutput>\n",
+        "<cfoutput><style>#x#</style><style>\n  #x#  \n</style></cfoutput>\n",
+        "<cfoutput><script>\nvar f =   #function() { return 1; }#;\n</script></cfoutput>\n",
+        "<cfoutput><script>\nvar a =   #f( 1, // c\n2 )#;\n</script></cfoutput>\n",
         // SQL and an event attribute are never handed off.
         "<cfquery name=\"q\">\nSELECT 1\n</cfquery>\n",
         "<a onclick=\"go( 1 )\">x</a>\n",
@@ -2160,6 +2167,235 @@ fn oxc_leaves_the_islands_the_hand_off_does_not_take_alone() {
     let src = "<style>\n.a{color:red}\n</style>\n";
     let out = format_with(src, Mode::Auto, &opts, &FormatCtx::default());
     assert_eq!(out.text, "<style>\n    .a{color:red}\n</style>\n");
+}
+
+/// A `<script>` / `<style>` in `<cfoutput>` holding only text, `##` and
+/// `#…#` is formatted: `##` handed off as `#`, each `#…#` as a placeholder
+/// as wide as it prints, and put back. Each group checks its second run.
+#[test]
+fn oxc_formats_an_island_holding_hashes() {
+    let fmt = |src: &str| tag_with(src, OXC);
+    // `##` alone; the same script outside `<cfoutput>` is pure.
+    assert_eq!(
+        fmt("<cfoutput><script>\n$( \"##a\" ).focus()\n</script></cfoutput>\n<script>\n$( \"#a\" ).focus()\n</script>\n"),
+        concat!(
+            "<cfoutput>\n    <script>\n        $(\"##a\").focus();\n    </script>\n</cfoutput>\n",
+            "<script>\n    $(\"#a\").focus();\n</script>\n"
+        )
+    );
+    // In strings, which keep their quote; in a template literal, comments
+    // and a regular expression.
+    assert_eq!(
+        fmt(concat!(
+            "<cfoutput><script>\n",
+            "var a = '#x#', b = \"#y#\", c = 'it\\'s #z#', d = '#f( \"q\" & 'r' )#', e = \"#p# #q#\"\n",
+            "var t = `a #x#\n  b`; // #c#\n/* #d# */ var r = /^#re#$/\n",
+            "</script></cfoutput>\n"
+        )),
+        concat!(
+            "<cfoutput>\n    <script>\n",
+            "        var a = '#x#',\n            b = \"#y#\",\n            c = 'it\\'s #z#',\n",
+            "            d = '#f('q' & 'r')#',\n            e = \"#p# #q#\";\n",
+            "        var t = `a #x#\n  b`; // #c#\n        /* #d# */ var r = /^#re#$/;\n",
+            "    </script>\n</cfoutput>\n"
+        )
+    );
+    // In code: a value, the last property, an argument, a statement, part
+    // of a name, a key, two together.
+    assert_eq!(
+        fmt(concat!(
+            "<cfoutput><script>\n",
+            "var o = {\n  a : #x#,\n  b : #y#\n}\nshow( #n# );\n#stmt()#\n",
+            "function #name#Callback() {}\nvar k = { #key#: 1 }, ab = #a##b#\n",
+            "</script></cfoutput>\n"
+        )),
+        concat!(
+            "<cfoutput>\n    <script>\n",
+            "        var o = {\n            a: #x#,\n            b: #y#,\n        };\n",
+            "        show(#n#);\n        #stmt()#;\n        function #name#Callback() {}\n",
+            "        var k = { #key#: 1 },\n            ab = #a##b#;\n",
+            "    </script>\n</cfoutput>\n"
+        )
+    );
+    // A `#…#` is measured as it prints: `#   f( a )   #` is `#f(a)#`, so
+    // this line fits at 112 columns (its source would not).
+    let line = format!(
+        "var fits = computeTheResult(firstArgument, {}, #f(a)#);",
+        "s".repeat(112 - 53)
+    );
+    assert_eq!(line.len(), 112);
+    assert_eq!(
+        fmt(&format!(
+            "<cfoutput><script>\n{}\n</script></cfoutput>\n",
+            line.replace("#f(a)#", "#   f( a )   #")
+        )),
+        format!("<cfoutput>\n    <script>\n        {line}\n    </script>\n</cfoutput>\n")
+    );
+    // CSS: `##` colours and selectors; a value, a `url(…)`, a string, and
+    // `#…#` glued to a unit, a class and a property name.
+    assert_eq!(
+        fmt(concat!(
+            "<cfoutput><style>\n##main{color:##FFF}\n",
+            ".#c#{width:#w#px;background:url(#u#);content:\"#l#\";margin-#s#:#m#}\n",
+            "</style></cfoutput>\n"
+        )),
+        concat!(
+            "<cfoutput>\n    <style>\n",
+            "        ##main {\n            color: ##fff;\n        }\n",
+            "        .#c# {\n            width: #w#px;\n            background: url(#u#);\n",
+            "            content: \"#l#\";\n            margin-#s#: #m#;\n        }\n",
+            "    </style>\n</cfoutput>\n"
+        )
+    );
+}
+
+/// What the island formatter of a refusal test returns: its input with
+/// `edit` applied, the edit standing for a formatter that moved a
+/// placeholder.
+struct Edit(fn(&str) -> String);
+
+impl cfformat::islands::IslandFormatter for Edit {
+    fn format(
+        &self,
+        req: &cfformat::islands::IslandRequest,
+    ) -> Result<String, cfformat::islands::Refused> {
+        Ok((self.0)(req.text))
+    }
+}
+
+/// `src` formatted with `islands` (oxc when `None`): the text, the
+/// warnings and the island counters (runs, warnings).
+fn with_islands(src: &str, edit: Option<Edit>) -> (String, Vec<String>, (usize, usize)) {
+    let (opts, _) = Options::from_json(OXC).unwrap();
+    let islands = match edit {
+        Some(edit) => Islands::with_formatter(std::sync::Arc::new(edit)),
+        None => Islands::new(),
+    };
+    let ctx = FormatCtx {
+        path: None,
+        islands: Some(&islands),
+    };
+    let out = format_with(src, Mode::Auto, &opts, &ctx);
+    let warnings = out.warnings.iter().map(|w| w.to_string()).collect();
+    let run = islands.stats();
+    assert_eq!(
+        (out.islands.formatted, out.islands.warnings),
+        (run.formatted, run.warnings),
+        "the file's counters and the run's"
+    );
+    (out.text, warnings, (run.formatted, run.warnings))
+}
+
+/// An island whose `#…#` do not come back as they went prints as written
+/// (raised to the floor, as any verbatim island), with a warning naming the
+/// check and the `#…#`'s line, counted as an island warning; so does one
+/// oxc refuses. The output is stable.
+#[test]
+fn an_island_whose_holes_do_not_come_back_is_refused_with_a_warning() {
+    let refused = |src: &str, edit: Option<Edit>| {
+        let (text, warnings, counts) = with_islands(src, edit);
+        let (opts, _) = Options::from_json(ISLANDS_OFF).unwrap();
+        assert_eq!(text, format_source(src, Mode::Auto, &opts), "{src:?}");
+        assert_eq!(counts, (1, 1), "{src:?}");
+        assert_eq!(warnings.len(), 1, "{src:?}");
+        warnings.into_iter().next().unwrap()
+    };
+    // Through oxc: the parenthesis guard, a comma before `]`, a parse error.
+    assert_eq!(
+        refused(
+            "<cfoutput><script>\n(#f()#).call();\n</script></cfoutput>\n",
+            None
+        ),
+        "<stdin>:2: islands.js: what precedes the #…# on line 2 changed from `(` to nothing"
+    );
+    let long = format!(
+        "<cfoutput><script>\nvar ids = [#valueList( q.{} )#];\n</script></cfoutput>\n",
+        "a".repeat(100)
+    );
+    assert_eq!(
+        refused(&long, None),
+        "<stdin>:2: islands.js: a `,` was added after the #…# on line 2, before `]`"
+    );
+    // Parentheses oxc drops that the neighbours do not show, a `;` in place
+    // of a `)`, a `#…#` newly joined to an operator.
+    assert_eq!(
+        refused(
+            "<cfoutput><script>\nfoo((#a#));\n</script></cfoutput>\n",
+            None
+        ),
+        "<stdin>:2: islands.js: the parentheses around the #…# on line 2 changed"
+    );
+    assert_eq!(
+        refused(
+            "<cfoutput><script>\nx = (y + #b#);\n</script></cfoutput>\n",
+            None
+        ),
+        "<stdin>:2: islands.js: what follows the #…# on line 2 changed from `)` to `;`"
+    );
+    assert_eq!(
+        refused(
+            "<cfoutput><script>\nx = - #c#;\n</script></cfoutput>\n",
+            None
+        ),
+        "<stdin>:2: islands.js: the #…# on line 2 is now joined to the `-` before it"
+    );
+    // A statement-level `#…#` after a statement with no `;`: the one oxc
+    // adds before it would end a statement the `#…#` may continue.
+    assert_eq!(
+        refused(
+            "<cfoutput><script>\nf()\n#g()#\n</script></cfoutput>\n",
+            None
+        ),
+        "<stdin>:2: islands.js: what precedes the #…# on line 3 changed from `)` to `;`"
+    );
+    assert_eq!(
+        refused(
+            "<cfoutput><script>\nvar a = #x#;\nvar b = ;\n</script></cfoutput>\n",
+            None
+        ),
+        "<stdin>:2: islands.js: Unexpected token"
+    );
+    // A formatter that moves its placeholders: dropped, doubled, swapped,
+    // into a comment, a neighbour changed, unglued.
+    let two = "<cfoutput><script>\nf(#a#,\n#b#);\n</script></cfoutput>\n";
+    for (edit, message) in [
+        (
+            Edit(|t| t.replace("zq0_", "x")),
+            "the #…# on line 2 is missing from the formatted text",
+        ),
+        (
+            Edit(|t| t.replace("zq0_", "zq0_, zq0_")),
+            "the #…# on line 2 is in the formatted text 2 times",
+        ),
+        (
+            Edit(|t| {
+                t.replace("zq0_", "TMP")
+                    .replace("zq1_", "zq0_")
+                    .replace("TMP", "zq1_")
+            }),
+            "the #…# on line 3 moved past another #…#",
+        ),
+        (
+            Edit(|t| t.replace("zq1_", "/* zq1_ */ 1")),
+            "the #…# on line 3 moved from code into a comment",
+        ),
+        (
+            Edit(|t| t.replace("zq1_)", "zq1_.x)")),
+            "what follows the #…# on line 3 changed from `)` to `.`",
+        ),
+    ] {
+        assert_eq!(
+            refused(two, Some(edit)),
+            format!("<stdin>:2: islands.js: {message}")
+        );
+    }
+    assert_eq!(
+        refused(
+            "<cfoutput><style>\na { width: #w#px }\n</style></cfoutput>\n",
+            Some(Edit(|t| t.replace("zq0_px", "zq0_ px")))
+        ),
+        "<stdin>:2: islands.css: the #…# on line 2 is no longer joined to the `p` after it"
+    );
 }
 
 /// A recovered region prints as written wherever it sits: its first

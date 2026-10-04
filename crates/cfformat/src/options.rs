@@ -196,14 +196,15 @@ pub struct Options {
     #[serde(rename = "alignment.doc_comments")]
     pub alignment_doc_comments: bool,
 
-    /// Pure `<script>` islands (`islands.js`: `"oxc"`, the default, or
-    /// `"off"`).
+    /// `<script>` islands, pure or holding only `#…#` and `##` (`islands.js`:
+    /// `"oxc"`, the default, or `"off"`).
     #[serde(rename = "islands.js")]
     pub islands_js: IslandPreset,
-    /// Pure `<style>` islands (`islands.css`).
+    /// `<style>` islands, pure or holding only `#…#` and `##` (`islands.css`).
     #[serde(rename = "islands.css")]
     pub islands_css: IslandPreset,
-    /// Pure JSON `<script>` islands (`islands.json`).
+    /// Pure JSON `<script>` islands (`islands.json`); one holding `#…#` or `##`
+    /// is never handed off.
     #[serde(rename = "islands.json")]
     pub islands_json: IslandPreset,
     /// Whether `"oxc"` reads the project's `.oxfmtrc` / `.prettierrc`

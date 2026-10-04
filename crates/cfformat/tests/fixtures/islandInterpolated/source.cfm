@@ -1,0 +1,61 @@
+<cfoutput>
+<script>
+$( "##a" ).focus();
+</script>
+<script>
+var single = '#prc.single#';
+var double = "#prc.double#";
+var escaped = 'it\'s #prc.name#';
+var mixed = '#encodeForJavaScript( x[ "a" ] & 'b' )#';
+var two = "#prc.first# and #prc.second#";
+var greeting = `Hello #user.name#,
+  you have #user.count# messages`;
+// #prc.lineComment#
+/* #prc.blockComment# */
+var pattern = /^#prc.pattern#$/;
+</script>
+<script>
+var api = {
+	baseUrl : "/api/v1/sites/#prc.site.getSlug()#/items",
+	authentication  : #toJson( prc.jwtTokens )#,
+	last: #prc.lastValue#
+};
+showResults( #prc.count# );
+#fileRead( expandPath( "/includes/widget.js" ) )#
+function #prc.udfName#Callback() {}
+var keyed = { #prc.key#: true };
+var adjacent = #prc.a##prc.b#;
+initialiseTheSelectionWidget( "#prc.widgetName#", #serializeJSON( prc.selectionWidgetOptions )#, "full", prc.selectionWidgetCallbacks );
+var fitsOnceFormatted = computeTheResult( firstArgument, secondArgumentWithALongerNameForWidthOk, #   foo( a, b )   # );
+</script>
+<script>
+(#args.menuItem.getJS()#).call();
+</script>
+<script>
+var ids = [#valueList( qSelectedRecordsForTheCurrentRequest.recordIdentifierWithAVeryLongNameToBreakTheLineInTwo, "," )#];
+</script>
+<script>
+var broken = #prc.value# + ;
+</script>
+<script>
+var a = 1;
+<cfif prc.admin>showAdmin();</cfif>
+</script>
+<script>
+var b = 2; <!--- a tag comment --->
+</script>
+<script type="application/json">
+{"a": #serializeJSON( prc.data )#}
+</script>
+<style>#prc.inlineStyles#</style>
+<style>
+##main { color: ##FFF; }
+.a{background:##ABCDEF}
+</style>
+<style>
+.#prc.cls# { width: #prc.width#px; color: #prc.color#; background: url(#prc.image#); content: "#prc.label#"; margin-#prc.side#: 0 }
+</style>
+</cfoutput>
+<script>
+$( "#a" ).focus();
+</script>

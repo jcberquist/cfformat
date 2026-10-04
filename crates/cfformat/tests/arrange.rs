@@ -243,6 +243,7 @@ fn commutation() {
             let fixture = common::Fixture {
                 name: f.name.clone(),
                 dir: f.dir.clone(),
+                path: f.path.clone(),
                 source: f.source.clone(),
                 mode: f.mode,
                 cases: Vec::new(),
@@ -262,6 +263,7 @@ fn commutation() {
             let fixture = common::Fixture {
                 name: f.name.clone(),
                 dir: f.dir.clone(),
+                path: f.dir.join("source.cfc"),
                 source: f.source.clone(),
                 mode: Mode::Auto,
                 cases: Vec::new(),

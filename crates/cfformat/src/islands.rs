@@ -1,5 +1,7 @@
-//! Formatting of pure islands: which option an island goes to, the text it
-//! is handed, and the per-run cache.
+//! Formatting of `<script>` / `<style>` islands: which option an island goes
+//! to, the text it is handed, the per-run cache, and for an island holding
+//! `#…#` and `##` the stand-ins it is handed in their place and the checks
+//! that put them back ([`holes`]).
 //!
 //! The printer (`print/islands.rs`) decides *whether* an island is handed off
 //! and splices the result; everything about the formatter lives here. An
@@ -8,6 +10,7 @@
 
 use std::collections::HashMap;
 use std::fmt;
+use std::ops::Range;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, OnceLock};
 use std::time::{Duration, Instant};
@@ -18,7 +21,10 @@ use crate::options::{IslandConfigMode, IslandPreset, Options};
 use crate::IndentStyle;
 
 mod config;
+pub(crate) mod holes;
 mod oxc;
+
+use holes::Site;
 
 pub use config::IslandConfig;
 pub use oxc::Oxc;
@@ -106,10 +112,18 @@ pub const SIZE_LIMIT: usize = 256 << 10;
 /// allocated but a stack: the open brackets of a stylesheet, or the
 /// `${…}` a script's scan is inside.
 pub fn nesting_depth(text: &str, lang: Lang) -> usize {
-    let b = text.as_bytes();
+    scan(text.as_bytes(), lang, &mut |_, _| {})
+}
+
+/// The scan [`nesting_depth`] makes, which also hands `visit` each literal
+/// region it reads — a string, a comment, a template literal's text, a
+/// regular expression, an unquoted `url(…)` body — with its range, in
+/// order (the interpolated islands of [`holes`] classify their `#…#` by
+/// them). Everything outside the regions is code. Returns the depth.
+fn scan(b: &[u8], lang: Lang, visit: &mut impl FnMut(Site, Range<usize>)) -> usize {
     match lang {
-        Lang::Css => css_nesting_depth(b),
-        _ => js_nesting_depth(b),
+        Lang::Css => css_nesting_depth(b, visit),
+        _ => js_nesting_depth(b, visit),
     }
 }
 
@@ -147,7 +161,7 @@ impl Brackets {
 /// as a token (`parse_raw_function`). Before that, `.a{b:foo(});`×n
 /// counted each `}` as the rule's closer, about 2 against n, and at the
 /// size limit the page aborted the process.
-fn css_nesting_depth(b: &[u8]) -> usize {
+fn css_nesting_depth(b: &[u8], visit: &mut impl FnMut(Site, Range<usize>)) -> usize {
     let mut n = Brackets::default();
     // The openers in code still open, the innermost last.
     let mut open = Vec::new();
@@ -157,13 +171,17 @@ fn css_nesting_depth(b: &[u8]) -> usize {
     while i < b.len() {
         let c = b[i];
         if c == b'/' && b.get(i + 1) == Some(&b'*') {
-            i = block_comment(b, i + 2, &mut n);
+            let end = block_comment(b, i + 2, &mut n);
+            visit(Site::Comment, i..end);
+            i = end;
             name = None;
             continue;
         }
         match c {
             b'"' | b'\'' => {
-                i = css_string(b, i + 1, c, &mut n);
+                let end = css_string(b, i + 1, c, &mut n);
+                visit(Site::String(c), i..end);
+                i = end;
                 name = None;
             }
             b'\\' => {
@@ -176,7 +194,13 @@ fn css_nesting_depth(b: &[u8]) -> usize {
                 let url = name.is_some_and(|start| url_function(&b[start..i]));
                 name = None;
                 i = if url {
-                    css_url(b, i + 1, &mut n, &mut open)
+                    // A quoted URL is read as code holding a string: the
+                    // scan returns at once.
+                    let end = css_url(b, i + 1, &mut n, &mut open);
+                    if end > i + 1 {
+                        visit(Site::Url, i + 1..end);
+                    }
+                    end
                 } else {
                     i + 1
                 };
@@ -329,7 +353,7 @@ fn block_comment(b: &[u8], mut i: usize, n: &mut Brackets) -> usize {
 }
 
 /// [`nesting_depth`] of a script, or of JSON.
-fn js_nesting_depth(b: &[u8]) -> usize {
+fn js_nesting_depth(b: &[u8], visit: &mut impl FnMut(Site, Range<usize>)) -> usize {
     let mut n = Brackets::default();
     // The `{` open in each `${…}` the scan is inside, the innermost's in
     // `braces`: a `}` with none open ends the substitution.
@@ -360,22 +384,30 @@ fn js_nesting_depth(b: &[u8]) -> usize {
             || rest.starts_with(b"<!--")
             || (line_start && rest.starts_with(b"-->"))
         {
-            i = line_comment(b, i, &mut n);
+            let end = line_comment(b, i, &mut n);
+            visit(Site::Comment, i..end);
+            i = end;
             continue;
         }
         if rest.starts_with(b"/*") {
-            i = block_comment(b, i + 2, &mut n);
+            let end = block_comment(b, i + 2, &mut n);
+            visit(Site::Comment, i..end);
+            i = end;
             continue;
         }
         line_start = false;
         i = match c {
             b'"' | b'\'' => {
                 prev = b'"';
-                js_string(b, i + 1, c, &mut n)
+                let end = js_string(b, i + 1, c, &mut n);
+                visit(Site::String(c), i..end);
+                end
             }
             b'/' if regex_may_follow(prev) => {
                 prev = b'"';
-                js_regex(b, i + 1, &mut n)
+                let end = js_regex(b, i + 1, &mut n);
+                visit(Site::Regex, i..end);
+                end
             }
             b'(' | b'[' => {
                 n.open();
@@ -406,6 +438,7 @@ fn js_nesting_depth(b: &[u8]) -> usize {
                     braces = substitutions.pop().unwrap_or(0);
                 }
                 let (next, substitution) = template_text(b, i + 1, &mut n);
+                visit(Site::Template, i..next);
                 if substitution {
                     substitutions.push(braces);
                     braces = 0;
@@ -534,8 +567,10 @@ pub fn tree_depth(text: &str) -> Option<usize> {
     oxc::tree_depth(text)
 }
 
-/// Where a pure island goes: the option that decides it and the extension
-/// of the synthetic path the formatter sees.
+/// Where an island goes: the option that decides it and the extension of
+/// the synthetic path the formatter sees. Whether an island is handed off
+/// at all — pure (one text), or holding only text, `##` and `#…#`
+/// ([`holes`]) — is the printer's question.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Target {
     /// The option key: `islands.js`, `islands.css` or `islands.json`.
@@ -568,7 +603,9 @@ impl Target {
 /// `speculationrules` → `islands.json` (`.json`), a `<style>` → `islands.css` (`.css`). Any other
 /// `<script type>`, and every other site (`<cfquery>`, `<cfjava>`, event and
 /// style attributes), is `None`: verbatim. Only `site` and `script_type`
-/// decide; purity is the caller's question.
+/// decide; what the island holds is the caller's question (the printer
+/// hands off a pure island and one whose CFML is only `#…#` and `##`, and
+/// never a JSON island holding either).
 pub fn dispatch(island: &Island) -> Option<Target> {
     let js = |ext| Target {
         key: "islands.js",
@@ -1154,6 +1191,17 @@ impl Islands {
             .unwrap_or_else(|e| e.into_inner())
             .record(hit, result.is_err());
         (result, hit)
+    }
+
+    /// Counts a warning for an island the formatter took and the printer
+    /// refused after it: an island holding `#…#` whose output did not give
+    /// them back as they went ([`holes::Interpolated::restore`]). The run
+    /// was counted by [`Islands::format_with`] as it was answered.
+    pub(crate) fn record_refusal(&self) {
+        self.stats
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .warnings += 1;
     }
 
     /// The counters so far.

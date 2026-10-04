@@ -301,7 +301,7 @@ fn oxc_matches_prettier() {
         .filter(|f| f.name.starts_with("island") || f.name == "tagHTMLScriptIndent")
         // prettier reads the `.prettierrc` there, oxc the `.oxfmtrc.jsonc`.
         .filter(|f| f.name != "islandConfigOxfmt")
-        .map(|f| (f.dir.join("source.cfc"), f.source, f.mode))
+        .map(|f| (f.path, f.source, f.mode))
         .collect();
     let mut must_match = run.corpus("fixtures", &fixtures).different;
     if let Some(dir) = common::commandbox_dir() {

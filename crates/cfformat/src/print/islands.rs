@@ -1,3 +1,13 @@
+//! Islands: the formatted path and the verbatim one.
+//!
+//! A `<script>` / `<style>` island dispatched to an `islands.*` option that
+//! is not `"off"`, outside a code fence, is handed to the island formatter
+//! when it is pure (one text) or, for JavaScript and CSS, holds only text,
+//! `##` and `#…#` printing on one line, which are stood in for and put back
+//! with checks (`crate::islands::holes`); [`Printer::formatted_island`]
+//! splices the result. Every other island, and one refused, takes the
+//! verbatim path below.
+//!
 //! The verbatim island path.
 //!
 //! `<cfquery>` SQL, `<script>` JS, `<style>` CSS and `<cfjava>` print as they
@@ -30,13 +40,14 @@
 use std::path::PathBuf;
 
 use cfdoc::builders::{hardline, literalline};
-use cfdoc::Doc;
-use cfparse::{Element, ElementKind, Lang, Node, TokenKind};
+use cfdoc::utils::{find_in_doc, will_break};
+use cfdoc::{print_doc, Doc, PrintOptions};
+use cfparse::{Element, ElementKind, Lang, Literal, Node, Token, TokenKind};
 
 use super::tags::{indent_to, TagCtx, Verbatim};
 use super::Printer;
 use crate::islands::{
-    dispatch, hand_off_text, keeps_literal_text, FormattedIsland, IslandRequest, Refused,
+    dispatch, hand_off_text, holes, keeps_literal_text, FormattedIsland, IslandRequest, Refused,
 };
 use crate::{Warning, WarningKind};
 
@@ -155,10 +166,13 @@ impl Printer<'_> {
     /// line. `floor` is the body's context ([`Printer::body_floor`]): `ctx`
     /// one level deeper under `tags.islands.indent`, else `ctx` itself.
     ///
-    /// A pure island whose `islands.*` option is not `"off"` is formatted
-    /// first ([`Printer::formatted_island`]); its lines then sit at the
-    /// floor and the closing tag always starts its own line. An island
-    /// printed here whose text may hold a string spanning lines
+    /// A `<script>` / `<style>` island whose `islands.*` option is not
+    /// `"off"` and that holds only text — or, inside `<cfoutput>`, text,
+    /// `##` and `#…#` — is formatted first ([`Printer::formatted_island`]);
+    /// its lines then sit at the floor and the closing tag always starts its
+    /// own line. Any other island, and one the formatter or the checks on
+    /// its `#…#` refuse, is printed here: one whose text may hold a string
+    /// spanning lines
     /// ([`keeps_literal_text`]) prints byte for byte ([`Verbatim::Raw`]); one
     /// of no language prints exactly, the closing tag directly after it
     /// ([`Verbatim::Exact`]); any other is raised to the floor
@@ -211,16 +225,20 @@ impl Printer<'_> {
     }
 
     /// The island formatter's (oxc's, in process) lines for an island body,
-    /// or `None` for the verbatim path. The body must be one pure island and
+    /// or `None` for the verbatim path. The body must be one island and
     /// trivia, in a rooted context (inside a code fence the width budget and
     /// the island's column are unknown), non-blank, dispatched to an
-    /// `islands.*` option that is not `"off"`. A refusal is a warning and
-    /// prints verbatim.
+    /// `islands.*` option that is not `"off"`, and either pure (one text)
+    /// or, for JavaScript and CSS, holding only text, `##` and `#…#` that
+    /// print on one line ([`Printer::interpolated`]). A refusal — the
+    /// formatter's, or for `#…#` the checks that put them back — is a
+    /// warning and prints verbatim.
     ///
     /// The formatter is handed the island's text as written
-    /// ([`hand_off_text`]), with `max_columns` less the floor's columns
-    /// (`ctx`, the body's floor: [`Printer::body_floor`]) as its width, and
-    /// its output is spliced line by line under the doc's own indentation,
+    /// ([`hand_off_text`]; with `#…#` and `##` stood in for, [`holes`]),
+    /// with `max_columns` less the floor's columns (`ctx`, the body's floor:
+    /// [`Printer::body_floor`]) as its width, and its output (the `#…#` put
+    /// back) is spliced line by line under the doc's own indentation,
     /// which [`Printer::island_body`] sets to that floor: each line follows
     /// a `hardline` and loses its trailing whitespace, except a line that
     /// starts inside literal text (a template literal, a continued string,
@@ -228,9 +246,11 @@ impl Printer<'_> {
     /// whose lines cannot be found is a refusal), which follows a
     /// `literalline` and prints as written, so its columns are the
     /// source's (and the line before one keeps its trailing whitespace,
-    /// which is inside the literal). That is also why a second run changes
+    /// which is inside the literal). Putting the `#…#` back moves no line:
+    /// none holds a line break. That is also why a second run changes
     /// nothing: the raw text the next run hands off is what the formatter
-    /// printed, and literal lines were never moved.
+    /// printed, a `#…#` stood in for at the width it prints, and literal
+    /// lines were never moved.
     fn formatted_island(&self, body: &[Node], ctx: TagCtx) -> Option<Doc> {
         let islands = self.islands?;
         if !ctx.rooted {
@@ -242,7 +262,7 @@ impl Printer<'_> {
             Node::Token(t) => matches!(t.kind, TokenKind::Newline | TokenKind::Whitespace),
             Node::Element(_) => true,
         });
-        if elements.next().is_some() || !trivia || !e.is_pure_island() {
+        if elements.next().is_some() || !trivia {
             return None;
         }
         let ElementKind::Island(island) = &e.kind else {
@@ -259,10 +279,18 @@ impl Printer<'_> {
         {
             return None;
         }
-        let Node::Token(t) = &e.children[0] else {
-            return None;
+        let pure;
+        let interpolated = match &e.children[..] {
+            [Node::Token(t)] if e.is_pure_island() => {
+                pure = hand_off_text(self.tree.text(t));
+                None
+            }
+            _ => {
+                pure = String::new();
+                Some(self.interpolated(e, target.lang)?)
+            }
         };
-        let text = hand_off_text(self.tree.text(t));
+        let text = interpolated.as_ref().map_or(&pure, |i| &i.text);
         if text.is_empty() {
             return None;
         }
@@ -288,13 +316,22 @@ impl Printer<'_> {
         };
         let req = IslandRequest {
             lang: target.lang,
-            text: &text,
+            text,
             path,
             indent: self.opts.indent_style(),
             width: self.opts.max_columns.saturating_sub(least).max(40),
             config,
         };
         let (result, hit) = islands.format(&req);
+        // The `#…#` put back, or the checks' refusal, which the run's
+        // counters learn of here: they counted the formatter's answer.
+        let result = result.and_then(|formatted| match &interpolated {
+            None => Ok(formatted),
+            Some(holes) => holes
+                .restore(&formatted.text)
+                .map(|text| FormattedIsland { text, ..formatted })
+                .inspect_err(|_| islands.record_refusal()),
+        });
         self.report.borrow_mut().stats.record(hit, result.is_err());
         match result {
             Ok(FormattedIsland {
@@ -331,6 +368,70 @@ impl Printer<'_> {
                 None
             }
         }
+    }
+
+    /// An island that is not pure, ready to hand off ([`holes::substitute`]),
+    /// or `None` when it is not one to hand off, silently: a JSON island
+    /// (its formatter refuses a placeholder outside a string and rewrites a
+    /// string's quote whatever it holds), a child other than a text, a `##`
+    /// or a `#…#` with both delimiters (a CF tag, a tag comment: no
+    /// placeholder stands for a tag body, which may hold part of a
+    /// statement), a `#…#` whose printed form is not one line (a forced
+    /// break, a line comment, a line break in its text), and what
+    /// [`holes::substitute`] declines. A `#…#` is printed flat: its doc
+    /// printed at an unbounded width, which the island's own line printing
+    /// it verbatim would give too.
+    fn interpolated(&self, e: &Element, lang: Lang) -> Option<holes::Interpolated> {
+        let text = |t: &Token| {
+            matches!(
+                t.kind,
+                TokenKind::Text | TokenKind::Whitespace | TokenKind::Newline
+            )
+        };
+        let hash = |t: &Token| t.kind == TokenKind::Literal(Literal::EscapeHash);
+        let hole = |h: &Element| {
+            h.kind == ElementKind::TemplateExpression && h.open.is_some() && h.close.is_some()
+        };
+        // What the island holds is checked before any `#…#` is printed.
+        let only = e.children.iter().all(|n| match n {
+            Node::Token(t) => text(t) || hash(t),
+            Node::Element(h) => hole(h),
+        });
+        if lang == Lang::Json || !only {
+            return None;
+        }
+        let mut pieces = Vec::with_capacity(e.children.len());
+        for n in &e.children {
+            pieces.push(match n {
+                Node::Token(t) if hash(t) => holes::Piece::Hash,
+                Node::Token(t) => holes::Piece::Text(self.tree.text(t)),
+                Node::Element(h) => holes::Piece::Hole(holes::Hole {
+                    text: self.flat(self.template_expression(h))?,
+                    line: self.tree.line_of(h.span.start),
+                }),
+            });
+        }
+        holes::substitute(pieces, lang)
+    }
+
+    /// `doc` printed on one line, or `None` when it cannot be: it holds a
+    /// forced break (a hard line, a broken group), a line suffix (a line
+    /// comment) or a line break in its text.
+    fn flat(&self, mut doc: Doc) -> Option<String> {
+        if will_break(&doc)
+            || find_in_doc(&doc, |d| matches!(d, Doc::LineSuffix(_)).then_some(())).is_some()
+        {
+            return None;
+        }
+        let text = print_doc(
+            &mut doc,
+            &PrintOptions {
+                width: isize::MAX as usize / 2,
+                indent: self.opts.indent_style(),
+                newline: "\n",
+            },
+        );
+        (!text.contains('\n')).then_some(text)
     }
 
     /// Whether the island a tag body owns keeps its text byte for byte:

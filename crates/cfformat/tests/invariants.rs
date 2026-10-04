@@ -72,6 +72,41 @@ const WIDE: &[(&str, usize, &str)] = &[
     ),
     ("componentAttrs[3]", 3, "string at 30 columns"),
     (
+        "islandInterpolated[0]",
+        40,
+        "island line: refused (a `,` added before `]`), printed as written",
+    ),
+    (
+        "islandInterpolated[1]",
+        40,
+        "island line: refused (a `,` added before `]`), printed as written",
+    ),
+    (
+        "islandInterpolated[2]",
+        28,
+        "island line: `\"off\"`, printed as written",
+    ),
+    (
+        "islandInterpolated[2]",
+        35,
+        "island line: `\"off\"`, printed as written",
+    ),
+    (
+        "islandInterpolated[2]",
+        56,
+        "island line: `\"off\"`, printed as written",
+    ),
+    (
+        "islandInterpolated[3]",
+        40,
+        "island line: refused (a `,` added before `]`), printed as written",
+    ),
+    (
+        "islandInterpolated[4]",
+        40,
+        "island line: refused (a `,` added before `]`), printed as written",
+    ),
+    (
         "keywordStatement[1]",
         2,
         "no break point: `return true;` at 12 columns",
@@ -247,6 +282,28 @@ fn the_token_stream_tells_significant_changes_apart() {
         ("a <cfset x = 1> b\n", "a <cfset x = 1>b\n"),
         // A comment's text.
         ("<!--- a b --->\n", "<!--- a c --->\n"),
+        // In an island handed off with its `#…#`: one changed, dropped,
+        // moved past another, or a `##` dropped.
+        (
+            "<cfoutput><script>\nf(#a#, #b#);\n</script></cfoutput>\n",
+            "<cfoutput><script>\nf(#a#, #c#);\n</script></cfoutput>\n",
+        ),
+        (
+            "<cfoutput><script>\nf(#a#, #b#);\n</script></cfoutput>\n",
+            "<cfoutput><script>\nf(#a#);\n</script></cfoutput>\n",
+        ),
+        (
+            "<cfoutput><script>\nf(#a#, #b#);\n</script></cfoutput>\n",
+            "<cfoutput><script>\nf(#b#, #a#);\n</script></cfoutput>\n",
+        ),
+        (
+            "<cfoutput><style>\n##a { color: red }\n</style></cfoutput>\n",
+            "<cfoutput><style>\na { color: red }\n</style></cfoutput>\n",
+        ),
+        (
+            "<cfoutput><script>\nf('#x( \"a\" )#');\n</script></cfoutput>\n",
+            "<cfoutput><script>\nf('#x( \"b\" )#');\n</script></cfoutput>\n",
+        ),
     ] {
         assert!(
             caught(src, out, Mode::Tags),
@@ -281,6 +338,11 @@ fn the_token_stream_tells_significant_changes_apart() {
         ),
         // A tag comment's spacers and its own-line form.
         ("<!---a--->\n", "<!---\n    a\n--->\n"),
+        // An island handed off with its `#…#`: its text is the formatter's.
+        (
+            "<cfoutput><script>\nf( #a#,#b# )\n</script></cfoutput>\n",
+            "<cfoutput>\n    <script>\n        f(#a#, #b#);\n    </script>\n</cfoutput>\n",
+        ),
         // A CF tag among attributes moved to a line of its own.
         (
             "<td <cfif x>class=\"a\"</cfif> id=\"b\">\n",

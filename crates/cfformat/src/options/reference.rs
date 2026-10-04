@@ -407,17 +407,24 @@ const REFERENCE: &[OptionInfo] = &[
     ),
     island_ex(
         "islands.css",
-        "How pure `<style>` islands are formatted in tag mode (`.css`; see `islands.js` and \
-         `islands.config`). A body with a line ending in `\\` (a CSS string continued over a \
-         line) prints as it is, byte for byte.",
+        "How `<style>` islands are formatted in tag mode (`.css`; see `islands.js`, which \
+         says which islands are handed off, and `islands.config`). A body with a line ending \
+         in `\\` (a CSS string continued over a line) prints as it is, byte for byte.",
         "<div>\n<style>\n.a { color: red; }\n  .b { color: blue; }\n</style>\n</div>\n",
         "{}",
     ),
     island_ex(
         "islands.js",
-        "How pure JavaScript `<script>` islands are formatted in tag mode: no `type`, a \
-         JavaScript MIME type (`.js`) or `module` (`.mjs`). An island is pure when it holds no \
-         CFML tag, `#expr#` or tag comment. \"oxc\", the default, formats it in process with \
+        "How JavaScript `<script>` islands are formatted in tag mode: no `type`, a \
+         JavaScript MIME type (`.js`) or `module` (`.mjs`). An island is handed off when it \
+         holds no CFML tag or tag comment; inside `<cfoutput>` it may hold `#expr#` and `##`, \
+         which the formatter sees as a placeholder as wide as the `#expr#` prints and as `#`, \
+         and which are put back after: a string holding a `#expr#` keeps its quote, and an \
+         island whose `#expr#` would not come back as they went (out of their string, a \
+         parenthesis around one dropped, a comma added after one before `]` or `)`, no longer \
+         joined to the word they touch, an operator now against one) prints as it is, with a \
+         warning. \
+         \"oxc\", the default, formats it in process with \
          the oxc formatter, which prints what prettier prints with its default options (double \
          quotes, semicolons, trailing commas) or with the options of the project's \
          `.prettierrc` (see `islands.config`): nothing needs to be installed. The island's text \
@@ -430,16 +437,19 @@ const REFERENCE: &[OptionInfo] = &[
          never changes a string. An island that does not parse is a warning and prints as it \
          is. \"off\" prints the island as it is, shifted as a whole so that no line sits left \
          of that indentation, or byte for byte, not shifted at all, when it holds a backtick or a line \
-         ending in `\\`; an impure island and one inside a code fence always print that way. \
+         ending in `\\`; an island holding a CFML tag or a tag comment, one whose `#expr#` \
+         prints over lines, one with nothing but whitespace around its `#expr#`, and one \
+         inside a code fence always print that way. \
          A `type` holding CFML (`type=\"#kind#\"`) names no language: the body is text.",
         "<div>\n<script>\nvar a = 1;\nif (a) {\n  b();\n}\n</script>\n</div>\n",
         "{}",
     ),
     island_ex(
         "islands.json",
-        "How pure JSON `<script>` islands are formatted in tag mode: `application/json`, \
+        "How JSON `<script>` islands are formatted in tag mode: `application/json`, \
          `application/ld+json`, `importmap` and `speculationrules` (`.json`; see `islands.js` \
-         and `islands.config`).",
+         and `islands.config`). One holding `#expr#` or `##` prints as it is: the JSON \
+         formatter takes no placeholder outside a string.",
         "<script type=\"application/json\">\n{\"a\": 1}\n</script>\n",
         "{}",
     ),
