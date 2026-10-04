@@ -58,6 +58,9 @@ or `cfdoc` directly, by the same path or git source.
   lists, in source order, what printed as written instead of formatted —
   `Warning { path, line, kind, message }`, `WarningKind::Island { key }` for
   an island oxc refuses (a parse error: `file:line: islands.js: message`)
+  or whose `#…#` the checks refuse (``file:line: islands.js: what precedes
+  the #…# on line 12 changed from `(` to nothing``, see "Island
+  formatting")
   and `WarningKind::Recovered(reason)` for a region the parse did not
   understand (`cfparse::Tree::recoveries`: `file:line: not formatted: an
   unmatched run` / `a stray closer` / `an unclosed block` / `nesting past
@@ -188,7 +191,7 @@ one in this workspace's `Cargo.toml`; keep the two in step.
 | `print/alignment.rs` | `alignment.consecutive.assignments`: the run partition and padding used by statement lists (`x = …`, `var x = …`, `param x = …`), delimited lists (struct members, named arguments, parameter defaults, `cfhttp(…)` attributes; only when the list breaks) and attribute groups; `alignment.consecutive.properties` / `.params`: the attribute runs of a statement list (`property …;` and attribute-form `param …;` statements with the same attribute names, case-insensitive), every attribute but the last padded to the widest of its column, only when the statement prints on one line |
 | `print/strings.rs` | quote style, the quote of a string holding one (Prettier's fewer escapes by default) and its re-escaping, `#expr#` |
 | `print/tags.rs` | tag mode: the document root, tags and tag bodies (`tags.lowercase`; `tags.body.indent`, under `"cfml"` a paired CF tag body that starts with HTML at the tag's own indent; attributes through the shared group, never padded (`attributes.key_value.padding` is for script), a CF tag's quoted values in `strings.attributes.quote`, an HTML tag's as written, as are those in a CF tag body inside an HTML tag's attribute list (`<div <cfif x>id="y"</cfif>>`); `<cfset>` / `<cfreturn>` / `<cfif>` / `<cfelseif>` script with `>` on its own line when it breaks, unless it ends on a call's, struct's, array's or index's bracket, and after a `//` comment that ends the script's last line (`<cfset s = // c` ⏎ `{ a: 1 }>` prints `<cfset s = {a: 1} // c` ⏎ `>`: after `>` the comment would be text), `<cfelse>` / `<cfelseif>` on their own line at the tag's indent, the segments between them indented, block tags from `data/tags.json`; a body on its tag's line keeps whitespace at either end as one space when the page can show it — an HTML body whose tag is not a block tag (`<span>hello </span>world`), or a CF body, which the browser never sees (`<cfoutput>#a# </cfoutput>`) — and drops it at the ends of a block tag's body (`<div> a </div>` is `<div>a</div>`); whitespace here is ASCII, as in HTML: a no-break space is text and is never trimmed; a body that breaks has line breaks at its ends instead, except an inline HTML body, which breaks at an end only where the source had whitespace there (`<a href="x"><img></a>` stays glued); for whitespace, a tag whose surrounding and edge whitespace a browser never renders counts as a block tag too (`spacelessTags` in `data/tags.json`, this project's own list beside the vendored `blockTags`: `<html>`, `<head>`, `<title>`, the parts of a table, `<select>`, `<option>`, …), without the line break after it; a line break follows a block tag's body and a CF tag body, unless what follows the CF body is glued to it in the source (`</cfif>more`) and is not such a tag; a paired `<pre>` / `<textarea>` (any case) prints its body exactly as written between its two formatted tags, every byte but the line endings (`newline`), CF tags in it left as they are (still parsed: they run on the server) — one whose tags the tree left bare, because they cross a CF body, is not recognised and its text is laid out as any other; a tag the tree left bare — an HTML tag that crosses a CF body, a CF tag paired across an island, an unmatched HTML tag — prints inline, on its own line when it had one, at the indentation around it; a CF tag the file-wide CF walk cannot pair makes its region print as written, with a warning), `<!--- --->` comments, `<cfscript>` bodies (a statement list one level inside the tag, or at the tag's own indent under `tags.islands.indent: false`; `Printer::body_floor` decides that depth for a `<cfscript>` body and for every island body (`<script>`, `<style>`, `<cfquery>`, `<cfjava>`), and the statement printers' own indent count follows it; an empty body is `<cfscript>` ⏎ `</cfscript>`) and ```` ``` ```` code fences |
-| `print/islands.rs` | islands: a pure `<script>` / `<style>` (JavaScript, a module, JSON — `application/json`, `application/ld+json`, `importmap`, `speculationrules` — or CSS) whose `islands.*` option is not `"off"` is handed to oxc as written, at a width of `max_columns` less its body's indentation (at least 40), and its output printed one level inside the tag (`tags.islands.indent`; at the tag's indent under `false`), a line inside a template literal, a continued string or a raw block comment (`islands::literal_lines`) as written; every other island (`<cfquery>`, `<cfjava>`, impure or `"off"` islands, islands inside a code fence) is verbatim (`TagCtx::verbatim`), its lines keeping their indentation relative to each other and shifted as a whole so that none sits left of its floor — one level inside its tag under `tags.islands.indent`, else the tag's indent, column 0 inside a code fence — and never left, the lines a CF tag in it breaks onto following that floor (`Verbatim::Shift`) — or, when its text may hold a string spanning lines (`islands::keeps_literal_text`), every line as written, not shifted, trimmed or re-indented, but whitespace-only edge lines dropped (the last line's trailing whitespace goes with the `hardline` before the closing tag) and the closing tag on its own line (`Verbatim::Raw`); a `<script>` / `<style>` body of no language (`Lang::Unknown`: a type the formatter does not know, or one CFML supplies) is never handed off and prints every line as written, its whitespace-only edge lines included, and the closing tag right after the last one (`Verbatim::Exact`); in every mode a line ending is the output's (`newline`), not the source's; a tag inside an island (`<cfqueryparam>` in a SQL line) never breaks, whatever the width, unless it holds a forced break (a `//` comment, a function body), when it breaks as it does outside an island; a `<script>` / `<style>` whose body starts with CFML and holds no island prints as written |
+| `print/islands.rs` | islands: a `<script>` / `<style>` (JavaScript, a module, JSON — `application/json`, `application/ld+json`, `importmap`, `speculationrules` — or CSS) whose `islands.*` option is not `"off"`, outside a code fence, is handed to oxc when it is pure (one text: as written) or, for JavaScript and CSS, holds only text, `##` and `#…#` that print on one line (`Printer::formatted_island`, `Printer::interpolated`: `##` as `#` and each `#…#` as a placeholder, put back and checked by `islands::holes`, see "Island formatting"), at a width of `max_columns` less its body's indentation (at least 40), and its output printed one level inside the tag (`tags.islands.indent`; at the tag's indent under `false`), a line inside a template literal, a continued string or a raw block comment (`islands::literal_lines`) as written; every other island (`<cfquery>`, `<cfjava>`, one holding a CF tag or a tag comment, a JSON island holding `#…#` or `##`, `"off"` islands, refused ones, islands inside a code fence) is verbatim (`TagCtx::verbatim`), its lines keeping their indentation relative to each other and shifted as a whole so that none sits left of its floor — one level inside its tag under `tags.islands.indent`, else the tag's indent, column 0 inside a code fence — and never left, the lines a CF tag in it breaks onto following that floor (`Verbatim::Shift`) — or, when its text may hold a string spanning lines (`islands::keeps_literal_text`), every line as written, not shifted, trimmed or re-indented, but whitespace-only edge lines dropped (the last line's trailing whitespace goes with the `hardline` before the closing tag) and the closing tag on its own line (`Verbatim::Raw`); a `<script>` / `<style>` body of no language (`Lang::Unknown`: a type the formatter does not know, or one CFML supplies) is never handed off and prints every line as written, its whitespace-only edge lines included, and the closing tag right after the last one (`Verbatim::Exact`); in every mode a line ending is the output's (`newline`), not the source's; a tag inside an island (`<cfqueryparam>` in a SQL line) never breaks, whatever the width, unless it holds a forced break (a `//` comment, a function body), when it breaks as it does outside an island; a `<script>` / `<style>` whose body starts with CFML and holds no island prints as written |
 | `print/mod.rs` | dispatch, ignore regions (`cfformat-ignore`, `@formatter:off`) |
 
 There is no fallback printer any more: `Printer::element` has an arm for every
@@ -308,12 +311,17 @@ platform (the Windows and macOS CI jobs included): the `island*` goldens have
 an `"off"` case (the verbatim shift, or byte for byte) and a case with the
 defaults (oxc's output, each reviewed against prettier 3.9.6);
 `islandTemplateLiteral`, `islandLiteralNested` and `islandVerbatimLiterals`
-pin literal preservation on both paths, `islandDynamicType` a `type` holding
+pin literal preservation on both paths, `islandInterpolated` the islands
+holding `#…#` and `##` in `<cfoutput>` (every site of a `#…#`, the refusals
+with their warnings, the cases left as written silently, the same script
+outside `<cfoutput>`, a `.prettierrc` with `singleQuote`; its source is a
+`source.cfm`, read in tag mode as the CLI reads a `.cfm`; any other fixture's
+is `source.cfc`), `islandDynamicType` a `type` holding
 CFML, `islandOpaqueBody` the bodies of no language (a newline around `type=`,
 generated attributes, static unknown types) byte for byte,
 `cfquerySqlLiterals` the SQL scan and `functionTypeJavaTextBlock` a Java
 text block with an escaped `"""`. The goldens and the invariants
-format each case as its fixture's `source.cfc` (`common::format_case`), and
+format each case as its fixture's source file (`common::format_case`), and
 every case that does not name `islands.config` runs with it `"off"`, so no
 `.prettierrc` above the checkout can move an expectation (`tests/printer.rs`
 and `tests/reference.rs` format with it `"off"` too). Two fixtures carry a
@@ -367,12 +375,20 @@ tag or `#expr#` is glued to what precedes it; separator commas are kept, a trail
 the comma after an empty item dropped; comments are compared on their own,
 in order, each line of their text trimmed, a doc comment's text not at all
 under `alignment.doc_comments`, which rewrites it; the test
-`the_token_stream_tells_significant_changes_apart` pins what it catches);
+`the_token_stream_tells_significant_changes_apart` pins what it catches;
+an island handed off is one `island` entry, its text the formatter's, and
+one holding `#…#` is followed by its `##` and `#…#` in order, each `#…#`
+streamed as any expression is, so none is dropped, added, reordered or has
+a string changed);
 reparse (no new `invalid` / `other` token, the same
 number of top-level statements, the same number of comments); literal
 preservation (every JavaScript island handed off keeps its template-literal
 quasis and its block comments, a comment's lines compared without their
-leading whitespace: `common::check_literals`, also run by
+leading whitespace, a JSDoc comment's — every line after the first
+starting with `*` — without trailing whitespace either, which the formatter
+drops as prettier does; an island holding `#…#` is parsed with each `##` as
+`#` and each `#…#` as `cfhole` and its number, the same in the input and
+the output: `common::check_literals`, also run by
 `tests/islands_real.rs`); exact preservation (an island of no language
 keeps its text byte for byte, a `<cfquery>` the multiset of its SQL
 literals under each dialect reading, a Java block or `<cfjava>` the
@@ -386,7 +402,9 @@ segments, chains inside calls and keyword groups, chain comments, source line
 breaks that must not matter, alignment runs and doc comments, and the tag-mode
 layouts: block vs inline bodies, blank-line capping, `<cfelse>`, attribute
 breaking, `tags.lowercase`, `tags.body.indent`, `tags.islands.indent` (the shift
-floor raise-only, the `true` → `false` → `true` round trip), tag comments, islands, `<cfscript>` and code
+floor raise-only, the `true` → `false` → `true` round trip), tag comments, islands (and those holding `#…#`: each shape's
+second run, each refusal's warning, through oxc and through an
+`IslandFormatter` that moves a placeholder), `<cfscript>` and code
 fences) and one case per soak regression. `tests/reference.rs` renders the root `SETTINGS.md` from
 `options::reference()`, formatting every example with the formatter itself,
 and fails when the checked-in file differs.
@@ -615,7 +633,7 @@ run (`warning: <file>: …` on stderr); an unreadable or invalid settings file
 is an error naming it, printed once, and fails every file it applies to.
 
 **Island formatting** (`islands.js`, `islands.css`, `islands.json`: `"oxc"`
-or `"off"`). The default, `"oxc"`, formats a pure island in process with the
+or `"off"`). The default, `"oxc"`, formats an island in process with the
 oxc formatter crates (a fraction of a millisecond an island, nothing on
 `PATH`); its output
 is what prettier prints with its default options (double quotes, semicolons,
@@ -655,7 +673,64 @@ block comment oxc prints raw (one whose lines do not all start with `*`):
 those keep their source columns and trailing whitespace, so formatting never
 changes a string. An island oxc cannot parse prints
 `file:line: islands.js: <oxc's message>` and stays verbatim; the exit code is
-unaffected. `"off"` prints the island as written, shifted as a whole until
+unaffected.
+
+**Islands holding `#…#`.** Inside `<cfoutput>`, a JavaScript or CSS island
+whose children are only text, `##` and `#…#` with both delimiters is handed
+off too (`Printer::interpolated`, `islands::holes`); a JSON island holding
+either is not (the JSON formatter refuses a placeholder outside a string and
+rewrites a string's quote whatever it holds). The hand-off text is the
+island's text with each `##` as `#` and each `#…#` as a placeholder: an
+identifier in both languages, the stem (the first of `zq`, `qx`, `jq`,
+`vq`, `xj`, `qj` the text does not hold; with none free the island is not
+handed off), the `#…#`'s number and `_`, so none is a prefix of another,
+padded with `_` to the width the `#…#` prints — `Printer::template_expression`
+printed flat, at an unbounded width, so a second run measures the same; a
+`#…#` narrower than its placeholder's minimum is measured that wide. The
+first `#…#` of a `'…'` or `"…"` string has the other quote character in its
+placeholder, as many as the string's own quote less the other's, plus one,
+so oxc, which keeps the quote that needs fewer escapes, keeps the string's
+quote whatever `singleQuote` says (what the `#…#` emits may hold either).
+The text then goes through `hand_off_text`, the width and the cache as a
+pure island's (the placeholders are deterministic). Where each `#…#` sits
+— code, a string and its quote, a template literal's text, a comment, a
+regular expression, an unquoted `url(…)` — is read by the scan
+`nesting_depth` makes, on the hand-off text and again on the output (its
+regular-expression rule is the heuristic described above: a misread reads
+both texts alike, and a `#…#` in a regular expression or a `url(…)` gets
+the checks on its neighbours as one in code does). The output is refused,
+with a warning naming the `#…#`'s line, when a placeholder is not there
+exactly once (`the #…# on line 4 is missing from the formatted text`, `… is
+in the formatted text 2 times`), comes back out of order (`… moved past
+another #…#`) or at another kind of place (`… moved from a '…' string into
+code`); and, for one in code, a regular expression or a `url(…)`, when the
+nearest non-blank character before it changed (``what precedes the #…# on
+line 4 changed from `(` to nothing``: oxc drops the parentheses around a
+name, and the `#…#` may emit `function () {…}`), when the one after it
+changed other than by a `;` added (a statement's terminator) or a `,` added
+before `}` (a property's trailing comma), each in front of what followed it
+(``what follows … changed from `)` to `;` ``: `x = (y + #b#);` printed
+`x = y + #b#;`; ``a `,` was added after the #…# on line 4, before `]` ``:
+an array of one `#…#` that emits an empty list would gain an element),
+when the number of parentheses directly around it changed (`the
+parentheses around the #…# on line 4 changed`: `foo((#a#))` printed
+`foo(#a#)` passes the other checks, and `1, 2` is then two arguments), when
+a word character it touched in the source (a letter, a digit, `_`, `$`,
+`-`, `%`, `.`, `#`, non-ASCII) no longer touches it (``the #…# on line 4
+is no longer joined to the `p` after it``), or when an operator character
+it was apart from now touches it (``the #…# on line 4 is now joined to the
+`-` before it``: `- #c#` printed `-#c#` reads `--1` when it emits `-1`).
+Otherwise each `#` becomes
+`##` again and each placeholder its `#…#`'s printed text; no line moves, so
+the literal lines stay right (a line holding a `##` is a column wider than
+oxc measured). A refusal, oxc's or the checks', prints the island as
+written and counts as an island warning (`IslandStats`, the `islands:`
+line). Left as written with no warning, since nothing was attempted: an
+island holding anything else (a CF tag, a tag comment), a `#…#` whose
+printed form is not one line (a forced break, a line comment), an island
+with nothing but whitespace outside its `#…#` (`<style>#css#</style>`), and
+a text holding a `#` (a lone hash the parse recovered). `"off"` and
+`--no-islands` print every such island as before. `"off"` prints the island as written, shifted as a whole until
 no line sits left of that indentation (never left) — unless its text may hold a string spanning lines (JS: a
 backtick or a line ending in `\`; CSS: a line ending in `\`, which is not
 handed to oxc either; `<cfquery>`: a string, quoted identifier or dollar

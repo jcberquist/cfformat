@@ -26,6 +26,30 @@ previous layout, byte for byte; on a file already formatted with `true` it
 brings `<cfscript>` bodies and formatted blocks back to the tag's indent,
 but leaves a raised block as written where it is.
 
+**Changed.** A `<script>` or `<style>` block inside `<cfoutput>` whose only
+CFML is `#expr#` and `##` is now formatted; it used to print as written.
+The formatter is handed each `##` as `#` and each `#expr#` as a name as wide
+as it prints, and both come back as they were. Before:
+`<script>` ⏎ `var api = { url : '/sites/#prc.slug#', token : #toJson( prc.jwt )# }` ⏎
+`$( '##form' ).validate()` ⏎ `</script>`; now:
+`<script>` ⏎ `    var api = { url: '/sites/#prc.slug#', token: #toJson(prc.jwt)# };` ⏎
+`    $("##form").validate();` ⏎ `</script>`. What is kept: the `#expr#`
+themselves (printed as any `#expr#` is), and the quote of a string holding
+one, whatever the project's `singleQuote` says, since what the expression
+emits may hold either quote; a string without one is the formatter's, as in
+any block. A block whose `#expr#` would not come back as they went prints
+as written with a warning, such as ``islands.js: what precedes the #…# on
+line 12 changed from `(` to nothing`` — oxc drops the parentheses of
+`(#expr#).call()`, which breaks the page when the expression emits a
+function — or ``a `,` was added after the #…# on line 12, before `]` ``;
+so does one oxc cannot parse. Left as written with no warning: a block
+holding a CF tag or a tag comment, a `#expr#` that prints over more than
+one line, a block with nothing but whitespace around its `#expr#`
+(`<style>#css#</style>`), and a JSON block holding `#expr#` or `##`. This
+changes the output of templates holding such blocks, typically a view's
+JavaScript; `"islands.js": "off"` and `"islands.css": "off"` print them as
+written, as before.
+
 **Builtins.** `configImport`, `dbPoolClear`, `isInThread` and `queryLazy`
 (Lucee), which cfdocs now lists, are builtins. Their calls are cased by
 `function_call.casing.builtin` instead of `.userdefined`: with the default

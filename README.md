@@ -4,7 +4,8 @@
 script and tag based code (`.cfc`, `.cfs`, `.cfm`). It reads a file, prints
 it again at a column width with consistent spacing, indentation, quotes and
 line breaks, and leaves what it cannot format untouched. In template files,
-any `<script>` and `<style>` blocks that do not contain CFML code are
+any `<script>` and `<style>` blocks that hold no CFML code, or only `#expr#`
+and `##` inside `<cfoutput>`, are
 formatted too, in process, by the [oxc](https://oxc.rs) formatter crates:
 the output is Prettier's, at cfformat's width and indentation and with the
 options of the project's `.prettierrc` when there is one, and nothing needs
@@ -153,6 +154,34 @@ indentation are always cfformat's. `"islands.config": "off"` ignores those
 files, and `"islands.js"`, `"islands.css"` or `"islands.json": "off"` prints
 that kind of block as written.
 
+A block inside `<cfoutput>` whose only CFML is `#expr#` and `##` is
+formatted too: the formatter sees each `#expr#` as a name as wide as it
+prints and each `##` as `#`, and gets them back as they were. A string
+holding a `#expr#` keeps its quote, since what the expression emits may
+hold either; a block whose `#expr#` would not come back as they went (a
+parenthesis around one dropped, a comma added after one before `]`, an
+operator now against one) prints as written with a warning.
+
+```cfm
+<cfoutput>
+<script>
+var api = { url : '/sites/#prc.slug#/items', token : #toJson( prc.jwt )# }
+$( '##form' ).validate()
+</script>
+</cfoutput>
+```
+
+prints as
+
+```cfm
+<cfoutput>
+    <script>
+        var api = { url: '/sites/#prc.slug#/items', token: #toJson(prc.jwt)# };
+        $("##form").validate();
+    </script>
+</cfoutput>
+```
+
 ## Migrating from CommandBox
 
 cfformat reads CommandBox cfformat's `.cfformat.json` files, but the output
@@ -246,7 +275,8 @@ the first three.
   kept every blank line between statements.
 - **Templates are formatted in full.** `cfformat` formats the CF and HTML tags
   of any template, and the `<script>` and `<style>` blocks in it with
-  Prettier's rules. Two new keys choose how tag bodies indent:
+  Prettier's rules, those inside `<cfoutput>` holding `#expr#` included.
+  Two new keys choose how tag bodies indent:
   `tags.body.indent` for CF tag bodies, and `tags.islands.indent`
   for the bodies of `<cfscript>`, `<script>`, `<style>`, `<cfquery>` and
   `<cfjava>`; `"islands.js"`, `"islands.css"` and `"islands.json": "off"`
@@ -443,11 +473,17 @@ block`, `a stray closer`, `an unmatched run`, `nesting past the limit`).
   `class="<cfif …>active"</cfif>"`) or inside a `style="…"` attribute, or a
   `<cfoutput>` opened inside a `<style>` block and closed after it, is paired
   correctly but printed where it is, without indenting what it wraps.
-- **`<script>` / `<style>` blocks are formatted only when they are pure**:
-  no CFML inside (a CF tag, or a `#expr#` inside `<cfoutput>`, makes the
-  block print as written), and a `type` the formatter knows (JavaScript, a
-  module, JSON, CSS). A block oxc cannot parse prints as written with a
-  warning (`path:line: islands.js: <message>`).
+- **`<script>` / `<style>` blocks holding CFML tags are not formatted**: a
+  block is formatted when its `type` is one the formatter knows (JavaScript,
+  a module, JSON, CSS) and it holds no CFML, or — JavaScript and CSS inside
+  `<cfoutput>` — only `#expr#` and `##`. A CF tag or a tag comment inside
+  (a `<cfif>` body may hold part of a statement), a `#expr#` that prints
+  over more than one line, nothing but whitespace around the `#expr#`
+  (`<style>#css#</style>`), or a JSON block holding `#expr#` or `##` makes
+  the block print as written, with no warning. A block oxc cannot parse, or
+  whose `#expr#` would not come back as they went, prints as written with a
+  warning (`path:line: islands.js: <message>`, such as ``what precedes the
+  #…# on line 12 changed from `(` to nothing``).
 - **Some blocks keep their text line for line.** Formatting never moves a
   line that starts inside a multi-line string: in a formatted `<script>`,
   the lines inside a template literal or a string continued with `\` keep
@@ -462,7 +498,7 @@ block`, `a stray closer`, `an unmatched run`, `nesting past the limit`).
     spaces included, and the closing tag follows the last line directly,
     whatever `islands.*` or `--no-islands` say. Only the CF tags and `#…#`
     inside it are formatted, in place.
-  - a `<cfquery>`, or a block printed as written (impure, refused, or under
+  - a `<cfquery>`, or a block printed as written (holding CFML, refused, or under
     `"islands.*": "off"`), whose text may hold a string spanning lines — for
     SQL, a string, quoted identifier or dollar quote that spans a line or
     that the formatter cannot see closed — keeps each line's text,
