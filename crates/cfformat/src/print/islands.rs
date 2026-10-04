@@ -3,11 +3,11 @@
 //! `<cfquery>` SQL, `<script>` JS, `<style>` CSS and `<cfjava>` print as they
 //! are: every line keeps its indentation relative to the others, blank lines
 //! survive and nothing is re-wrapped. The one change is that an island whose
-//! least-indented line sits left of its floor — the owning tag's indent, or
-//! one level inside it for a `<script>` / `<style>` under
-//! `tags.script_and_style.indent` ([`Printer::body_floor`]) — is shifted
-//! right as a whole until that line reaches the floor (the least leading
-//! indent of the non-blank lines), measured in columns with a tab counting
+//! least-indented line sits left of its floor — one level inside the owning
+//! tag under `tags.islands.indent`, else the tag's own indent
+//! ([`Printer::body_floor`]) — is shifted right as a whole until that line
+//! reaches the floor (the least leading indent of the non-blank lines),
+//! measured in columns with a tab counting
 //! `indent_size` and re-emitted by [`Printer::indent_to_column`]: whole
 //! indents as tabs under `tab_indent`, the remainder as spaces. That shift,
 //! the per-line trim and the re-rendering are safe only when no string spans
@@ -153,8 +153,7 @@ impl Printer<'_> {
     /// closing tag starts its own line at the tag's indent (`ctx`) when the
     /// island holds a newline or a tag; otherwise everything stays on one
     /// line. `floor` is the body's context ([`Printer::body_floor`]): `ctx`
-    /// one level deeper for a `<script>` / `<style>` under
-    /// `tags.script_and_style.indent`, else `ctx` itself.
+    /// one level deeper under `tags.islands.indent`, else `ctx` itself.
     ///
     /// A pure island whose `islands.*` option is not `"off"` is formatted
     /// first ([`Printer::formatted_island`]); its lines then sit at the
@@ -185,15 +184,25 @@ impl Printer<'_> {
             _ if self.keeps_literal_text(body) => Verbatim::Raw,
             _ => Verbatim::Shift,
         };
-        let ctx = TagCtx {
+        let inner = TagCtx {
             island: true,
             verbatim,
             ..floor
         };
-        let (lines, tags) = self.island_lines(body, ctx);
+        let (lines, tags) = self.island_lines(body, inner);
         let multi = (lines.len() > 1 || tags) && verbatim != Verbatim::Exact;
         let mut parts = vec![open];
-        parts.push(self.render_island(lines, ctx));
+        let rendered = self.render_island(lines, inner);
+        // Every island line carries its own indentation after a
+        // `literalline`, so the doc's indentation reaches only the lines a
+        // CF tag in the island breaks onto (`<cfset x = {` ⏎ …): under
+        // `Shift` those follow the floor the island's lines were raised to.
+        // A body kept as written has no floor.
+        parts.push(if verbatim == Verbatim::Shift {
+            indent_to(ctx, floor, vec![rendered])
+        } else {
+            rendered
+        });
         if multi {
             parts.push(hardline());
         }

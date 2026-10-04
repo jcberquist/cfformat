@@ -94,9 +94,9 @@
                 </cfscript>
             </cfif>
             <cfquery name="flush">
-            SELECT a
-            FROM t
-            WHERE b = <cfqueryparam value="#b#">
+                SELECT a
+                FROM t
+                WHERE b = <cfqueryparam value="#b#">
             </cfquery>
             <cfquery name="indented">
                 SELECT a
@@ -322,9 +322,9 @@ one = 1;
 				</cfscript>
 			</cfif>
 			<cfquery name="flush">
-			SELECT a
-			FROM t
-			WHERE b = <cfqueryparam value="#b#">
+				SELECT a
+				FROM t
+				WHERE b = <cfqueryparam value="#b#">
 			</cfquery>
 			<cfquery name="indented">
 				SELECT a
@@ -441,9 +441,9 @@ one = 1;
                 </cfscript>
             </cfif>
             <cfquery name="flush">
-            SELECT a
-            FROM t
-            WHERE b = <cfqueryparam value="#b#">
+                SELECT a
+                FROM t
+                WHERE b = <cfqueryparam value="#b#">
             </cfquery>
             <cfquery name="indented">
                 SELECT a
@@ -551,9 +551,9 @@ var t = `line one
                 </cfscript>
             </cfif>
             <cfquery name="flush">
-            SELECT a
-            FROM t
-            WHERE b = <cfqueryparam value="#b#">
+                SELECT a
+                FROM t
+                WHERE b = <cfqueryparam value="#b#">
             </cfquery>
             <cfquery name="indented">
                 SELECT a

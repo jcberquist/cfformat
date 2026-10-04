@@ -12,7 +12,7 @@
 </cfoutput>
 <div>
     <cfquery name="q">
-    SELECT 1
+        SELECT 1
     </cfquery>
 </div>
 <a onclick="go( 1 )">x</a>
@@ -32,7 +32,7 @@
 </cfoutput>
 <div>
     <cfquery name="q">
-    SELECT 1
+        SELECT 1
     </cfquery>
 </div>
 <a onclick="go( 1 )">x</a>

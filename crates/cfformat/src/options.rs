@@ -163,11 +163,11 @@ pub struct Options {
     /// (`tags.body.indent`).
     #[serde(rename = "tags.body.indent")]
     pub tags_body_indent: TagBodyIndent,
-    /// Whether the body of a paired `<cfscript>`, `<script>` or `<style>` tag
-    /// is indented one level inside the tag rather than printed at the tag's
-    /// own indent (`tags.script_and_style.indent`).
-    #[serde(rename = "tags.script_and_style.indent")]
-    pub tags_script_and_style_indent: bool,
+    /// Whether the body of a paired `<cfscript>`, `<script>`, `<style>`,
+    /// `<cfquery>` or `<cfjava>` tag is indented one level inside the tag
+    /// rather than printed at the tag's own indent (`tags.islands.indent`).
+    #[serde(rename = "tags.islands.indent")]
+    pub tags_islands_indent: bool,
     /// Asterisk alignment in block and doc comments (`comment.asterisks`).
     #[serde(rename = "comment.asterisks")]
     pub comment_asterisks: Asterisks,
@@ -251,7 +251,7 @@ impl Default for Options {
             attributes_key_value_padding: false,
             tags_lowercase: true,
             tags_body_indent: TagBodyIndent::Always,
-            tags_script_and_style_indent: true,
+            tags_islands_indent: true,
             comment_asterisks: Asterisks::Align,
             multiline_comma: CommaStyle::Trailing,
             method_call_chain_multiline: 0,
@@ -1737,15 +1737,15 @@ mod tests {
     }
 
     #[test]
-    fn tags_script_and_style_indent_values() {
-        assert!(Options::default().tags_script_and_style_indent);
+    fn tags_islands_indent_values() {
+        assert!(Options::default().tags_islands_indent);
         for value in [true, false] {
-            let json = format!(r#"{{"tags.script_and_style.indent": {value}}}"#);
+            let json = format!(r#"{{"tags.islands.indent": {value}}}"#);
             let (o, warnings) = Options::from_json(&json).unwrap();
-            assert_eq!(o.tags_script_and_style_indent, value);
+            assert_eq!(o.tags_islands_indent, value);
             assert!(warnings.is_empty());
         }
-        assert!(Options::from_json(r#"{"tags.script_and_style.indent": "always"}"#).is_err());
+        assert!(Options::from_json(r#"{"tags.islands.indent": "always"}"#).is_err());
     }
 
     #[test]

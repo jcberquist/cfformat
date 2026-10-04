@@ -33,8 +33,8 @@ use crate::options::TagBodyIndent;
 pub(crate) enum Verbatim {
     /// Every line keeps its indentation relative to the others and loses
     /// its trailing whitespace; the island is shifted right as a whole when
-    /// it sits left of its floor ([`Printer::body_floor`]: the tag's indent,
-    /// or one level inside it for a `<script>` / `<style>`), and never left.
+    /// it sits left of its floor ([`Printer::body_floor`]: one level inside
+    /// the tag, or the tag's indent), and never left.
     Shift,
     /// Byte for byte: the island's text may hold a string or literal
     /// spanning lines ([`crate::islands::keeps_literal_text`]), so no line
@@ -441,7 +441,7 @@ impl Printer<'_> {
             .iter()
             .any(|n| n.as_element().is_some_and(|c| owns_island(e, name, c)))
         {
-            let floor = self.body_floor(e, name, ctx);
+            let floor = self.body_floor(e, ctx);
             return self.island_body(open_doc, body, close_doc, ctx, floor);
         }
         if is_preformatted(e, name) {
@@ -478,12 +478,12 @@ impl Printer<'_> {
         if e.cf_kind() == Some(CfKind::Script) {
             // The statements sit at the body's floor: one level in by
             // default, the tag's own indent under
-            // `tags.script_and_style.indent: false`. The statement printers'
+            // `tags.islands.indent: false`. The statement printers'
             // own count of the indentation (`at_indent`) is the floor's too,
             // so whatever reads it (the attribute alignment) agrees with what
             // prints. A `<!--- --->` in there is verbatim, as it is in a
             // script file.
-            let floor = self.body_floor(e, name, ctx);
+            let floor = self.body_floor(e, ctx);
             let stmts = self.at_indent(floor.depth, || {
                 self.with_tag_ctx(
                     TagCtx {
@@ -599,22 +599,20 @@ impl Printer<'_> {
         Doc::Concat(parts)
     }
 
-    /// The context the body of `e`, a paired tag named `name` printed in
-    /// `ctx`, sits at when that body is a `<cfscript>` statement list or an
-    /// island ([`Printer::island_body`]): the depth its lines are indented
-    /// to, the floor of a verbatim island's shift and what the width handed
-    /// to the island formatter is measured from. A `<cfscript>`, `<script>`
-    /// or `<style>` body is one level inside its tag under
-    /// `tags.script_and_style.indent` (the default) and at the tag's own
-    /// indent otherwise; a `<cfquery>` or `<cfjava>` body always is at the
-    /// tag's. Inside a code fence (`rooted` false) an island keeps the tag's
-    /// context, since it keeps its source columns there; a `<cfscript>`
-    /// body, laid out by the doc printer, is one level in there too.
-    pub(crate) fn body_floor(&self, e: &Element, name: &str, ctx: TagCtx) -> TagCtx {
+    /// The context the body of `e`, a paired tag printed in `ctx`, sits at
+    /// when that body is a `<cfscript>` statement list or an island
+    /// ([`Printer::island_body`]: `<script>`, `<style>`, `<cfquery>`,
+    /// `<cfjava>`): the depth its lines are indented to, the floor of a
+    /// verbatim island's shift and what the width handed to the island
+    /// formatter is measured from. It is one level inside the tag under
+    /// `tags.islands.indent` (the default) and the tag's own context
+    /// otherwise. Inside a code fence (`rooted` false) an island keeps the
+    /// tag's context, since it keeps its source columns there; a
+    /// `<cfscript>` body, laid out by the doc printer, is one level in there
+    /// too.
+    pub(crate) fn body_floor(&self, e: &Element, ctx: TagCtx) -> TagCtx {
         let script = e.cf_kind() == Some(CfKind::Script);
-        let island = e.kind == (ElementKind::TagBody { cf: false })
-            && (name.eq_ignore_ascii_case("script") || name.eq_ignore_ascii_case("style"));
-        if self.opts.tags_script_and_style_indent && (script || (island && ctx.rooted)) {
+        if self.opts.tags_islands_indent && (script || ctx.rooted) {
             ctx.deeper()
         } else {
             ctx

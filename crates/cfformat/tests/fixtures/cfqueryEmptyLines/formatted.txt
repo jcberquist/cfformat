@@ -1,7 +1,7 @@
 <cffunction name="get">
     <cfquery name="myquery">
-    SELECT col, col2
+        SELECT col, col2
 
-    FROM tablename
+        FROM tablename
     </cfquery>
 </cffunction>

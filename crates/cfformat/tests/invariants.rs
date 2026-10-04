@@ -37,12 +37,22 @@ const WIDE: &[(&str, usize, &str)] = &[
     ),
     (
         "cfqueryParamWide[0]",
+        7,
+        "island line: a tag inside an island never breaks",
+    ),
+    (
+        "cfqueryParamWide[0]",
         9,
         "island line: a tag inside an island never breaks",
     ),
     (
         "cfqueryParamWide[1]",
         6,
+        "island line: a tag inside an island never breaks",
+    ),
+    (
+        "cfqueryParamWide[1]",
+        7,
         "island line: a tag inside an island never breaks",
     ),
     (
@@ -88,7 +98,7 @@ const WIDE: &[(&str, usize, &str)] = &[
         "no break point: a `<cfoutput>` attribute entry at 51 columns",
     ),
     (
-        "tagScriptStyleIndent[4]",
+        "tagIslandsIndent[4]",
         23,
         "island line: a verbatim island is raised as a whole, never re-wrapped",
     ),

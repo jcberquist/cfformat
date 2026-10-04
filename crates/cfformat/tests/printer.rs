@@ -1576,11 +1576,11 @@ fn tags_body_indent_cfml_keeps_a_cf_body_that_starts_with_html_flush() {
     );
 }
 
-/// `tags.script_and_style.indent: false`.
-const FLUSH: &str = r#"{"newline": "\n", "tags.script_and_style.indent": false}"#;
+/// `tags.islands.indent: false`.
+const FLUSH: &str = r#"{"newline": "\n", "tags.islands.indent": false}"#;
 
 #[test]
-fn a_verbatim_script_or_style_body_is_raised_to_one_level_in_never_lowered() {
+fn a_verbatim_island_body_is_raised_to_one_level_in_never_lowered() {
     // A `#expr#` in `<cfoutput>` makes the island impure: verbatim, shifted.
     let flush = "<cfoutput>\n<script>\nvar a = #x#;\nif (a) {\n  b();\n}\n</script>\n</cfoutput>\n";
     let raised = concat!(
@@ -1611,15 +1611,28 @@ fn a_verbatim_script_or_style_body_is_raised_to_one_level_in_never_lowered() {
     // A body on the tag's own line stays there.
     let inline = "<cfoutput>\n    <script>var a = #x#;</script>\n</cfoutput>\n";
     assert_eq!(tag(inline), inline);
-    // A `<cfquery>` keeps the tag's indent as its floor.
+    // A `<cfquery>` and a `<cfjava>` body have the same floor.
+    let query = "<div>\n<cfquery name=\"q\">\nSELECT 1\n</cfquery>\n</div>\n";
+    let query_raised =
+        "<div>\n    <cfquery name=\"q\">\n        SELECT 1\n    </cfquery>\n</div>\n";
+    assert_eq!(tag(query), query_raised);
     assert_eq!(
-        tag("<div>\n<cfquery name=\"q\">\nSELECT 1\n</cfquery>\n</div>\n"),
+        tag_with(query, FLUSH),
         "<div>\n    <cfquery name=\"q\">\n    SELECT 1\n    </cfquery>\n</div>\n"
+    );
+    assert_eq!(tag_with(query_raised, FLUSH), query_raised);
+    assert_eq!(
+        tag("<div>\n<cfjava handle=\"h\">\npublic class A {\n  int b;\n}\n</cfjava>\n</div>\n"),
+        concat!(
+            "<div>\n    <cfjava handle=\"h\">\n",
+            "        public class A {\n          int b;\n        }\n",
+            "    </cfjava>\n</div>\n"
+        )
     );
 }
 
 #[test]
-fn script_and_style_indent_round_trips() {
+fn islands_indent_round_trips() {
     let src = concat!(
         "<div>\n<cfscript>\nif (a) {\nb = 1;\n}\n</cfscript>\n",
         "<script>\nvar t = `x\n  y`;\nif (t) {go()}\n</script>\n",
@@ -1649,7 +1662,7 @@ fn script_and_style_indent_round_trips() {
 }
 
 #[test]
-fn a_cfscript_in_a_code_fence_follows_script_and_style_indent() {
+fn a_cfscript_in_a_code_fence_follows_islands_indent() {
     // The fence's tags are laid out by the doc printer at the fence's own
     // indentation, so a `<cfscript>` body there indents like any other.
     let src = "{\n```\n<cfif a>\n<cfscript>\nx = 1;\n</cfscript>\n</cfif>\n```\n}";
@@ -1918,13 +1931,14 @@ fn islands_keep_their_shape() {
     // An empty island keeps the two tags together.
     assert_eq!(tag("<script></script>\n"), "<script></script>\n");
     assert_eq!(tag("<script>\n</script>\n"), "<script>\n</script>\n");
-    // Tabs inside SQL count as `indent_size` columns; at depth 0 nothing moves.
+    // Tabs inside SQL count as `indent_size` columns: at depth 0 the
+    // least-indented line moves one level in and the other keeps its tab.
     assert_eq!(
         tag_with(
             "<cfquery name=\"q\">\n\tSELECT 1\nFROM t\n</cfquery>\n",
             r#"{"newline": "\n", "tab_indent": true}"#
         ),
-        "<cfquery name=\"q\">\n\tSELECT 1\nFROM t\n</cfquery>\n"
+        "<cfquery name=\"q\">\n\t\tSELECT 1\n\tFROM t\n</cfquery>\n"
     );
 }
 
@@ -1940,14 +1954,14 @@ fn an_island_already_at_or_beyond_its_tag_indent_is_untouched() {
 
 #[test]
 fn an_island_shifts_with_tabs_and_a_space_remainder() {
-    // `least` is 4 (one tab), `min` is 2: every line moves 2 columns, so 4
-    // columns print as a tab and 6 as a tab plus two spaces.
+    // `least` is 8 (two tabs), `min` is 2: every line moves 6 columns, so 8
+    // columns print as two tabs and 10 as two tabs plus two spaces.
     assert_eq!(
         tag_with(
             "<div>\n<cfquery name=\"q\">\n  SELECT a\n    FROM t\n</cfquery>\n</div>\n",
             r#"{"newline": "\n", "tab_indent": true}"#
         ),
-        "<div>\n\t<cfquery name=\"q\">\n\tSELECT a\n\t  FROM t\n\t</cfquery>\n</div>\n"
+        "<div>\n\t<cfquery name=\"q\">\n\t\tSELECT a\n\t\t  FROM t\n\t</cfquery>\n</div>\n"
     );
 }
 
@@ -1957,14 +1971,14 @@ fn an_island_s_first_line_does_not_count_toward_its_shift() {
     // indentation; `min` is measured over the lines after it.
     assert_eq!(
         tag("<div>\n<cfquery name=\"q\">        SELECT a\nFROM t\n  WHERE b\n</cfquery>\n</div>\n"),
-        "<div>\n    <cfquery name=\"q\">        SELECT a\n    FROM t\n      WHERE b\n    </cfquery>\n</div>\n"
+        "<div>\n    <cfquery name=\"q\">        SELECT a\n        FROM t\n          WHERE b\n    </cfquery>\n</div>\n"
     );
 }
 
 #[test]
 fn a_query_inside_a_function_keeps_its_sql() {
-    // `min` is 0 (`SELECT`, `WHERE`) and `least` 8: `FROM` moves from 12 to
-    // 20 and a tag inside the SQL counts like any other line.
+    // `min` is 0 (`SELECT`, `WHERE`) and `least` 12: `FROM` moves from 12 to
+    // 24 and a tag inside the SQL counts like any other line.
     assert_eq!(
         tag(concat!(
             "<cffunction name=\"get\">\n<cfif x>\n<cfquery name=\"q\">\n",
@@ -1973,8 +1987,8 @@ fn a_query_inside_a_function_keeps_its_sql() {
         )),
         concat!(
             "<cffunction name=\"get\">\n    <cfif x>\n        <cfquery name=\"q\">\n",
-            "        SELECT a\n                    FROM t\n",
-            "        WHERE b = #c# <cfqueryparam value=\"#d#\">\n",
+            "            SELECT a\n                        FROM t\n",
+            "            WHERE b = #c# <cfqueryparam value=\"#d#\">\n",
             "        </cfquery>\n    </cfif>\n</cffunction>\n"
         )
     );

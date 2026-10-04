@@ -541,7 +541,7 @@ Type: _string_: `"oxc"`, `"off"`
 
 Default: **`"oxc"`**
 
-How pure JavaScript `<script>` islands are formatted in tag mode: no `type`, a JavaScript MIME type (`.js`) or `module` (`.mjs`). An island is pure when it holds no CFML tag, `#expr#` or tag comment. "oxc", the default, formats it in process with the oxc formatter, which prints what prettier prints with its default options (double quotes, semicolons, trailing commas) or with the options of the project's `.prettierrc` (see `islands.config`): nothing needs to be installed. The island's text is handed over as written (blank lines before and after dropped), the indentation comes from `tab_indent` and `indent_size`, the width is `max_columns` less the island's indentation, at least 40, and the output is printed one level inside the tag (at the tag's indent under `tags.script_and_style.indent: false`) — except a line inside a template literal, a continued string or a block comment oxc prints raw, which keeps its source columns and its trailing whitespace: formatting never changes a string. An island that does not parse is a warning and prints as it is. "off" prints the island as it is, shifted as a whole so that no line sits left of that indentation, or byte for byte, not shifted at all, when it holds a backtick or a line ending in `\`; an impure island and one inside a code fence always print that way. A `type` holding CFML (`type="#kind#"`) names no language: the body is text.
+How pure JavaScript `<script>` islands are formatted in tag mode: no `type`, a JavaScript MIME type (`.js`) or `module` (`.mjs`). An island is pure when it holds no CFML tag, `#expr#` or tag comment. "oxc", the default, formats it in process with the oxc formatter, which prints what prettier prints with its default options (double quotes, semicolons, trailing commas) or with the options of the project's `.prettierrc` (see `islands.config`): nothing needs to be installed. The island's text is handed over as written (blank lines before and after dropped), the indentation comes from `tab_indent` and `indent_size`, the width is `max_columns` less the island's indentation, at least 40, and the output is printed one level inside the tag (at the tag's indent under `tags.islands.indent: false`) — except a line inside a template literal, a continued string or a block comment oxc prints raw, which keeps its source columns and its trailing whitespace: formatting never changes a string. An island that does not parse is a warning and prints as it is. "off" prints the island as it is, shifted as a whole so that no line sits left of that indentation, or byte for byte, not shifted at all, when it holds a backtick or a line ending in `\`; an impure island and one inside a code fence always print that way. A `type` holding CFML (`type="#kind#"`) names no language: the body is text.
 
 ```cfc
 // islands.js: "oxc"
@@ -1158,6 +1158,46 @@ With "always", every broken tag body is indented one level. With "cfml", a paire
 </cfif>
 ```
 
+## tags.islands.indent
+
+Type: _boolean_
+
+Default: **`true`**
+
+When true, the body of a paired `<cfscript>`, `<script>`, `<style>`, `<cfquery>` or `<cfjava>` tag is indented one level inside the tag, as prettier indents a `<script>` / `<style>` body; when false, it prints at the tag's own indent. A `<cfscript>` body's statements and a formatted island (whose width is `max_columns` less that indentation, at least 40) are printed at that indent. A body printed as written — a `<cfquery>`, a `<cfjava>`, a `<script>` / `<style>` that holds CFML, is refused or is "off" — is raised as a whole so that no line sits left of that indent, its lines keeping their indentation relative to each other, and is never lowered: one written deeper stays where it is. Lines inside a template literal, a continued string or a raw block comment keep their source columns, a body printed byte for byte (one that may hold a string spanning lines, or of no language) is not moved, and the closing tag stays at the tag's indent. An island in an attribute value or inside a code fence is not affected, and `tags.body.indent` does not apply to these bodies. Turning it from true to false returns `<cfscript>` bodies and formatted islands to the tag's indent, but a body printed as written that was raised stays where it is.
+
+```cfc
+// tags.islands.indent: true
+<div>
+    <cfscript>
+        x = 1;
+    </cfscript>
+    <script>
+        var a = 1;
+    </script>
+    <cfquery name="q">
+        SELECT a
+        FROM t
+    </cfquery>
+</div>
+```
+
+```cfc
+// tags.islands.indent: false
+<div>
+    <cfscript>
+    x = 1;
+    </cfscript>
+    <script>
+    var a = 1;
+    </script>
+    <cfquery name="q">
+    SELECT a
+    FROM t
+    </cfquery>
+</div>
+```
+
 ## tags.lowercase
 
 Type: _boolean_
@@ -1178,36 +1218,4 @@ When true, tag names are lowercased. If false, tag name case is left as is. Attr
 <CFIF a EQ b>
     <DIV CLASS="x"></DIV>
 </CFIF>
-```
-
-## tags.script_and_style.indent
-
-Type: _boolean_
-
-Default: **`true`**
-
-When true, the body of a paired `<cfscript>`, `<script>` or `<style>` tag is indented one level inside the tag, as prettier indents a `<script>` / `<style>` body; when false, it prints at the tag's own indent. A `<cfscript>` body's statements, a formatted island (whose width is `max_columns` less that indentation, at least 40) and a verbatim `<script>` / `<style>` island all follow it: a verbatim island is raised as a whole so that no line sits left of that indent, and never lowered. Lines inside a template literal, a continued string or a raw block comment keep their source columns, a body printed byte for byte (one that may hold a string spanning lines, or of no language) is not moved, and the closing tag stays at the tag's indent. `<cfquery>` and `<cfjava>` bodies, islands in attribute values and a `<script>` / `<style>` inside a code fence are not affected, and `tags.body.indent` does not apply to these three bodies. Turning it from true to false returns `<cfscript>` bodies and formatted islands to the tag's indent, but a verbatim island that was raised stays where it is.
-
-```cfc
-// tags.script_and_style.indent: true
-<div>
-    <cfscript>
-        x = 1;
-    </cfscript>
-    <script>
-        var a = 1;
-    </script>
-</div>
-```
-
-```cfc
-// tags.script_and_style.indent: false
-<div>
-    <cfscript>
-    x = 1;
-    </cfscript>
-    <script>
-    var a = 1;
-    </script>
-</div>
 ```

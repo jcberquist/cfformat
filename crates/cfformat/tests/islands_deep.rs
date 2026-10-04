@@ -299,7 +299,7 @@ fn format(page: String) -> Formatted {
             };
             let opts = Options {
                 newline: cfformat::options::NewlineStyle::Lf,
-                tags_script_and_style_indent: false,
+                tags_islands_indent: false,
                 ..Options::default()
             };
             cfformat::format_with(&page, Mode::Tags, &opts, &ctx)
