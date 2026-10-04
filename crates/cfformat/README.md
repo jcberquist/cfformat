@@ -707,7 +707,10 @@ code`); and, for one in code, a regular expression or a `url(…)`, when the
 nearest non-blank character before it changed (``what precedes the #…# on
 line 4 changed from `(` to nothing``: oxc drops the parentheses around a
 name, and the `#…#` may emit `function () {…}`), when the one after it
-changed other than by a `;` added (a statement's terminator) or a `,` added
+changed other than by a `;` added (a statement's terminator, though not
+before an `else`: ``a `;` was added after the #…# on line 4, before
+`else` ``, since `if (a) #x#` ⏎ `else …` does not parse once a `#…#`
+emitting a whole statement has a `;` after it) or a `,` added
 before `}` (a property's trailing comma), each in front of what followed it
 (``what follows … changed from `)` to `;` ``: `x = (y + #b#);` printed
 `x = y + #b#;`; ``a `,` was added after the #…# on line 4, before `]` ``:
@@ -720,7 +723,12 @@ a word character it touched in the source (a letter, a digit, `_`, `$`,
 `-`, `%`, `.`, `#`, non-ASCII) no longer touches it (``the #…# on line 4
 is no longer joined to the `p` after it``), or when an operator character
 it was apart from now touches it (``the #…# on line 4 is now joined to the
-`-` before it``: `- #c#` printed `-#c#` reads `--1` when it emits `-1`).
+`-` before it``: `- #c#` printed `-#c#` reads `--1` when it emits `-1`),
+or when what followed it on a later line of the source is on its line in
+the output and is not a closing bracket, a `,` or a `;` (``the #…# on line
+4 was joined to the `(` on the line after it``: `#lib#` ⏎
+`(function () {…})();` printed `#lib#(function () {…})();` is another
+program when the `#…#` emits whole statements or ends in a `//` comment).
 Otherwise each `#` becomes
 `##` again and each placeholder its `#…#`'s printed text; no line moves, so
 the literal lines stay right (a line holding a `##` is a column wider than

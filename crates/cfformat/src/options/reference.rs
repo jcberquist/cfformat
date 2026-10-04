@@ -422,7 +422,8 @@ const REFERENCE: &[OptionInfo] = &[
          and which are put back after: a string holding a `#expr#` keeps its quote, and an \
          island whose `#expr#` would not come back as they went (out of their string, a \
          parenthesis around one dropped, a comma added after one before `]` or `)`, no longer \
-         joined to the word they touch, an operator now against one) prints as it is, with a \
+         joined to the word they touch, an operator now against one, the next line's code \
+         brought up to one's line) prints as it is, with a \
          warning. \
          \"oxc\", the default, formats it in process with \
          the oxc formatter, which prints what prettier prints with its default options (double \

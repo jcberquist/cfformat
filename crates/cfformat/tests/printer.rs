@@ -2355,6 +2355,29 @@ fn an_island_whose_holes_do_not_come_back_is_refused_with_a_warning() {
         ),
         "<stdin>:2: islands.js: what precedes the #…# on line 3 changed from `)` to `;`"
     );
+    // A `#…#` on its own line and the code on the next one: oxc reads a
+    // call of a name, the page may get whole statements.
+    assert_eq!(
+        refused(
+            "<cfoutput><script>\n#lib#\n(function () { go(); })();\n</script></cfoutput>\n",
+            None
+        ),
+        "<stdin>:2: islands.js: the #…# on line 2 was joined to the `(` on the line after it"
+    );
+    assert_eq!(
+        refused(
+            "<cfoutput><script>\nif (a) #x#\nelse b();\n</script></cfoutput>\n",
+            None
+        ),
+        "<stdin>:2: islands.js: a `;` was added after the #…# on line 2, before `else`"
+    );
+    assert_eq!(
+        refused(
+            "<cfoutput><style>\n.a { color: red; }\n#rules#\n.b { color: blue; }\n</style></cfoutput>\n",
+            None
+        ),
+        "<stdin>:2: islands.css: the #…# on line 3 was joined to the `.` on the line after it"
+    );
     assert_eq!(
         refused(
             "<cfoutput><script>\nvar a = #x#;\nvar b = ;\n</script></cfoutput>\n",

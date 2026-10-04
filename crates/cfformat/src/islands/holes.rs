@@ -19,8 +19,10 @@
 //! same bytes around it: the same non-blank byte before it, the same after
 //! it (or a statement's `;`, or a property's trailing `,` before `}`, each
 //! added in front of what followed), as many parentheses around it, the
-//! same byte where it touched a word in the source, and no
-//! operator newly against it (`- #x#` printed `-#x#`). Then each `#`
+//! same byte where it touched a word in the source, no
+//! operator newly against it (`- #x#` printed `-#x#`), and nothing but a
+//! closing bracket or a separator brought up from a later line to its own
+//! (`#x#` ⏎ `(f)();` printed `#x#(f)();`). Then each `#`
 //! becomes `##` again and each placeholder its hole's printed text. An
 //! island that fails a check is refused, and the printer prints it as
 //! written with a warning naming the check and the hole's line.
@@ -374,12 +376,12 @@ fn depths(
     out
 }
 
-/// The nearest character before `at` that is not ASCII whitespace.
-fn before(text: &str, at: usize) -> Option<char> {
-    text[..at]
-        .trim_end_matches(|c: char| c.is_ascii_whitespace())
-        .chars()
-        .next_back()
+/// The nearest character before `at` that is not ASCII whitespace, and
+/// where it is.
+fn before(text: &str, at: usize) -> Option<(usize, char)> {
+    let rest = text[..at].trim_end_matches(|c: char| c.is_ascii_whitespace());
+    let c = rest.chars().next_back()?;
+    Some((rest.len() - c.len_utf8(), c))
 }
 
 /// The nearest character from `at` on that is not ASCII whitespace, and
@@ -389,6 +391,14 @@ fn after(text: &str, at: usize) -> Option<(usize, char)> {
     let trimmed = rest.trim_start_matches(|c: char| c.is_ascii_whitespace());
     let c = trimmed.chars().next()?;
     Some((at + rest.len() - trimmed.len(), c))
+}
+
+/// Whether `text` from `at` on is an `else`, whitespace skipped.
+fn before_else(text: &str, at: usize) -> bool {
+    text[at..]
+        .trim_start_matches(|c: char| c.is_ascii_whitespace())
+        .strip_prefix("else")
+        .is_some_and(|rest| !rest.starts_with(is_word))
 }
 
 /// A character as a warning shows it.
@@ -442,8 +452,8 @@ impl Interpolated {
             self.holes.iter().map(|h| h.at),
         );
         let is = depths(out, &regions, at.iter().copied());
-        for (i, (h, &o)) in self.holes.iter().zip(&at).enumerate() {
-            self.check(h, out, o, site_at(&regions, o).0, (was[i], is[i]))?;
+        for (i, &o) in at.iter().enumerate() {
+            self.check(i, out, &at, site_at(&regions, o).0, (was[i], is[i]))?;
         }
         let mut restored = String::with_capacity(out.len() + out.len() / 8);
         let mut from = 0;
@@ -456,18 +466,37 @@ impl Interpolated {
         Ok(restored)
     }
 
-    /// The checks on one hole: its site, then for a hole in code its
-    /// neighbours. `o` is its placeholder's position in `out`; `depth` the
-    /// parentheses open at it before and after ([`depths`]).
+    /// The checks on hole `n`: its site, then for a hole in code its
+    /// neighbours. `at` is every placeholder's position in `out`; `depth`
+    /// the parentheses open at the hole before and after ([`depths`]).
     fn check(
         &self,
-        h: &Placed,
+        n: usize,
         out: &str,
-        o: usize,
+        at: &[usize],
         site: Site,
         depth: (isize, isize),
     ) -> Result<(), Refused> {
+        let (h, o) = (&self.holes[n], at[n]);
         let line = h.hole.line;
+        // A neighbour as a message shows it: the page's character, so a
+        // byte of another hole's placeholder is that hole's `#`.
+        let was_face = |i: usize, c: char| {
+            let held = |p: &Placed| (p.at..p.at + p.placeholder.len()).contains(&i);
+            if self.holes.iter().any(held) {
+                '#'
+            } else {
+                c
+            }
+        };
+        let is_face = |i: usize, c: char| {
+            let held = |(p, &a): (&Placed, &usize)| (a..a + p.placeholder.len()).contains(&i);
+            if self.holes.iter().zip(at).any(held) {
+                '#'
+            } else {
+                c
+            }
+        };
         let refuse = |message: String| Err(Refused(message));
         if site != h.site {
             return refuse(format!(
@@ -482,11 +511,11 @@ impl Interpolated {
         let text = &self.text;
         let len = h.placeholder.len();
         let (was, is) = (before(text, h.at), before(out, o));
-        if was != is {
+        if was.map(|w| w.1) != is.map(|i| i.1) {
             return refuse(format!(
                 "what precedes the #…# on line {line} changed from {} to {}",
-                shown(was),
-                shown(is)
+                shown(was.map(|(i, c)| was_face(i, c))),
+                shown(is.map(|(i, c)| is_face(i, c)))
             ));
         }
         let (was, is) = (after(text, h.at + len), after(out, o + len));
@@ -497,24 +526,46 @@ impl Interpolated {
             // `y + #x#;` lost a parenthesis, not gained a `;`).
             let then = |i: usize| after(out, i + 1).map(|(_, c)| c);
             let allowed = match is {
-                // A statement's terminator added.
+                // A statement's terminator added; not before an `else`,
+                // which a `#…#` emitting a whole statement could not take.
+                Some((i, ';')) if before_else(out, i + 1) => {
+                    return refuse(format!(
+                        "a `;` was added after the #…# on line {line}, before `else`"
+                    ))
+                }
                 Some((i, ';')) => then(i) == was_c,
                 // A trailing comma after a property value.
                 Some((i, ',')) => was_c == Some('}') && then(i) == was_c,
                 _ => false,
             };
             if !allowed {
-                return refuse(match is_c {
-                    Some(',') => format!(
-                        "a `,` was added after the #…# on line {line}, before {}",
-                        shown(was_c)
-                    ),
+                let was = shown(was.map(|(i, c)| was_face(i, c)));
+                return refuse(match is {
+                    Some((_, ',')) => {
+                        format!("a `,` was added after the #…# on line {line}, before {was}")
+                    }
                     _ => format!(
-                        "what follows the #…# on line {line} changed from {} to {}",
-                        shown(was_c),
-                        shown(is_c)
+                        "what follows the #…# on line {line} changed from {was} to {}",
+                        shown(is.map(|(i, c)| is_face(i, c)))
                     ),
                 });
+            }
+        }
+        // What followed it on a later line is not brought up to its line:
+        // a `#…#` on a line of its own may emit whole statements, or end in
+        // a `//` comment, and `#lib#` ⏎ `(function () {…})();` printed
+        // `#lib#(function () {…})();` is then another program. A closing
+        // bracket and a separator end what the `#…#` is in, and may join it.
+        if let (Some((w, _)), Some((i, c))) = (was, is) {
+            let broke = |t: &str, from: usize, to: usize| t[from..to].contains('\n');
+            if broke(text, h.at + len, w)
+                && !broke(out, o + len, i)
+                && !matches!(c, ')' | ']' | '}' | ',' | ';')
+            {
+                return refuse(format!(
+                    "the #…# on line {line} was joined to the `{}` on the line after it",
+                    is_face(i, c)
+                ));
             }
         }
         // The parentheses around it, of which the checks above see only
@@ -526,9 +577,11 @@ impl Interpolated {
                 "the parentheses around the #…# on line {line} changed"
             ));
         }
-        let glued = |side: &str, was: Option<char>, is: Option<char>| match (was, is) {
+        // `i` is where the source's neighbour is, for its face.
+        let glued = |side: &str, i: usize, was: Option<char>, is: Option<char>| match (was, is) {
             (Some(c), _) if is_word(c) && is != was => refuse(format!(
-                "the #…# on line {line} is no longer joined to the `{c}` {side} it"
+                "the #…# on line {line} is no longer joined to the `{}` {side} it",
+                was_face(i, c)
             )),
             // Newly joined to an operator: `- #x#` printed `-#x#` reads
             // `--1` when the `#…#` emits `-1`.
@@ -539,11 +592,13 @@ impl Interpolated {
         };
         glued(
             "before",
+            h.at.saturating_sub(1),
             text[..h.at].chars().next_back(),
             out[..o].chars().next_back(),
         )?;
         glued(
             "after",
+            h.at + len,
             text[h.at + len..].chars().next(),
             out[o + len..].chars().next(),
         )
@@ -789,6 +844,60 @@ mod tests {
             round(&js("(#x#).call();"), |_| "(zq0_.call());\n".into()),
             Err("what follows the #…# on line 1 changed from `)` to `.`".into())
         );
+        // A `;` before an `else`: `if (a) { … }; else` does not parse.
+        assert_eq!(
+            round(&js("if (a) #x#\nelse b();"), |_| {
+                "if (a) zq0_;\nelse b();\n".into()
+            }),
+            Err("a `;` was added after the #…# on line 1, before `else`".into())
+        );
+        assert!(round(&js("#x#\nelsewhere();"), |_| "zq0_;\nelsewhere();\n".into()).is_ok());
+    }
+
+    #[test]
+    fn a_message_shows_a_neighbouring_hole_as_a_hash() {
+        // Not a byte of its placeholder.
+        let i = js("#a#\n#b#\nvar c = 1;");
+        assert_eq!(
+            round(&i, |_| "zq0_;\nzq1_;\nvar c = 1;\n".into()),
+            Err("what precedes the #…# on line 1 changed from `#` to `;`".into())
+        );
+        assert_eq!(
+            round(&i, |_| "zq0_(zq1_);\nvar c = 1;\n".into()),
+            Err("what follows the #…# on line 1 changed from `#` to `(`".into())
+        );
+        assert_eq!(
+            round(&js("x = #a##b#;"), |t| t.replace("_zq", "_ zq")),
+            Err("the #…# on line 1 is no longer joined to the `#` after it".into())
+        );
+    }
+
+    #[test]
+    fn a_hole_is_not_joined_to_the_line_after_it() {
+        // What the source had on the next line stays there, or the `#…#`
+        // gains a separator.
+        let i = js("#lib#\n(function () {})();");
+        assert_eq!(
+            round(&i, |t| t.replace('\n', "")),
+            Err("the #…# on line 1 was joined to the `(` on the line after it".into())
+        );
+        assert!(round(&i, |t| t.to_owned()).is_ok());
+        assert_eq!(
+            round(&js("x = #o#\n  .a();"), |_| "x = zq0_.a();\n".into()),
+            Err("the #…# on line 1 was joined to the `.` on the line after it".into())
+        );
+        assert_eq!(
+            round(&css(".a { }\n#rules#\n.b { }"), |_| {
+                ".a {\n}\nzq0____ .b {\n}\n".into()
+            }),
+            Err("the #…# on line 1 was joined to the `.` on the line after it".into())
+        );
+        // A closing bracket or a separator may come up to its line.
+        assert!(round(&js("f(\n  a,\n  #x#\n);"), |_| "f(a, zq0_);\n".into()).is_ok());
+        assert!(round(&js("a = [\n  #x#\n  , 1];"), |_| "a = [zq0_, 1];\n".into()).is_ok());
+        assert!(round(&js("o = {\n  #x#\n};"), |_| "o = { zq0_ };\n".into()).is_ok());
+        // On one line in the source, there is nothing to keep.
+        assert!(round(&js("x = #o# .a();"), |_| "x = zq0_.a();\n".into()).is_ok());
     }
 
     #[test]
