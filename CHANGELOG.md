@@ -58,6 +58,22 @@ but every other block of their language as well.
 `function_call.casing.builtin` instead of `.userdefined`: with the default
 `"cfdocs"`, `QUERYLAZY(…)` prints as `queryLazy(…)`.
 
+**Changed.** `<script>` and `<style>` blocks are formatted by the oxc
+formatter crates of oxfmt 0.72.0 (was 0.70.0). No block of the projects
+tried formats differently; what can move is rarer code. A CSS comma list
+with a signed item after the first stays on one line when it fits, where
+Prettier breaks it: `font-family: system-ui, -apple-system, sans-serif;`
+used to print one item per line. Comments around an `=`, between a callee
+and its `(`, or among a test call's arguments keep their place and order,
+where one could be dropped or repeated: `const b /* c */` ⏎ `= // d` ⏎
+`1;` printed `const b = // d` ⏎ `// d` ⏎ `1;` and now prints
+`const b /* c */ = // d` ⏎ `1;`; `foo /* c */ (a)` printed
+`foo(/* c */ a)` and now prints `foo /* c */(a)`. A block comment whose
+other lines are printed as written keeps the trailing spaces of its first
+line. A JSON array or object holding only a block comment prints on one
+line: `"a": [/* c */]`. Building from source needs Rust 1.97, the new oxc
+crates' minimum.
+
 ## 0.2.0 — 2026-09-30
 
 **Fixed.** A region printed as written could end inside a two-character

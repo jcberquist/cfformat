@@ -24,7 +24,7 @@ assert_eq!(out, "if (a == b) {\n    x = 1;\n}\n");
 ## Install
 
 See the [root README](../../README.md#install): release binaries, or
-`cargo install --locked --path crates/cfformat-cli` from a checkout (Rust 1.96 or
+`cargo install --locked --path crates/cfformat-cli` from a checkout (Rust 1.97 or
 newer and the platform's usual linker and build tools; every dependency is
 pure Rust, so no other native library is needed; the oxc crates are a git
 dependency, so `cfformat` is not on crates.io). Nothing needs to be on
@@ -166,7 +166,7 @@ its own root `Cargo.toml`:
 
 ```toml
 [patch.crates-io]
-oxc_allocator = { git = "https://github.com/oxc-project/oxc", rev = "288d8cc77984b0a3851c58c423ffe9e6edc79f2e" }
+oxc_allocator = { git = "https://github.com/oxc-project/oxc", rev = "2bd08ebe8f36fcf1954a675ffdeb4c6d0129f609" }
 ```
 
 Without it the two allocators are two crates and the build fails in
@@ -387,8 +387,8 @@ number of top-level statements, the same number of comments); literal
 preservation (every JavaScript island handed off keeps its template-literal
 quasis and its block comments, a comment's lines compared without their
 leading whitespace, a JSDoc comment's — every line after the first
-starting with `*` — without trailing whitespace either, which the formatter
-drops as prettier does; an island holding `#…#` is parsed with each `##` as
+starting with `*` — without trailing whitespace either, which the printer
+trims from every island line outside a literal; an island holding `#…#` is parsed with each `##` as
 `#` and each `#…#` as `cfhole` and its number, the same in the input and
 the output: `common::check_literals`, also run by
 `tests/islands_real.rs`); exact preservation (an island of no language

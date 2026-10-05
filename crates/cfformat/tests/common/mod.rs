@@ -779,8 +779,9 @@ pub fn handed_off_js(tree: &Tree, opts: &Options) -> Vec<String> {
 /// quasi texts is unchanged, and so is the multiset of block comments with
 /// each line's leading whitespace trimmed (the formatter re-aligns a JSDoc
 /// comment, not its text), and a JSDoc comment's trailing whitespace too
-/// (the formatter drops it, as prettier does). Returns the islands checked
-/// and the problems.
+/// (its lines are not literal text, and the printer trims the end of every
+/// island line outside a literal). Returns the islands checked and the
+/// problems.
 pub fn check_literals(src: &str, out: &str, mode: Mode, opts: &Options) -> (usize, Vec<String>) {
     let before = handed_off_js(&cfparse::parse_source(src, mode), opts);
     let after = handed_off_js(&cfparse::parse_source(out, mode), opts);
@@ -810,9 +811,9 @@ pub fn check_literals(src: &str, out: &str, mode: Mode, opts: &Options) -> (usiz
             v
         };
         // A comment whose lines after the first all start with `*` is one
-        // the formatter re-aligns, as prettier does, trailing whitespace
-        // dropped with the leading; any other block comment prints raw, its
-        // lines' ends as written.
+        // the formatter re-aligns, as prettier does, and the printer trims
+        // its lines' ends; any other block comment prints raw, its lines'
+        // ends as written.
         let comments = |v: Vec<String>| {
             sorted(
                 v.iter()

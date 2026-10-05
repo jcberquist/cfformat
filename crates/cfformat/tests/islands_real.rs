@@ -170,7 +170,7 @@ impl Sweep {
 #[ignore]
 fn real_island_formatters() {
     let tool = "oxc";
-    eprintln!("islands_real: {tool}: in process (oxfmt_v0.70.0)");
+    eprintln!("islands_real: {tool}: in process (oxfmt_v0.72.0)");
     let islands = Islands::new();
     let started = std::time::Instant::now();
 

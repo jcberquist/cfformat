@@ -110,7 +110,7 @@ The same six exist for `cfvet` (`cfvet_linux_x86_64`, `cfvet_macos`, …).
 Each release also carries `LICENSE` and `LICENSE-PRETTIER` (see
 [Licence](#licence)).
 
-You can also build and install it with Cargo. It requires Rust 1.96 or newer
+You can also build and install it with Cargo. It requires Rust 1.97 or newer
 and what Rust itself needs on your platform to link a program: a C linker and
 the platform's build tools (`build-essential` or similar on Linux, the Xcode
 command line tools on macOS, the Visual Studio C++ build tools for the MSVC
@@ -561,7 +561,7 @@ only from the root of the build, and without it the build fails with
 
 ```toml
 [patch.crates-io]
-oxc_allocator = { git = "https://github.com/oxc-project/oxc", rev = "288d8cc77984b0a3851c58c423ffe9e6edc79f2e" }
+oxc_allocator = { git = "https://github.com/oxc-project/oxc", rev = "2bd08ebe8f36fcf1954a675ffdeb4c6d0129f609" }
 ```
 
 The workspace's other crates are `cfformat-cli` (the `cfformat` command
