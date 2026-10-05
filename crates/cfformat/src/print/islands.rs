@@ -245,7 +245,8 @@ impl Printer<'_> {
     /// which [`Printer::island_body`] sets to that floor: each line follows
     /// a `hardline` and loses its trailing whitespace, except a line that
     /// starts inside literal text (a template literal, a continued string,
-    /// a raw block comment: the result carries them, [`FormattedIsland::literal_lines`], and a text
+    /// a block comment the formatter prints raw — in CSS every one: the
+    /// result carries them, [`FormattedIsland::literal_lines`], and a text
     /// whose lines cannot be found is a refusal), which follows a
     /// `literalline` and prints as written, so its columns are the
     /// source's (and the line before one keeps its trailing whitespace,

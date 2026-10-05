@@ -493,7 +493,10 @@ block`, `a stray closer`, `an unmatched run`, `nesting past the limit`).
 - **Some blocks keep their text line for line.** Formatting never moves a
   line that starts inside a multi-line string: in a formatted `<script>`,
   the lines inside a template literal or a string continued with `\` keep
-  their columns. A block printed as written is otherwise shifted as a whole
+  their columns. So do the lines of a comment the formatter leaves as
+  written: in a `<style>`, every `/* … */` comment's lines after the first,
+  as with Prettier; in a `<script>`, those of one whose lines do not all
+  start with `*`. A block printed as written is otherwise shifted as a whole
   so that no line sits left of where its body belongs (one level inside
   its tag, or at the tag's indent with `"tags.islands.indent": false`), and
   never to the left, except:

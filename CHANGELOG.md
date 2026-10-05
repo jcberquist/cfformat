@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+**Fixed.** A comment spanning lines in a `<style>` block, and in a JSON
+`<script>` one whose lines do not all start with `*`, moved at every run:
+its lines after the first were indented again each time the file was
+formatted, so `cfformat --check` never passed on such a file. In 0.2.0 this
+happened in a block nested inside another tag. Those lines now keep their
+source columns, as Prettier leaves them; only the comment's first line
+follows the block's indentation: `<style>` ⏎ `/*` ⏎ ` * note` ⏎ ` */` prints
+`<style>` ⏎ `    /*` ⏎ ` * note` ⏎ ` */`. A file whose comments were pushed
+right by earlier runs keeps them where they are.
+
 **Changed.** The body of a `<cfscript>`, `<script>`, `<style>`, `<cfquery>`
 or `<cfjava>` tag is indented one level inside the tag, as Prettier indents
 a `<script>` or `<style>` body; it used to print at the tag's own indent.

@@ -2501,6 +2501,31 @@ fn islands_interpolated_false_prints_an_island_holding_hashes_as_written() {
     }
 }
 
+/// A block comment the formatter prints as written keeps the columns of
+/// its lines after the first, in CSS and JSON as in JavaScript: indenting
+/// them with the island would indent them again at every run. The line
+/// before one keeps its trailing whitespace, which is the comment's.
+#[test]
+fn an_island_comment_spanning_lines_does_not_move_on_a_second_run() {
+    let src = concat!(
+        "<div>\n<style>\n/*\n * a\n */\n.a{color:red;\n/* b  \n     c */\n}\n</style>\n",
+        "<script type=\"application/json\">\n{\n/* d\n e */\n\"f\":1,\n/*\n * g\n */\n\"h\":2}\n</script>\n</div>\n"
+    );
+    let (text, warnings, _) = with_islands(src, None);
+    assert_eq!(
+        text,
+        concat!(
+            "<div>\n    <style>\n        /*\n * a\n */\n        .a {\n            color: red;\n",
+            "            /* b  \n     c */\n        }\n    </style>\n",
+            "    <script type=\"application/json\">\n        {\n            /* d\n e */\n",
+            "            \"f\": 1,\n            /*\n             * g\n             */\n",
+            "            \"h\": 2\n        }\n    </script>\n</div>\n"
+        )
+    );
+    assert!(warnings.is_empty(), "{warnings:?}");
+    assert_eq!(with_islands(&text, None).0, text);
+}
+
 /// A recovered region prints as written wherever it sits: its first
 /// line where the printer puts it, every other line as in the source, and
 /// everything around it formatted.

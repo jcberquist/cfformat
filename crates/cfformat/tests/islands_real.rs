@@ -10,7 +10,7 @@
 //! - every case of the island fixtures (`islandScript`, `islandModule`,
 //!   `islandJson`, `islandStyle`, `islandTemplateLiteral`, `islandWidth`,
 //!   `islandLdJson`, `islandLiteralNested`, `islandDynamicType`,
-//!   `islandVerbatimLiterals`, `islandInterpolated`) with its own settings (`tab_indent`,
+//!   `islandVerbatimLiterals`, `islandInterpolated`, `islandComment`) with its own settings (`tab_indent`,
 //!   `max_columns`, an `islands.*` key `"off"`);
 //! - every island fixture's source and every `../commandbox-cfformat` file
 //!   holding a `<script>` or `<style>`, with the default options.
@@ -41,6 +41,7 @@ const FIXTURES: &[&str] = &[
     "islandDynamicType",
     "islandVerbatimLiterals",
     "islandInterpolated",
+    "islandComment",
 ];
 
 fn sources() -> Vec<(PathBuf, String, Mode)> {

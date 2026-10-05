@@ -1,0 +1,13 @@
+[
+    {},
+    {
+        "tags.islands.indent": false
+    },
+    {
+        "tab_indent": true
+    },
+    {
+        "islands.css": "off",
+        "islands.json": "off"
+    }
+]

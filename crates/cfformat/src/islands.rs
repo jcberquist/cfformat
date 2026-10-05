@@ -665,22 +665,26 @@ pub fn hand_off_text(text: &str) -> String {
 }
 
 /// The lines of `text`, a formatter's output for an island of `lang`, that
-/// start inside literal text: a template literal's quasi (a tagged
-/// template's too, and one nested in another's `${…}`), a string literal
-/// continued over a line, or a block comment the formatter prints raw (one
-/// whose lines after the first do not all start with `*`). 0-based
-/// indices, ascending; the first line is never one. The printer joins these
-/// lines with `literalline` and prints them as written, so their columns
-/// are the text's own. CSS and JSON have none: no CSS or JSON string spans
-/// a line (a CSS `\`-newline body is not handed off,
+/// start inside literal text. In JavaScript: a template literal's quasi (a
+/// tagged template's too, and one nested in another's `${…}`), a string
+/// literal continued over a line, or a block comment the formatter prints
+/// raw (one whose lines after the first do not all start with `*`). In
+/// JSON: such a block comment. In CSS: any block comment, since the CSS
+/// formatter re-aligns none. 0-based indices, ascending; the first line is
+/// never one. The printer joins these lines with `literalline` and prints
+/// them as written, so their columns are the text's own: an indented line
+/// of a comment would be indented again at every run. No CSS or JSON
+/// string spans a line (a CSS `\`-newline body is not handed off,
 /// [`keeps_literal_text`]).
 ///
-/// The lines are found in the parsed text, so a JavaScript text that
+/// A JavaScript text's lines are found in the parsed text, so one that
 /// parses neither as a script nor as a module has none to give: that is
 /// [`Refused`] (`internal error: the formatted text does not
 /// parse`), and so is an island thread that cannot start, never an empty
-/// list, which would re-indent every line of a literal. [`Islands`] runs
-/// this on every formatter's output ([`FormattedIsland`]).
+/// list, which would re-indent every line of a literal. A CSS or JSON
+/// text's are found by the scan [`nesting_depth`] makes, which cannot
+/// fail. [`Islands`] runs this on every formatter's output
+/// ([`FormattedIsland`]).
 pub fn literal_lines(text: &str, lang: Lang) -> Result<Vec<usize>, Refused> {
     oxc::literal_lines(text, lang)
 }
@@ -1634,7 +1638,7 @@ mod tests {
         assert_eq!(js("`/* a\n b */`;\n"), [1]);
         // A module parses as one.
         assert_eq!(js("import a from \"a\";\nawait `x\ny`;\n"), [2]);
-        // CSS and JSON have none.
+        // CSS and JSON have no string that spans lines.
         assert_eq!(
             literal_lines(".a {\n  content: \"x\\\ny\";\n}\n", Lang::Css),
             Ok(Vec::new())
@@ -1643,6 +1647,29 @@ mod tests {
             literal_lines("{\n  \"a\": 1\n}\n", Lang::Json),
             Ok(Vec::new())
         );
+        // A CSS comment is printed as written, whatever its lines start
+        // with: every line after its first, wherever the comment sits.
+        let css = |text: &str| literal_lines(text, Lang::Css).unwrap();
+        assert_eq!(css("/*\n * a\n */\n.a {\n}\n"), [1, 2]);
+        assert_eq!(css(".a {\n  /* b\n     c */\n  color: red;\n}\n"), [2]);
+        assert_eq!(css("/* one line */\n.a {\n}\n"), Vec::<usize>::new());
+        // A `/*` in a string or a quoted URL starts none.
+        assert_eq!(
+            css(".a {\n  content: \"/*\";\n  background: url(\"/*\");\n}\n/* b */\n"),
+            Vec::<usize>::new()
+        );
+        // In an unquoted URL the scan cannot tell: what it reads over a
+        // line from there is kept as written.
+        assert_eq!(css(".a {\n  b: url(/*c);\n}\n/* d\n   e */\n"), [2, 3, 4]);
+        // The JSON formatter re-aligns a comment whose lines start with
+        // `*`, as the JavaScript one does, and prints any other raw.
+        let json = |text: &str| literal_lines(text, Lang::Json).unwrap();
+        assert_eq!(
+            json("{\n  /*\n   * a\n   */\n  \"a\": 1\n}\n"),
+            Vec::<usize>::new()
+        );
+        assert_eq!(json("{\n  /* a\n     b */\n  \"a\": \"/*\"\n}\n"), [2]);
+        assert_eq!(json("{\n  // a\n  \"a\": 1\n}\n"), Vec::<usize>::new());
         // A script that does not parse has no lines to give: a failure,
         // not an empty list. Not for CSS, which has none to find.
         assert_eq!(

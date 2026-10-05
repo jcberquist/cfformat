@@ -408,9 +408,10 @@ const REFERENCE: &[OptionInfo] = &[
     island_ex(
         "islands.css",
         "How `<style>` islands are formatted in tag mode (`.css`; see `islands.js`, which \
-         says which islands are handed off, `islands.interpolated` and `islands.config`). A \
-         body with a line ending in `\\` (a CSS string continued over a line) prints as it is, \
-         byte for byte.",
+         says which islands are handed off, `islands.interpolated` and `islands.config`). The \
+         lines of a comment after its first keep their source columns, as prettier leaves \
+         them: the formatter moves no text of a CSS comment. A body with a line ending in \
+         `\\` (a CSS string continued over a line) prints as it is, byte for byte.",
         "<div>\n<style>\n.a { color: red; }\n  .b { color: blue; }\n</style>\n</div>\n",
         "{}",
     ),
@@ -467,7 +468,9 @@ const REFERENCE: &[OptionInfo] = &[
         "How JSON `<script>` islands are formatted in tag mode: `application/json`, \
          `application/ld+json`, `importmap` and `speculationrules` (`.json`; see `islands.js` \
          and `islands.config`). One holding `#expr#` or `##` prints as it is: the JSON \
-         formatter takes no placeholder outside a string.",
+         formatter takes no placeholder outside a string. A block comment whose lines after \
+         the first do not all start with `*` keeps those lines at their source columns, as \
+         in a JavaScript island.",
         "<script type=\"application/json\">\n{\"a\": 1}\n</script>\n",
         "{}",
     ),
@@ -755,7 +758,8 @@ const REFERENCE: &[OptionInfo] = &[
          is \"off\" — is raised as a whole so that no line sits left of that indent, its \
          lines keeping their indentation relative to each other, and is never lowered: one \
          written deeper stays where it is. Lines inside a template literal, a continued \
-         string or a raw block comment keep their source columns, a body printed byte for \
+         string or a block comment the formatter prints raw (in CSS, every comment) keep \
+         their source columns, a body printed byte for \
          byte (one that may hold a string spanning lines, or of no language) is not moved, \
          and the closing tag stays at the tag's indent. An island in an attribute value or \
          inside a code fence is not affected, and `tags.body.indent` does not apply to these \

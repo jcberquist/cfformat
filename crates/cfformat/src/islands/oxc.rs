@@ -18,6 +18,7 @@ use oxc_span::SourceType;
 use super::config::{
     ArrowParens, IslandConfig, ObjectWrap, OperatorPosition, QuoteProps, TrailingComma,
 };
+use super::holes::Site;
 use super::{
     nesting_depth, FormattedIsland, IslandFormatter, IslandRequest, Refused, ISLAND_STACK,
     ISLAND_THREAD, NESTING_LIMIT, SIZE_LIMIT,
@@ -403,17 +404,22 @@ impl<'a> Visit<'a> for Depth {
 }
 
 /// [`super::literal_lines`]: the lines of `text` (a formatter's output
-/// for a JS island) that start inside a template-literal quasi, a string
-/// literal that spans lines (a `\`-newline continuation), or a block
-/// comment the formatter does not re-indent. Parsed as [`format()`] parses
-/// (the formatter's own `parse_for_format`), as a script or module,
-/// whichever parses; CSS and JSON have none, nor has a text of one line.
-/// The parse and the walk run on the island's thread
-/// ([`on_island_stack`]). A text that parses as neither, or a thread that
-/// cannot start, is a refusal: its lines are unknown.
+/// for an island) that start inside text the formatter prints as written.
+/// For a JS island: a template-literal quasi, a string literal that spans
+/// lines (a `\`-newline continuation), or a block comment the formatter
+/// does not re-indent; parsed as [`format()`] parses (the formatter's own
+/// `parse_for_format`), as a script or module, whichever parses, the parse
+/// and the walk on the island's thread ([`on_island_stack`]). A text that
+/// parses as neither, or a thread that cannot start, is a refusal: its
+/// lines are unknown. For a CSS or JSON island: a block comment
+/// ([`comment_literal_lines`]), found by a scan that cannot fail. A text of
+/// one line has none.
 pub(super) fn literal_lines(text: &str, lang: Lang) -> Result<Vec<usize>, Refused> {
-    if !has_literal_lines(text, lang) {
+    if !text.contains('\n') {
         return Ok(Vec::new());
+    }
+    if lang != Lang::Js {
+        return Ok(comment_literal_lines(text, lang));
     }
     on_island_stack(|| js_literal_lines(text))
         .unwrap_or_else(|e| Err(Refused(format!("cannot start the island thread: {e}"))))
@@ -421,15 +427,62 @@ pub(super) fn literal_lines(text: &str, lang: Lang) -> Result<Vec<usize>, Refuse
 
 /// [`literal_lines`] on the calling thread, which must be the island's.
 fn literal_lines_here(text: &str, lang: Lang) -> Result<Vec<usize>, Refused> {
-    if !has_literal_lines(text, lang) {
+    if !text.contains('\n') {
         return Ok(Vec::new());
+    }
+    if lang != Lang::Js {
+        return Ok(comment_literal_lines(text, lang));
     }
     js_literal_lines(text)
 }
 
-/// Whether `text` can have [`literal_lines`]: JavaScript holding a newline.
-fn has_literal_lines(text: &str, lang: Lang) -> bool {
-    lang == Lang::Js && text.contains('\n')
+/// [`literal_lines`] of a CSS or JSON text: the lines that start inside a
+/// block comment the formatter prints as written. The CSS formatter prints
+/// every comment so, as prettier does; the JSON formatter re-aligns one
+/// whose lines after the first all start with `*` ([`indentable`]), as the
+/// JavaScript formatter does, and prints any other raw. Indenting such a
+/// line would add to it at every run. The comments are found by the scan
+/// [`nesting_depth`] makes, which knows a string from a comment, with no
+/// parse; neither language has another text that spans lines (a CSS
+/// `\`-newline body is not handed off, and a JSON string holds no line
+/// break). An unquoted `url(…)` body the scan reads over a line is literal
+/// too: the formatter prints a URL on one line, so the scan took a `/*` in
+/// one for a comment's start, and where that comment ends is not known.
+fn comment_literal_lines(text: &str, lang: Lang) -> Vec<usize> {
+    let mut spans = Vec::new();
+    super::scan(text.as_bytes(), lang, &mut |site, range| {
+        let body = &text[range.clone()];
+        let raw = match site {
+            Site::Comment => body.starts_with("/*") && (lang == Lang::Css || !indentable(body)),
+            Site::Url => true,
+            _ => false,
+        };
+        if raw && body.contains('\n') {
+            spans.push((range.start as u32, range.end as u32 - 1));
+        }
+    });
+    lines_starting_in(text, spans)
+}
+
+/// The 0-based lines of `text` that start inside one of `spans`, byte
+/// ranges `(start, end)` of literal text: a line starting at `o` is
+/// literal when `start < o <= end` (a line may start exactly where a quasi
+/// ends, with its closing backtick: indenting it would still add to the
+/// quasi).
+fn lines_starting_in(text: &str, mut spans: Vec<(u32, u32)>) -> Vec<usize> {
+    spans.sort_unstable();
+    let mut out = Vec::new();
+    for (i, o) in text
+        .match_indices('\n')
+        .map(|(at, _)| at as u32 + 1)
+        .enumerate()
+    {
+        let before = spans.partition_point(|&(start, _)| start < o);
+        if before > 0 && o <= spans[before - 1].1 {
+            out.push(i + 1);
+        }
+    }
+    out
 }
 
 /// [`literal_lines`] of a JavaScript text holding a newline.
@@ -446,10 +499,6 @@ fn js_literal_lines(text: &str) -> Result<Vec<usize>, Refused> {
             "internal error: the formatted text does not parse".into(),
         ));
     };
-    // Byte ranges `(start, end)` of literal text: a line starting at `o`
-    // is literal when `start < o <= end` (a line may start exactly where a
-    // quasi ends, with its closing backtick: indenting it would still add
-    // to the quasi).
     let mut spans = Spans(Vec::new());
     spans.visit_program(&ret.program);
     for c in ret.program.comments.iter() {
@@ -458,20 +507,7 @@ fn js_literal_lines(text: &str) -> Result<Vec<usize>, Refused> {
             spans.0.push((c.span.start, c.span.end - 1));
         }
     }
-    let mut spans = spans.0;
-    spans.sort_unstable();
-    let mut out = Vec::new();
-    for (i, o) in text
-        .match_indices('\n')
-        .map(|(at, _)| at as u32 + 1)
-        .enumerate()
-    {
-        let before = spans.partition_point(|&(start, _)| start < o);
-        if before > 0 && o <= spans[before - 1].1 {
-            out.push(i + 1);
-        }
-    }
-    Ok(out)
+    Ok(lines_starting_in(text, spans.0))
 }
 
 /// [`super::literal_texts`]: the program's literal texts, or `None` when

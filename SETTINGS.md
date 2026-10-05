@@ -509,7 +509,7 @@ Type: _string_: `"oxc"`, `"off"`
 
 Default: **`"oxc"`**
 
-How `<style>` islands are formatted in tag mode (`.css`; see `islands.js`, which says which islands are handed off, `islands.interpolated` and `islands.config`). A body with a line ending in `\` (a CSS string continued over a line) prints as it is, byte for byte.
+How `<style>` islands are formatted in tag mode (`.css`; see `islands.js`, which says which islands are handed off, `islands.interpolated` and `islands.config`). The lines of a comment after its first keep their source columns, as prettier leaves them: the formatter moves no text of a CSS comment. A body with a line ending in `\` (a CSS string continued over a line) prints as it is, byte for byte.
 
 ```cfc
 // islands.css: "oxc"
@@ -605,7 +605,7 @@ Type: _string_: `"oxc"`, `"off"`
 
 Default: **`"oxc"`**
 
-How JSON `<script>` islands are formatted in tag mode: `application/json`, `application/ld+json`, `importmap` and `speculationrules` (`.json`; see `islands.js` and `islands.config`). One holding `#expr#` or `##` prints as it is: the JSON formatter takes no placeholder outside a string.
+How JSON `<script>` islands are formatted in tag mode: `application/json`, `application/ld+json`, `importmap` and `speculationrules` (`.json`; see `islands.js` and `islands.config`). One holding `#expr#` or `##` prints as it is: the JSON formatter takes no placeholder outside a string. A block comment whose lines after the first do not all start with `*` keeps those lines at their source columns, as in a JavaScript island.
 
 ```cfc
 // islands.json: "oxc"
@@ -1196,7 +1196,7 @@ Type: _boolean_
 
 Default: **`true`**
 
-When true, the body of a paired `<cfscript>`, `<script>`, `<style>`, `<cfquery>` or `<cfjava>` tag is indented one level inside the tag, as prettier indents a `<script>` / `<style>` body; when false, it prints at the tag's own indent. A `<cfscript>` body's statements and a formatted island (whose width is `max_columns` less that indentation, at least 40) are printed at that indent. A body printed as written — a `<cfquery>`, a `<cfjava>`, a `<script>` / `<style>` that holds CFML, is refused or is "off" — is raised as a whole so that no line sits left of that indent, its lines keeping their indentation relative to each other, and is never lowered: one written deeper stays where it is. Lines inside a template literal, a continued string or a raw block comment keep their source columns, a body printed byte for byte (one that may hold a string spanning lines, or of no language) is not moved, and the closing tag stays at the tag's indent. An island in an attribute value or inside a code fence is not affected, and `tags.body.indent` does not apply to these bodies. Turning it from true to false returns `<cfscript>` bodies and formatted islands to the tag's indent, but a body printed as written that was raised stays where it is.
+When true, the body of a paired `<cfscript>`, `<script>`, `<style>`, `<cfquery>` or `<cfjava>` tag is indented one level inside the tag, as prettier indents a `<script>` / `<style>` body; when false, it prints at the tag's own indent. A `<cfscript>` body's statements and a formatted island (whose width is `max_columns` less that indentation, at least 40) are printed at that indent. A body printed as written — a `<cfquery>`, a `<cfjava>`, a `<script>` / `<style>` that holds CFML, is refused or is "off" — is raised as a whole so that no line sits left of that indent, its lines keeping their indentation relative to each other, and is never lowered: one written deeper stays where it is. Lines inside a template literal, a continued string or a block comment the formatter prints raw (in CSS, every comment) keep their source columns, a body printed byte for byte (one that may hold a string spanning lines, or of no language) is not moved, and the closing tag stays at the tag's indent. An island in an attribute value or inside a code fence is not affected, and `tags.body.indent` does not apply to these bodies. Turning it from true to false returns `<cfscript>` bodies and formatted islands to the tag's indent, but a body printed as written that was raised stays where it is.
 
 ```cfc
 // tags.islands.indent: true
