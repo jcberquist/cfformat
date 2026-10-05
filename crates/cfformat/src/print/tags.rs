@@ -79,6 +79,15 @@ pub(crate) struct TagCtx {
     /// (`<div <cfif x>id="y"</cfif>>`) are HTML attributes
     /// ([`KeyValueStyle::HtmlAttribute`]), not a CF tag's.
     pub html_attributes: bool,
+    /// Whether whitespace put just before what prints in this context — a
+    /// node list's start, or one of its elements — cannot show on the page:
+    /// whitespace or a tag next to which the browser drops it is already
+    /// there. A CF tag body reads it to know whether a line break at its
+    /// start would add a space to the page ([`Printer::tag_body`]);
+    /// [`Printer::tag_nodes`] sets it for each element it prints.
+    pub space_before: bool,
+    /// The same just after it.
+    pub space_after: bool,
 }
 
 impl TagCtx {
@@ -91,6 +100,8 @@ impl TagCtx {
             verbatim: Verbatim::Shift,
             tags: true,
             html_attributes: false,
+            space_before: true,
+            space_after: true,
         }
     }
 
@@ -357,7 +368,32 @@ impl Printer<'_> {
                     lines.text_lines(self.tree.slice(e.span.clone()));
                 }
                 Node::Element(e) => {
-                    lines.doc(self.with_tag_ctx(ctx, || self.element(e)));
+                    // Whether whitespace next to this element would show:
+                    // not where there is some already, nor next to a tag the
+                    // browser drops it around, nor at an end of the list
+                    // where the list's own context says so.
+                    let quiet = |n: Option<&Node>, edge: bool, space: bool| match n {
+                        None => edge,
+                        Some(n) => {
+                            space || n.as_element().is_some_and(|n| self.is_spaceless_html(n))
+                        }
+                    };
+                    let before = i.checked_sub(1).map(|at| &nodes[at]);
+                    let after = nodes.get(i + 1);
+                    let at = TagCtx {
+                        space_before: quiet(
+                            before,
+                            ctx.space_before,
+                            before.is_some_and(|n| self.ends_with_space(n)),
+                        ),
+                        space_after: quiet(
+                            after,
+                            ctx.space_after,
+                            after.is_some_and(|n| self.starts_with_space(n)),
+                        ),
+                        ..ctx
+                    };
+                    lines.doc(self.with_tag_ctx(at, || self.element(e)));
                     // What follows a CF tag body with no whitespace between
                     // them (`</cfif>more`) is glued to it on the page, so it
                     // stays glued here: a break would add a space. Next to
@@ -392,6 +428,13 @@ impl Printer<'_> {
             .starts_with(|c: char| c.is_ascii_whitespace())
     }
 
+    /// Whether `n`, a node of a tag-mode node list, ends with whitespace.
+    fn ends_with_space(&self, n: &Node) -> bool {
+        self.tree
+            .slice(n.span())
+            .ends_with(|c: char| c.is_ascii_whitespace())
+    }
+
     /// Whether a line break follows this node even when the source has none.
     fn forces_break(&self, e: &Element) -> bool {
         match e.kind {
@@ -419,7 +462,12 @@ impl Printer<'_> {
 
     /// A paired tag: `[open tag, body, close tag]`. The body breaks — its
     /// lines indented once between two hard lines — when it holds a tag or a
-    /// newline, and stays on the open tag's line otherwise. Under
+    /// newline, and stays on the open tag's line otherwise. A hard line at
+    /// an end of the body reaches the page as whitespace, so there is one
+    /// only where that cannot add a space to it ([`Edge`]): always for a
+    /// block tag, where the source has whitespace for an inline HTML tag,
+    /// and for a CF tag, which the page does not see, where
+    /// [`Printer::cf_edges`] says so. Under
     /// `tags.body.indent: "cfml"` a broken paired CF tag body that starts with
     /// HTML (its first non-trivia node is not a CF tag) sits at the tag's own
     /// indent instead. A `<cfscript>` body is a script statement list and a
@@ -510,45 +558,76 @@ impl Printer<'_> {
         // (`<span>hello </span>world`) or a CF body (transparent to the
         // browser: `<cfoutput>#a# </cfoutput>b`) is part of the page's text.
         // A block tag's edges are not: the browser drops that whitespace.
-        let (lead, trail) = if keeps_edge_space(e, name) {
+        // So each end of a body is one of three things ([`Edge`]), and a
+        // body split by `<cfelse>` has that many more ends.
+        let cf = e.kind == (ElementKind::TagBody { cf: true });
+        let segments = self.else_segments(body);
+        let edges: Vec<(Edge, Edge)> = if cf {
+            let looped = self.is_loop(e, name);
+            segments
+                .iter()
+                .map(|segment| self.cf_edges(segment.nodes, ctx, looped))
+                .collect()
+        } else if keeps_edge_space(e, name) {
+            // An inline HTML tag: whitespace inside it shows wherever the
+            // source has none (`<a href="x"><img></a>`: a break would put a
+            // space in the link). A stray `<cfelse>` in it is on its own
+            // line whatever is around it, as in a block tag's body.
             let text = self.tree.slice(body_span(body));
-            (
-                text.starts_with(|c: char| c.is_ascii_whitespace()),
-                text.ends_with(|c: char| c.is_ascii_whitespace()),
-            )
+            let space = |there: bool| if there { Edge::Space } else { Edge::Glued };
+            let last = segments.len() - 1;
+            (0..=last)
+                .map(|i| {
+                    (
+                        if i > 0 {
+                            Edge::Space
+                        } else {
+                            space(text.starts_with(|c: char| c.is_ascii_whitespace()))
+                        },
+                        if i < last {
+                            Edge::Space
+                        } else {
+                            space(text.ends_with(|c: char| c.is_ascii_whitespace()))
+                        },
+                    )
+                })
+                .collect()
         } else {
-            (false, false)
+            vec![(Edge::Free, Edge::Free); segments.len()]
         };
         if broken {
-            // A broken inline HTML body has a line break at an end only
-            // where the source had whitespace there (`<a href="x"><img></a>`
-            // stays glued: a break would put a space in the link). A CF body
-            // and a block tag's body always do.
-            let html_inline =
-                e.kind == (ElementKind::TagBody { cf: false }) && keeps_edge_space(e, name);
-            let (lead, trail) = if html_inline {
-                (lead, trail)
-            } else {
-                (true, true)
-            };
+            // A broken body has a line break at an end the source has
+            // whitespace at, and at one where it would not show — unless
+            // some end of the body is glued to what is next to it
+            // (`<cfif x>O<cfelse>Uno</cfif>fficial`): then the author kept
+            // the body tight on purpose, and only the ends with whitespace
+            // break. An inline HTML body's ends are glued or have
+            // whitespace; a block tag's never show.
+            let glued = edges
+                .iter()
+                .any(|&(lead, trail)| lead == Edge::Glued || trail == Edge::Glued);
+            let breaks = |edge: Edge| edge == Edge::Space || (edge == Edge::Free && !glued);
             // `tags.body.indent: "cfml"`: a CF tag body that starts with HTML
             // stays at the tag's indent, `depth` included, so an island in it
             // is raised to the flush column.
-            let flush = self.opts.tags_body_indent == TagBodyIndent::Cfml
-                && e.kind == ElementKind::TagBody { cf: true }
-                && starts_with_html(body);
+            let flush =
+                self.opts.tags_body_indent == TagBodyIndent::Cfml && cf && starts_with_html(body);
             let inner = if flush { ctx } else { ctx.deeper() };
-            for (i, segment) in self.else_segments(body).into_iter().enumerate() {
-                if i > 0 {
-                    parts.push(hardline());
+            for (segment, &(lead, trail)) in segments.iter().zip(&edges) {
+                if let Some(tag) = segment.tag {
                     // No dedent: the segment's `indent` simply does not cover
                     // the `<cfelse>`, which prints at the enclosing tag's
-                    // indent.
-                    parts.push(self.with_tag_ctx(ctx, || self.element(segment.tag.unwrap())));
+                    // indent, on its own line when the ends around it break.
+                    parts.push(self.with_tag_ctx(ctx, || self.element(tag)));
                 }
-                let doc = self.tag_nodes(segment.nodes, inner);
+                let within = TagCtx {
+                    space_before: lead != Edge::Glued,
+                    space_after: trail != Edge::Glued,
+                    ..inner
+                };
+                let doc = self.tag_nodes(segment.nodes, within);
                 if !doc.is_empty() {
-                    let lines = if i > 0 || lead {
+                    let lines = if breaks(lead) {
                         vec![hardline(), doc]
                     } else {
                         vec![doc]
@@ -559,14 +638,17 @@ impl Printer<'_> {
                         indent(lines)
                     });
                 }
-            }
-            if trail {
-                parts.push(hardline());
+                if breaks(trail) {
+                    parts.push(hardline());
+                }
             }
         } else {
-            // On one line, that whitespace collapses to one space instead
-            // of disappearing.
-            let edge = |space: bool| if space { line() } else { softline() };
+            let (lead, trail) = edges[0];
+            let within = TagCtx {
+                space_before: lead != Edge::Glued,
+                space_after: trail != Edge::Glued,
+                ..ctx
+            };
             if body
                 .iter()
                 .any(|n| n.as_element().is_some_and(is_tag_comment))
@@ -575,11 +657,25 @@ impl Printer<'_> {
                 // with a newline when it does not fit: the comment would
                 // otherwise break inside the line (`><!---` ⏎ text ⏎
                 // `---></cffunction>`), and the next run reads that newline
-                // and breaks the body.
-                let doc = self.tag_nodes(body, ctx.deeper());
+                // and breaks the body. On one line an end's whitespace
+                // collapses to one space instead of disappearing; a glued
+                // end gets neither a space nor a break.
+                let edge = |edge: Edge| match edge {
+                    Edge::Space => line(),
+                    Edge::Free => softline(),
+                    Edge::Glued => Doc::Concat(Vec::new()),
+                };
+                let doc = self.tag_nodes(body, within.deeper());
                 parts.push(group(vec![indent(vec![edge(lead), doc]), edge(trail)]));
             } else {
-                let doc = self.tag_nodes(body, ctx);
+                let doc = self.tag_nodes(body, within);
+                // On one line, that whitespace collapses to one space
+                // instead of disappearing; a block tag's is dropped.
+                let (lead, trail) = if keeps_edge_space(e, name) {
+                    (lead == Edge::Space, trail == Edge::Space)
+                } else {
+                    (false, false)
+                };
                 if doc.is_empty() {
                     if lead || trail {
                         parts.push(Doc::from(" "));
@@ -617,6 +713,78 @@ impl Printer<'_> {
         } else {
             ctx
         }
+    }
+
+    /// The two ends of `nodes`, a CF tag body or one `<cfelse>` segment of
+    /// it, printed in `ctx`. The tag does not reach the page, so what the
+    /// body starts with follows what precedes the tag there, and what it
+    /// ends with precedes what follows the tag: an end with no whitespace is
+    /// [`Edge::Free`] only when whitespace would not show on that side —
+    /// the context says so ([`TagCtx::space_before`]), or the body's own
+    /// node at that end is a tag the browser drops whitespace around. Every
+    /// segment of a `<cfif>` starts and ends in the same place on the page,
+    /// so each is judged against the same context. A loop's body (`looped`)
+    /// also follows itself: whitespace at its start shows after its own end
+    /// unless that end has whitespace or a such a tag too, and the other way
+    /// round. A body of nothing but whitespace, or empty, is one place: both
+    /// its ends are judged against both sides.
+    fn cf_edges(&self, nodes: &[Node], ctx: TagCtx, looped: bool) -> (Edge, Edge) {
+        let text = self.tree.slice(body_span(nodes));
+        let space = |c: char| c.is_ascii_whitespace();
+        if text.trim_matches(space).is_empty() {
+            let edge = match (text.is_empty(), ctx.space_before || ctx.space_after) {
+                (false, _) => Edge::Space,
+                (true, true) => Edge::Free,
+                (true, false) => Edge::Glued,
+            };
+            return (edge, edge);
+        }
+        let spaceless = |n: Option<&Node>| {
+            n.and_then(Node::as_element)
+                .is_some_and(|n| self.is_spaceless_html(n))
+        };
+        // Per end: the source has whitespace there; the body's own node
+        // there hides whitespace.
+        let (lead_space, lead_tag) = (text.starts_with(space), spaceless(nodes.first()));
+        let (trail_space, trail_tag) = (text.ends_with(space), spaceless(nodes.last()));
+        let edge = |has_space: bool, tag: bool, outside: bool, other_end: bool| {
+            if has_space {
+                Edge::Space
+            } else if tag || (outside && (!looped || other_end)) {
+                Edge::Free
+            } else {
+                Edge::Glued
+            }
+        };
+        (
+            edge(
+                lead_space,
+                lead_tag,
+                ctx.space_before,
+                trail_space || trail_tag,
+            ),
+            edge(
+                trail_space,
+                trail_tag,
+                ctx.space_after,
+                lead_space || lead_tag,
+            ),
+        )
+    }
+
+    /// Whether `e`, a paired CF tag named `name`, may emit its body more
+    /// than once: `<cfloop>`, and a `<cfoutput>` with a `query` or `group`
+    /// attribute (judged by the word appearing in its opening tag, which
+    /// errs towards a loop).
+    fn is_loop(&self, e: &Element, name: &str) -> bool {
+        if name.eq_ignore_ascii_case("cfloop") {
+            return true;
+        }
+        name.eq_ignore_ascii_case("cfoutput")
+            && e.open_tag().is_some_and(|open| {
+                let tag = self.tree.slice(open.span.clone()).to_ascii_lowercase();
+                tag.contains("query") || tag.contains("group")
+            })
     }
 
     /// A body split at its bare `<cfelse>` / `<cfelseif>` tags; the first
@@ -715,8 +883,11 @@ impl Printer<'_> {
             } else {
                 KeyValueStyle::TagAttribute
             };
+            // Whitespace between attributes never shows.
             let attrs_ctx = TagCtx {
                 html_attributes: html,
+                space_before: true,
+                space_after: true,
                 ..ctx.deeper()
             };
             if let Some((attrs, id)) = self.with_tag_ctx(attrs_ctx, || {
@@ -904,6 +1075,18 @@ pub(crate) fn indent_to(ctx: TagCtx, floor: TagCtx, parts: Vec<Doc>) -> Doc {
     } else {
         Doc::Concat(parts)
     }
+}
+
+/// An end of a tag body, or of one `<cfelse>` segment of it: what a line
+/// break there would do to the page.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Edge {
+    /// The source has whitespace there: a line break keeps it.
+    Space,
+    /// It has none, and whitespace there would not show.
+    Free,
+    /// It has none, and whitespace there would show: no line break.
+    Glued,
 }
 
 /// A `<cfelse>` / `<cfelseif>` clause of a tag body.

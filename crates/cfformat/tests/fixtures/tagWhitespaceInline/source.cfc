@@ -27,3 +27,18 @@ a
 <div>
   indented
 </div>
+<div id="header">School - <cfif official>O<cfelse>Uno</cfif>fficial Transcript</div>
+<p>Status: <span class="x"><cfif a><b>yes</b><cfelse>no</cfif></span>.</p>
+<td><cfif a>#b#<cfelse>&nbsp;</cfif></td>
+<p>x<cfif a> <b>y</b><cfelse>z </cfif>w</p>
+<p>a<cfif x><cfelse>b</cfif>c</p>
+<p>a<cfif x> <cfelse>b</cfif>c</p>
+<p>a<cfif x><div>d</div></cfif>c</p>
+<p>foo<cfif x><cfset y = 1></cfif>bar</p>
+<p>Names: <cfloop query="q"><b>#q.name#</b>,</cfloop> end</p>
+<p>Names: <cfloop query="q"><b>#q.name#</b>, </cfloop> end</p>
+<p>Names: <cfoutput query="q"><b>#q.name#</b>;</cfoutput> end</p>
+<p>Total <cfoutput><b>#n#</b>;</cfoutput> end</p>
+<cfif a><div>one</div><cfelse><div>two</div></cfif>
+<p>A sentence long enough that the body of the tag in it cannot stay on this one line, and the word is O<cfif x><!--- why --->pen</cfif>ed.</p>
+<h4><cfif i IS 'coldfusion'>ColdFusion<cfelseif i IS 'lucee'>Lucee</cfif>:</h4>

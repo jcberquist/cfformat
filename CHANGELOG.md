@@ -1,5 +1,32 @@
 # Changelog
 
+## Unreleased
+
+**Fixed.** A CF tag body glued to the text around it could gain a space on
+the page. A body holding a tag — a `<cfelse>` is enough — was always broken
+onto lines of its own, and the line breaks reach the page as whitespace:
+`<cfif official>O<cfelse>Uno</cfif>fficial Transcript` printed `<cfif
+official>` ⏎ `O` ⏎ `<cfelse>` ⏎ `Uno` ⏎ `</cfif>fficial Transcript`, which a
+browser shows as `O fficial Transcript`; `week<cfif n neq 1>s</cfif>` was
+safe, `"runnable":<cfif x>true<cfelse>false</cfif>` and a Markdown
+`[<cfif a>#b#<cfelse>#c#</cfif>](…)` were not. A CF tag body, and each
+`<cfelse>` / `<cfelseif>` segment of it, now breaks at an end only where
+the source has whitespace, or where whitespace cannot show: next to
+whitespace, or next to a block tag (`<div>`, `<td>`, …) or the start or end
+of its body. When some end of the body is glued, the ends without
+whitespace all stay closed and the `<cfelse>` stays on the line, so the
+example prints as written; a line too long then breaks inside the tag
+(`<cfif official` ⏎ `>O<cfelse>…`). The body of a `<cfloop>`, or of a
+`<cfoutput>` with `query` or `group`, is also kept from gaining whitespace
+between two passes (`<cfloop …><b>#x#</b>,</cfloop>`). A one-line body
+holding a `<!--- --->` no longer breaks at a glued end either, for an HTML
+tag as for a CF one. Bodies with whitespace at their ends, and those next
+to block tags, print as before. This changes the output of templates with
+such glued bodies — back to what the page showed before they were
+formatted. A file already formatted by an earlier version keeps the
+whitespace that version added: the formatter cannot tell it from the
+author's.
+
 ## 0.3.0 — 2026-10-05
 
 **Fixed.** In a `<script>` block, a comment before the `=` of a declaration
