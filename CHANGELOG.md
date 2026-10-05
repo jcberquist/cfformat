@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.1 — 2026-10-05
 
 **Fixed.** A CF tag body glued to the text around it could gain a space on
 the page. A body holding a tag — a `<cfelse>` is enough — was always broken
