@@ -47,8 +47,11 @@ holding a CF tag or a tag comment, a `#expr#` that prints over more than
 one line, a block with nothing but whitespace around its `#expr#`
 (`<style>#css#</style>`), and a JSON block holding `#expr#` or `##`. This
 changes the output of templates holding such blocks, typically a view's
-JavaScript; `"islands.js": "off"` and `"islands.css": "off"` print them as
-written, as before.
+JavaScript. The new key `islands.interpolated` (default `true`) set to
+`false` prints them as written, as before, byte for byte and with no
+warning, while blocks with no `#expr#` or `##` are still formatted;
+`"islands.js": "off"` and `"islands.css": "off"` print them as written too,
+but every other block of their language as well.
 
 **Builtins.** `configImport`, `dbPoolClear`, `isInThread` and `queryLazy`
 (Lucee), which cfdocs now lists, are builtins. Their calls are cased by

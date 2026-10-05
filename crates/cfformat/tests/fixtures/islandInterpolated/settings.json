@@ -12,5 +12,8 @@
     },
     {
         "islands.config": "auto"
+    },
+    {
+        "islands.interpolated": false
     }
 ]

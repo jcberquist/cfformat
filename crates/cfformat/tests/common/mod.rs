@@ -237,8 +237,9 @@ pub type Tok = (String, String);
 /// With islands on, an island oxc takes — pure, non-blank, outside a code
 /// fence, dispatched to an `islands.*` option that is not `"off"` — is one
 /// `island` entry naming its synthetic extension: its text is oxc's
-/// business. So is a JavaScript or CSS island holding only text, `##` and
-/// `#…#` ([`interpolated`]), whose `island` entry is followed by its `##`
+/// business. So is, under `islands.interpolated`, a JavaScript or CSS
+/// island holding only text, `##` and `#…#` ([`interpolated`]), whose
+/// `island` entry is followed by its `##`
 /// and `#…#` in order, each `#…#` streamed as any expression is: the
 /// formatter must give back every CF token and string of them, in order.
 pub fn token_stream(tree: &Tree, opts: &Options) -> Vec<Tok> {
@@ -403,7 +404,7 @@ fn stream_host(
 }
 
 /// The `islands.*` extension of an island oxc would take: a pure one, or
-/// one [`interpolated`].
+/// one [`interpolated`] under `islands.interpolated`.
 fn formatted_island(
     tree: &Tree,
     opts: &Options,
@@ -413,7 +414,7 @@ fn formatted_island(
     let ElementKind::Island(island) = &el.kind else {
         return None;
     };
-    if fenced || !(el.is_pure_island() || interpolated(tree, el)) {
+    if fenced || !(el.is_pure_island() || (opts.islands_interpolated && interpolated(tree, el))) {
         return None;
     }
     let target = cfformat::islands::dispatch(island).filter(|t| t.enabled(opts))?;

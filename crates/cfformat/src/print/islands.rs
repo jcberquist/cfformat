@@ -2,9 +2,10 @@
 //!
 //! A `<script>` / `<style>` island dispatched to an `islands.*` option that
 //! is not `"off"`, outside a code fence, is handed to the island formatter
-//! when it is pure (one text) or, for JavaScript and CSS, holds only text,
-//! `##` and `#…#` printing on one line, which are stood in for and put back
-//! with checks (`crate::islands::holes`); [`Printer::formatted_island`]
+//! when it is pure (one text) or, for JavaScript and CSS under
+//! `islands.interpolated`, holds only text, `##` and `#…#` printing on one
+//! line, which are stood in for and put back with checks
+//! (`crate::islands::holes`); [`Printer::formatted_island`]
 //! splices the result. Every other island, and one refused, takes the
 //! verbatim path below.
 //!
@@ -167,8 +168,9 @@ impl Printer<'_> {
     /// one level deeper under `tags.islands.indent`, else `ctx` itself.
     ///
     /// A `<script>` / `<style>` island whose `islands.*` option is not
-    /// `"off"` and that holds only text — or, inside `<cfoutput>`, text,
-    /// `##` and `#…#` — is formatted first ([`Printer::formatted_island`]);
+    /// `"off"` and that holds only text — or, inside `<cfoutput>` and under
+    /// `islands.interpolated`, text, `##` and `#…#` — is formatted first
+    /// ([`Printer::formatted_island`]);
     /// its lines then sit at the floor and the closing tag always starts its
     /// own line. Any other island, and one the formatter or the checks on
     /// its `#…#` refuse, is printed here: one whose text may hold a string
@@ -229,8 +231,9 @@ impl Printer<'_> {
     /// trivia, in a rooted context (inside a code fence the width budget and
     /// the island's column are unknown), non-blank, dispatched to an
     /// `islands.*` option that is not `"off"`, and either pure (one text)
-    /// or, for JavaScript and CSS, holding only text, `##` and `#…#` that
-    /// print on one line ([`Printer::interpolated`]). A refusal — the
+    /// or, for JavaScript and CSS under `islands.interpolated`, holding only
+    /// text, `##` and `#…#` that print on one line
+    /// ([`Printer::interpolated`]). A refusal — the
     /// formatter's, or for `#…#` the checks that put them back — is a
     /// warning and prints verbatim.
     ///
@@ -371,7 +374,9 @@ impl Printer<'_> {
     }
 
     /// An island that is not pure, ready to hand off ([`holes::substitute`]),
-    /// or `None` when it is not one to hand off, silently: a JSON island
+    /// or `None` when it is not one to hand off, silently: any island under
+    /// `islands.interpolated: false` (it then prints as written, as it would
+    /// if no `#…#` were ever handed off), a JSON island
     /// (its formatter refuses a placeholder outside a string and rewrites a
     /// string's quote whatever it holds), a child other than a text, a `##`
     /// or a `#…#` with both delimiters (a CF tag, a tag comment: no
@@ -382,6 +387,9 @@ impl Printer<'_> {
     /// printed at an unbounded width, which the island's own line printing
     /// it verbatim would give too.
     fn interpolated(&self, e: &Element, lang: Lang) -> Option<holes::Interpolated> {
+        if !self.opts.islands_interpolated {
+            return None;
+        }
         let text = |t: &Token| {
             matches!(
                 t.kind,

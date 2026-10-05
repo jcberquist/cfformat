@@ -107,6 +107,21 @@ const WIDE: &[(&str, usize, &str)] = &[
         "island line: refused (a `,` added before `]`), printed as written",
     ),
     (
+        "islandInterpolated[5]",
+        28,
+        "island line: `islands.interpolated: false`, printed as written",
+    ),
+    (
+        "islandInterpolated[5]",
+        35,
+        "island line: `islands.interpolated: false`, printed as written",
+    ),
+    (
+        "islandInterpolated[5]",
+        56,
+        "island line: `islands.interpolated: false`, printed as written",
+    ),
+    (
         "keywordStatement[1]",
         2,
         "no break point: `return true;` at 12 columns",

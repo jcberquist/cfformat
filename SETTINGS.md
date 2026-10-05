@@ -509,7 +509,7 @@ Type: _string_: `"oxc"`, `"off"`
 
 Default: **`"oxc"`**
 
-How `<style>` islands are formatted in tag mode (`.css`; see `islands.js`, which says which islands are handed off, and `islands.config`). A body with a line ending in `\` (a CSS string continued over a line) prints as it is, byte for byte.
+How `<style>` islands are formatted in tag mode (`.css`; see `islands.js`, which says which islands are handed off, `islands.interpolated` and `islands.config`). A body with a line ending in `\` (a CSS string continued over a line) prints as it is, byte for byte.
 
 ```cfc
 // islands.css: "oxc"
@@ -535,13 +535,45 @@ How `<style>` islands are formatted in tag mode (`.css`; see `islands.js`, which
 </div>
 ```
 
+## islands.interpolated
+
+Type: _boolean_
+
+Default: **`true`**
+
+Whether a `<script>` or `<style>` island inside `<cfoutput>` that holds `#expr#` or `##` besides its text is formatted. When true, it is handed off as `islands.js` describes, the `#expr#` stood in for and put back, and an island whose `#expr#` would not come back as they went prints as it is, with a warning. When false, every such island prints as it is, as "off" prints an island, with no warning: nothing is attempted. A pure island (no `#expr#`, no `##`) is formatted either way. It covers `<script>` and `<style>` alike; a JSON island holding `#expr#` or `##` is never handed off, and `"islands.js": "off"` / `"islands.css": "off"` leave every island of their language as it is whatever this key says.
+
+```cfc
+// islands.interpolated: true
+<cfoutput>
+    <script>
+        var a = { b: 1 };
+    </script>
+    <script>
+        var c = { id: #id#, name: '#name#' };
+    </script>
+</cfoutput>
+```
+
+```cfc
+// islands.interpolated: false
+<cfoutput>
+    <script>
+        var a = { b: 1 };
+    </script>
+    <script>
+        var c = {id:#id#, name:'#name#'}
+    </script>
+</cfoutput>
+```
+
 ## islands.js
 
 Type: _string_: `"oxc"`, `"off"`
 
 Default: **`"oxc"`**
 
-How JavaScript `<script>` islands are formatted in tag mode: no `type`, a JavaScript MIME type (`.js`) or `module` (`.mjs`). An island is handed off when it holds no CFML tag or tag comment; inside `<cfoutput>` it may hold `#expr#` and `##`, which the formatter sees as a placeholder as wide as the `#expr#` prints and as `#`, and which are put back after: a string holding a `#expr#` keeps its quote, and an island whose `#expr#` would not come back as they went (out of their string, a parenthesis around one dropped, a comma added after one before `]` or `)`, no longer joined to the word they touch, an operator now against one, the next line's code brought up to one's line) prints as it is, with a warning. "oxc", the default, formats it in process with the oxc formatter, which prints what prettier prints with its default options (double quotes, semicolons, trailing commas) or with the options of the project's `.prettierrc` (see `islands.config`): nothing needs to be installed. The island's text is handed over as written (blank lines before and after dropped), the indentation comes from `tab_indent` and `indent_size`, the width is `max_columns` less the island's indentation, at least 40, and the output is printed one level inside the tag (at the tag's indent under `tags.islands.indent: false`) — except a line inside a template literal, a continued string or a block comment oxc prints raw, which keeps its source columns and its trailing whitespace: formatting never changes a string. An island that does not parse is a warning and prints as it is. "off" prints the island as it is, shifted as a whole so that no line sits left of that indentation, or byte for byte, not shifted at all, when it holds a backtick or a line ending in `\`; an island holding a CFML tag or a tag comment, one whose `#expr#` prints over lines, one with nothing but whitespace around its `#expr#`, and one inside a code fence always print that way. A `type` holding CFML (`type="#kind#"`) names no language: the body is text.
+How JavaScript `<script>` islands are formatted in tag mode: no `type`, a JavaScript MIME type (`.js`) or `module` (`.mjs`). An island is handed off when it holds no CFML tag or tag comment; inside `<cfoutput>` it may hold `#expr#` and `##` (unless `islands.interpolated` is false), which the formatter sees as a placeholder as wide as the `#expr#` prints and as `#`, and which are put back after: a string holding a `#expr#` keeps its quote, and an island whose `#expr#` would not come back as they went (out of their string, a parenthesis around one dropped, a comma added after one before `]` or `)`, no longer joined to the word they touch, an operator now against one, the next line's code brought up to one's line) prints as it is, with a warning. "oxc", the default, formats it in process with the oxc formatter, which prints what prettier prints with its default options (double quotes, semicolons, trailing commas) or with the options of the project's `.prettierrc` (see `islands.config`): nothing needs to be installed. The island's text is handed over as written (blank lines before and after dropped), the indentation comes from `tab_indent` and `indent_size`, the width is `max_columns` less the island's indentation, at least 40, and the output is printed one level inside the tag (at the tag's indent under `tags.islands.indent: false`) — except a line inside a template literal, a continued string or a block comment oxc prints raw, which keeps its source columns and its trailing whitespace: formatting never changes a string. An island that does not parse is a warning and prints as it is. "off" prints the island as it is, shifted as a whole so that no line sits left of that indentation, or byte for byte, not shifted at all, when it holds a backtick or a line ending in `\`; an island holding a CFML tag or a tag comment, one whose `#expr#` prints over lines, one with nothing but whitespace around its `#expr#`, and one inside a code fence always print that way. A `type` holding CFML (`type="#kind#"`) names no language: the body is text.
 
 ```cfc
 // islands.js: "oxc"

@@ -2266,7 +2266,16 @@ impl cfformat::islands::IslandFormatter for Edit {
 /// `src` formatted with `islands` (oxc when `None`): the text, the
 /// warnings and the island counters (runs, warnings).
 fn with_islands(src: &str, edit: Option<Edit>) -> (String, Vec<String>, (usize, usize)) {
-    let (opts, _) = Options::from_json(OXC).unwrap();
+    with_islands_under(src, OXC, edit)
+}
+
+/// [`with_islands`] under `settings`.
+fn with_islands_under(
+    src: &str,
+    settings: &str,
+    edit: Option<Edit>,
+) -> (String, Vec<String>, (usize, usize)) {
+    let (opts, _) = Options::from_json(settings).unwrap();
     let islands = match edit {
         Some(edit) => Islands::with_formatter(std::sync::Arc::new(edit)),
         None => Islands::new(),
@@ -2426,6 +2435,70 @@ fn an_island_whose_holes_do_not_come_back_is_refused_with_a_warning() {
         ),
         "<stdin>:2: islands.css: the #…# on line 2 is no longer joined to the `p` after it"
     );
+}
+
+/// Under `islands.interpolated: false` an island holding `#…#` or `##` is
+/// never handed off: it prints as written, as under `"off"`, with no
+/// warning and nothing counted, whether `true` would format it or refuse
+/// it; a pure island beside it is still formatted.
+#[test]
+fn islands_interpolated_false_prints_an_island_holding_hashes_as_written() {
+    const NOT_INTERPOLATED: &str = r#"{"newline": "\n", "islands.js": "oxc", "islands.css": "oxc", "islands.json": "oxc", "islands.config": "off", "islands.interpolated": false}"#;
+    let (off, _) = Options::from_json(ISLANDS_OFF).unwrap();
+    // (a) Formatted under `true`; under `false` as written, raised to the
+    // body's indent, while the pure `<script>` and `<style>` format.
+    let src = concat!(
+        "<cfoutput><script>\nvar a = {b:#x#,c:'##'}\n</script>\n",
+        "<script>\nvar d = {e:1}\n</script>\n",
+        "<style>\n.#c#{width:#w#px}\n</style>\n<style>\n.f{color:red}\n</style></cfoutput>\n"
+    );
+    let (formatted, warnings, counts) = with_islands(src, None);
+    assert_eq!(
+        formatted,
+        concat!(
+            "<cfoutput>\n    <script>\n        var a = { b: #x#, c: \"##\" };\n    </script>\n",
+            "    <script>\n        var d = { e: 1 };\n    </script>\n",
+            "    <style>\n        .#c# {\n            width: #w#px;\n        }\n    </style>\n",
+            "    <style>\n        .f {\n            color: red;\n        }\n    </style>\n</cfoutput>\n"
+        )
+    );
+    assert_eq!((warnings.len(), counts), (0, (4, 0)));
+    let (text, warnings, counts) = with_islands_under(src, NOT_INTERPOLATED, None);
+    assert_eq!(
+        text,
+        concat!(
+            "<cfoutput>\n    <script>\n        var a = {b:#x#,c:'##'}\n    </script>\n",
+            "    <script>\n        var d = { e: 1 };\n    </script>\n",
+            "    <style>\n        .#c#{width:#w#px}\n    </style>\n",
+            "    <style>\n        .f {\n            color: red;\n        }\n    </style>\n</cfoutput>\n"
+        )
+    );
+    assert!(warnings.is_empty(), "{warnings:?}");
+    assert_eq!(counts, (2, 0));
+    // (c) Stable on a second run; `true` afterwards gives what `true`
+    // gives on the source.
+    assert_eq!(with_islands_under(&text, NOT_INTERPOLATED, None).0, text);
+    assert_eq!(with_islands(&text, None).0, formatted);
+    // (b) Refused with a warning under `true` (by oxc's output, and by a
+    // formatter that moves its placeholder); under `false` the formatter is
+    // never asked: as written, no warning.
+    for (src, edit) in [
+        (
+            "<cfoutput><script>\n(#f()#).call();\n</script></cfoutput>\n",
+            None,
+        ),
+        (
+            "<cfoutput><script>\nf(#a#,\n#b#);\n</script></cfoutput>\n",
+            Some(|| Edit(|t| t.replace("zq0_", "x"))),
+        ),
+    ] {
+        let (_, warnings, counts) = with_islands(src, edit.map(|e| e()));
+        assert_eq!((warnings.len(), counts), (1, (1, 1)), "{src:?}");
+        let (text, warnings, counts) = with_islands_under(src, NOT_INTERPOLATED, edit.map(|e| e()));
+        assert_eq!(text, format_source(src, Mode::Auto, &off), "{src:?}");
+        assert!(warnings.is_empty(), "{src:?}: {warnings:?}");
+        assert_eq!(counts, (0, 0), "{src:?}");
+    }
 }
 
 /// A recovered region prints as written wherever it sits: its first

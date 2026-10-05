@@ -196,17 +196,25 @@ pub struct Options {
     #[serde(rename = "alignment.doc_comments")]
     pub alignment_doc_comments: bool,
 
-    /// `<script>` islands, pure or holding only `#…#` and `##` (`islands.js`:
-    /// `"oxc"`, the default, or `"off"`).
+    /// `<script>` islands (`islands.js`: `"oxc"`, the default, or `"off"`):
+    /// pure ones, and under `islands.interpolated` those holding only `#…#`
+    /// and `##`.
     #[serde(rename = "islands.js")]
     pub islands_js: IslandPreset,
-    /// `<style>` islands, pure or holding only `#…#` and `##` (`islands.css`).
+    /// `<style>` islands (`islands.css`): pure ones, and under
+    /// `islands.interpolated` those holding only `#…#` and `##`.
     #[serde(rename = "islands.css")]
     pub islands_css: IslandPreset,
     /// Pure JSON `<script>` islands (`islands.json`); one holding `#…#` or `##`
     /// is never handed off.
     #[serde(rename = "islands.json")]
     pub islands_json: IslandPreset,
+    /// Whether a `<script>` / `<style>` island holding only text, `#…#` and
+    /// `##` is handed to the island formatter (`islands.interpolated`); when
+    /// false it prints as written, with no warning, and pure islands are
+    /// still formatted.
+    #[serde(rename = "islands.interpolated")]
+    pub islands_interpolated: bool,
     /// Whether `"oxc"` reads the project's `.oxfmtrc` / `.prettierrc`
     /// (`islands.config`).
     #[serde(rename = "islands.config")]
@@ -263,6 +271,7 @@ impl Default for Options {
             islands_js: IslandPreset::Oxc,
             islands_css: IslandPreset::Oxc,
             islands_json: IslandPreset::Oxc,
+            islands_interpolated: true,
             islands_config: IslandConfigMode::Auto,
         }
     }
@@ -1714,6 +1723,21 @@ mod tests {
             let json = format!(r#"{{"islands.config": {bad}}}"#);
             assert!(Options::from_json(&json).is_err(), "{json}");
         }
+    }
+
+    #[test]
+    fn islands_interpolated_values() {
+        assert!(Options::default().islands_interpolated);
+        for value in [true, false] {
+            let json = format!(r#"{{"islands.interpolated": {value}}}"#);
+            let (o, warnings) = Options::from_json(&json).unwrap();
+            assert_eq!(o.islands_interpolated, value);
+            assert!(warnings.is_empty());
+        }
+        let err = Options::from_json(r#"{"islands.interpolated": "off"}"#)
+            .unwrap_err()
+            .to_string();
+        assert!(err.contains("`islands.interpolated`"), "{err}");
     }
 
     #[test]

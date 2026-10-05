@@ -182,6 +182,9 @@ prints as
 </cfoutput>
 ```
 
+`"islands.interpolated": false` leaves every such block as written, with no
+warning, while blocks with no `#expr#` or `##` are still formatted.
+
 ## Migrating from CommandBox
 
 cfformat reads CommandBox cfformat's `.cfformat.json` files, but the output
@@ -280,7 +283,8 @@ the first three.
   `tags.body.indent` for CF tag bodies, and `tags.islands.indent`
   for the bodies of `<cfscript>`, `<script>`, `<style>`, `<cfquery>` and
   `<cfjava>`; `"islands.js"`, `"islands.css"` and `"islands.json": "off"`
-  leave those blocks as written.
+  leave those blocks as written, and `"islands.interpolated": false` only
+  the ones holding `#expr#` or `##`.
 
 ## Ignoring a region
 
@@ -483,7 +487,9 @@ block`, `a stray closer`, `an unmatched run`, `nesting past the limit`).
   the block print as written, with no warning. A block oxc cannot parse, or
   whose `#expr#` would not come back as they went, prints as written with a
   warning (`path:line: islands.js: <message>`, such as ``what precedes the
-  #…# on line 12 changed from `(` to nothing``).
+  #…# on line 12 changed from `(` to nothing``). `"islands.interpolated":
+  false` leaves every block holding `#expr#` or `##` as written, with no
+  warning, while blocks with no CFML are still formatted.
 - **Some blocks keep their text line for line.** Formatting never moves a
   line that starts inside a multi-line string: in a formatted `<script>`,
   the lines inside a template literal or a string continued with `\` keep

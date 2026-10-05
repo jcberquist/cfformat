@@ -1505,7 +1505,9 @@ fn settings_schema_describes_every_key() {
     keys.sort();
     default_keys.sort();
     assert_eq!(keys, default_keys);
-    assert_eq!(keys.len(), 48);
+    assert_eq!(keys.len(), 49);
+    assert_eq!(properties["islands.interpolated"]["type"], "boolean");
+    assert_eq!(properties["islands.interpolated"]["default"], true);
     for (key, p) in properties {
         assert!(
             p["description"].as_str().is_some_and(|d| !d.is_empty()),

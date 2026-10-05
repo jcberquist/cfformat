@@ -408,16 +408,33 @@ const REFERENCE: &[OptionInfo] = &[
     island_ex(
         "islands.css",
         "How `<style>` islands are formatted in tag mode (`.css`; see `islands.js`, which \
-         says which islands are handed off, and `islands.config`). A body with a line ending \
-         in `\\` (a CSS string continued over a line) prints as it is, byte for byte.",
+         says which islands are handed off, `islands.interpolated` and `islands.config`). A \
+         body with a line ending in `\\` (a CSS string continued over a line) prints as it is, \
+         byte for byte.",
         "<div>\n<style>\n.a { color: red; }\n  .b { color: blue; }\n</style>\n</div>\n",
         "{}",
+    ),
+    tag_ex(
+        "islands.interpolated",
+        Kind::Bool,
+        "true",
+        "Whether a `<script>` or `<style>` island inside `<cfoutput>` that holds `#expr#` or \
+         `##` besides its text is formatted. When true, it is handed off as `islands.js` \
+         describes, the `#expr#` stood in for and put back, and an island whose `#expr#` would \
+         not come back as they went prints as it is, with a warning. When false, every such \
+         island prints as it is, as \"off\" prints an island, with no warning: nothing is \
+         attempted. A pure island (no `#expr#`, no `##`) is formatted either way. It covers \
+         `<script>` and `<style>` alike; a JSON island holding `#expr#` or `##` is never \
+         handed off, and `\"islands.js\": \"off\"` / `\"islands.css\": \"off\"` leave every \
+         island of their language as it is whatever this key says.",
+        "<cfoutput>\n<script>\nvar a = {b:1}\n</script>\n<script>\nvar c = {id:#id#, name:'#name#'}\n</script>\n</cfoutput>\n",
     ),
     island_ex(
         "islands.js",
         "How JavaScript `<script>` islands are formatted in tag mode: no `type`, a \
          JavaScript MIME type (`.js`) or `module` (`.mjs`). An island is handed off when it \
-         holds no CFML tag or tag comment; inside `<cfoutput>` it may hold `#expr#` and `##`, \
+         holds no CFML tag or tag comment; inside `<cfoutput>` it may hold `#expr#` and `##` \
+         (unless `islands.interpolated` is false), \
          which the formatter sees as a placeholder as wide as the `#expr#` prints and as `#`, \
          and which are put back after: a string holding a `#expr#` keeps its quote, and an \
          island whose `#expr#` would not come back as they went (out of their string, a \
