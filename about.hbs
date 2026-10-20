@@ -1,0 +1,50 @@
+{{!-- The template of THIRD-PARTY-LICENSES.md; `cargo about` fills it from
+Cargo.lock as about.toml says (the command is in AGENTS.md). It prints
+nothing that depends on the machine it runs on: no path, no date. The
+workspace's own crates are the ones without a `source`; they are not third
+party and are skipped, with their group of the licence texts (about.toml
+puts them, alone, under the root LICENSE, so a group whose first crate is
+one of them holds nothing else). --}}
+# Third-party licences
+
+`cfformat` and `cfvet` are statically linked, and the licences of the
+crates they are built from ask for their copyright and permission notices
+to travel with every copy. This file holds them: every crate that goes into
+the release binaries, those linked in and the few (procedural macros and
+what they need) that run at compile time. It is generated from `Cargo.lock`,
+never edited by hand. `cfformat`'s own licence is [`LICENSE`](LICENSE), and
+the notice of the Prettier source that `crates/cfdoc` is a port of is
+[`crates/cfdoc/LICENSE-PRETTIER`](crates/cfdoc/LICENSE-PRETTIER).
+
+The crates come first, each with the licence expression its manifest
+declares and where it comes from; then every distinct licence text follows
+once, with the crates it covers. A crate offering a choice (`MIT OR
+Apache-2.0`) is used under the licence whose text lists it.
+
+## Crates
+
+| Crate | Version | Licence | Source |
+| ----- | ------- | ------- | ------ |
+{{#each crates~}}
+{{#if package.source}}
+| {{package.name}} | {{package.version}} | {{license}} | {{#if (eq package.source "registry+https://github.com/rust-lang/crates.io-index")}}[crates.io](https://crates.io/crates/{{package.name}}){{else}}`{{{package.source}}}`{{/if}} |
+{{/if}}
+{{~/each}}
+
+## Licence texts
+{{#each licenses}}
+{{#if (lookup (lookup (lookup used_by 0) "crate") "source")}}
+
+### {{name}} ({{id}})
+
+Used by: {{#each used_by}}{{crate.name}} {{crate.version}}{{#unless @last}}, {{/unless}}{{/each}}
+{{#unless source_path}}
+
+The crate ships no licence file; this is the licence's standard text.
+{{/unless}}
+
+```text
+{{{text}}}
+```
+{{/if}}
+{{~/each}}

@@ -1,0 +1,244 @@
+# The configuration of `cargo about`, which generates THIRD-PARTY-LICENSES.md
+# from Cargo.lock (the command is in AGENTS.md). Both binaries statically link
+# every crate in their dependency graphs, so the notices of all of them ship
+# with the releases.
+
+# The licences the shipped crates are used under, in priority order: a crate
+# offering a choice (`MIT OR Apache-2.0`) is taken under the first of these
+# that satisfies it. This is exactly the set found in the dependency graph;
+# a new dependency under any other licence makes the generation fail, which
+# is the point: it is a decision to take, not something to slip through.
+# `Unicode-3.0` is the ICU4X crates and the Unicode tables, `Apache-2.0`
+# the one crate (`similar`) that offers nothing else, `BSL-1.0` the Boost
+# side of `dragonbox_ecma` (`Apache-2.0 WITH LLVM-exception OR BSL-1.0`).
+accepted = ["MIT", "Apache-2.0", "Unicode-3.0", "BSL-1.0"]
+
+# The release targets (.github/workflows/release.yml); a crate that only
+# builds elsewhere (wasm, redox, …) is left out.
+targets = [
+    "x86_64-unknown-linux-gnu",
+    "x86_64-unknown-linux-musl",
+    "aarch64-unknown-linux-gnu",
+    "aarch64-unknown-linux-musl",
+    "x86_64-pc-windows-msvc",
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+]
+
+# Build scripts and their dependencies run at build time, and dev
+# dependencies only in the tests: no code of theirs is in a binary.
+ignore-build-dependencies = true
+ignore-dev-dependencies = true
+
+# Clarifications: where a crate's licence text is not found in the crate
+# directory, the file to use, pinned by its checksum. When the text changes
+# the tool only warns and scans the crate as if the entry were not there;
+# CI fails on that warning, and the checksum is updated with the text.
+
+# The workspace's own crates are the root LICENSE. They are MIT like the
+# rest, but they are not third party: about.hbs leaves them out, and
+# LICENSE ships on its own.
+
+[cfcli.clarify]
+license = "MIT"
+
+[[cfcli.clarify.files]]
+path = "../../LICENSE"
+checksum = "e187da01edaeb7ea140ab0b1141d75e361f647f88276f66dabbd3e7914f756c2"
+
+[cfdoc.clarify]
+license = "MIT"
+
+[[cfdoc.clarify.files]]
+path = "../../LICENSE"
+checksum = "e187da01edaeb7ea140ab0b1141d75e361f647f88276f66dabbd3e7914f756c2"
+
+[cfformat.clarify]
+license = "MIT"
+
+[[cfformat.clarify.files]]
+path = "../../LICENSE"
+checksum = "e187da01edaeb7ea140ab0b1141d75e361f647f88276f66dabbd3e7914f756c2"
+
+[cfformat-cli.clarify]
+license = "MIT"
+
+[[cfformat-cli.clarify.files]]
+path = "../../LICENSE"
+checksum = "e187da01edaeb7ea140ab0b1141d75e361f647f88276f66dabbd3e7914f756c2"
+
+[cfparse.clarify]
+license = "MIT"
+
+[[cfparse.clarify.files]]
+path = "../../LICENSE"
+checksum = "e187da01edaeb7ea140ab0b1141d75e361f647f88276f66dabbd3e7914f756c2"
+
+[cfvet.clarify]
+license = "MIT"
+
+[[cfvet.clarify.files]]
+path = "../../LICENSE"
+checksum = "e187da01edaeb7ea140ab0b1141d75e361f647f88276f66dabbd3e7914f756c2"
+
+# The oxc crates are a git dependency on one revision of the oxc
+# repository, whose crates carry no licence file of their own: the licence
+# is the repository's root LICENSE (MIT, VoidZero Inc. & Contributors,
+# Boshen), two directories up from each crate.
+
+[oxc_allocator.clarify]
+license = "MIT"
+
+[[oxc_allocator.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_ast.clarify]
+license = "MIT"
+
+[[oxc_ast.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_ast_macros.clarify]
+license = "MIT"
+
+[[oxc_ast_macros.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_ast_visit.clarify]
+license = "MIT"
+
+[[oxc_ast_visit.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_data_structures.clarify]
+license = "MIT"
+
+[[oxc_data_structures.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_diagnostics.clarify]
+license = "MIT"
+
+[[oxc_diagnostics.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_ecmascript.clarify]
+license = "MIT"
+
+[[oxc_ecmascript.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_estree.clarify]
+license = "MIT"
+
+[[oxc_estree.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_formatter.clarify]
+license = "MIT"
+
+[[oxc_formatter.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_formatter_core.clarify]
+license = "MIT"
+
+[[oxc_formatter_core.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_formatter_css.clarify]
+license = "MIT"
+
+[[oxc_formatter_css.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_formatter_json.clarify]
+license = "MIT"
+
+[[oxc_formatter_json.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_jsdoc.clarify]
+license = "MIT"
+
+[[oxc_jsdoc.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_parser.clarify]
+license = "MIT"
+
+[[oxc_parser.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_regular_expression.clarify]
+license = "MIT"
+
+[[oxc_regular_expression.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_span.clarify]
+license = "MIT"
+
+[[oxc_span.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_str.clarify]
+license = "MIT"
+
+[[oxc_str.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+[oxc_syntax.clarify]
+license = "MIT"
+
+[[oxc_syntax.clarify.files]]
+path = "../../LICENSE"
+checksum = "95ced5ecf1133fbf41d409b5555c86c344f83f3b019926057ddbc07cfdcc27b3"
+
+# The windows crates name their licence files in lower case, which the
+# scan does not pick up.
+
+[windows-link.clarify]
+license = "MIT OR Apache-2.0"
+
+[[windows-link.clarify.files]]
+path = "license-mit"
+license = "MIT"
+checksum = "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+
+[windows-sys.clarify]
+license = "MIT OR Apache-2.0"
+
+[[windows-sys.clarify.files]]
+path = "license-mit"
+license = "MIT"
+checksum = "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+
+# siphasher ships only COPYING: its copyright lines and the statement that
+# it is Apache-2.0 or MIT at the user's option. That notice is what its MIT
+# licence asks to be kept, so it stands as the crate's text.
+
+[siphasher.clarify]
+license = "MIT OR Apache-2.0"
+
+[[siphasher.clarify.files]]
+path = "COPYING"
+license = "MIT"
+checksum = "c962ee4d1d05ddc138b202b2540219ebc57893fcf97b364852094a9a94ce1365"

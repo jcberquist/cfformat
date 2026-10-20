@@ -26,6 +26,19 @@ jobs:
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Test
         run: cargo test --workspace --locked --no-fail-fast
+      # THIRD-PARTY-LICENSES.md is generated from Cargo.lock (about.toml,
+      # about.hbs, AGENTS.md): regenerated here and compared, so a lock
+      # change without the regeneration fails. cargo-about's warnings fail
+      # too: one means a crate's licence did not resolve as about.toml
+      # says (a pinned text changed), which the tool otherwise papers over.
+      # The install is skipped when the cache above already holds the tool.
+      - name: Third-party licence notices are current
+        run: |
+          cargo install --locked --version 0.9.2 --features cli cargo-about
+          cargo about generate --locked --workspace --fail -o THIRD-PARTY-LICENSES.md about.hbs 2> about.log
+          cat about.log
+          test ! -s about.log
+          git diff --exit-code -- THIRD-PARTY-LICENSES.md
       # The fixed stress shapes (every input that once overflowed the stack
       # or went quadratic) and every fixture, each cut at each eighth and
       # each mutated (one edit per shape, eight per fixture): parse and

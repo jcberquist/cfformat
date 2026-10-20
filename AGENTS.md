@@ -48,6 +48,23 @@ bump them together.
   fixtures), `UPDATE_REFERENCE=1` (`SETTINGS.md`, generated
   from the option definitions), `UPDATE_SNAPSHOTS=1` (`cfparse`) and
   `UPDATE_CASES=1` (`cfvet`).
+- `THIRD-PARTY-LICENSES.md`, the licence notices of every crate in the
+  binaries, is generated from `Cargo.lock` by [`cargo
+  about`](https://github.com/EmbarkStudios/cargo-about) (`cargo install
+  --locked --version 0.9.2 --features cli cargo-about`) with `about.toml`
+  (the accepted licences, the release targets, the pinned texts of crates
+  that ship none) and `about.hbs` (the layout). Never edit it by hand: after
+  a change to `Cargo.lock`, run
+
+  ```text
+  cargo about generate --locked --workspace --fail -o THIRD-PARTY-LICENSES.md about.hbs
+  ```
+
+  and review the diff. A warning from the tool is a problem to fix in
+  `about.toml`, not noise; CI regenerates the file, fails on any warning and
+  on any difference. A new dependency under a licence that `accepted` does
+  not list fails the generation: that is a decision to take, in the file's
+  comments.
 - `crates/cfformat/tests/invariants.rs` checks every golden case for
   idempotence, token preservation and literal preservation; a formatter change
   that breaks one of these is wrong, not the invariant.
