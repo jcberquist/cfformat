@@ -1523,7 +1523,9 @@ fn an_inline_body_breaks_only_where_it_had_whitespace() {
         tag("<span>\n<b>x</b>\n</span>\n"),
         "<span>\n    <b>x</b>\n</span>\n"
     );
-    assert_eq!(tag("<span>a\nb</span>\n"), "<span>a\n    b</span>\n");
+    // A body glued to its tag at the start is not indented as a body: its
+    // later lines stay at the tag's indent.
+    assert_eq!(tag("<span>a\nb</span>\n"), "<span>a\nb</span>\n");
     assert_eq!(
         tag("<tr><td>a</td><td> b </td></tr>\n"),
         "<tr>\n    <td>a</td><td>b</td>\n</tr>\n"

@@ -95,8 +95,8 @@
 </cfif>
 <p>
     A sentence long enough that the body of the tag in it cannot stay on this one line, and the word is O<cfif x><!---
-            why
-        --->pen</cfif>ed.
+        why
+    --->pen</cfif>ed.
 </p>
 <h4>
     <cfif i IS 'coldfusion'>ColdFusion<cfelseif i IS 'lucee'>Lucee</cfif>:

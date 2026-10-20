@@ -673,7 +673,6 @@ impl Printer<'_> {
                 .iter()
                 .any(|&(lead, trail)| lead == Edge::Glued || trail == Edge::Glued);
             let breaks = |edge: Edge| edge == Edge::Space || (edge == Edge::Free && !glued);
-            let inner = if flush { ctx } else { ctx.deeper() };
             for (segment, &(lead, trail)) in segments.iter().zip(&edges) {
                 if let Some(tag) = segment.tag {
                     // No dedent: the segment's `indent` simply does not cover
@@ -681,22 +680,31 @@ impl Printer<'_> {
                     // indent, on its own line when the ends around it break.
                     parts.push(self.with_tag_ctx(ctx, || self.element(tag)));
                 }
+                // A segment that opens onto lines of its own is indented
+                // once (or stays at the tag's indent when `flush`); one that
+                // starts on the tag's line, because a break there would show
+                // on the page, is not indented as a body: its lines stay at
+                // the tag's indent, and what breaks inside it — a `#…#`'s
+                // arguments — indents from the tag (`<a href="x">#f(` ⏎
+                // `'a'` ⏎ `)#</a>`), as a one-line body does below.
+                let opens = breaks(lead);
+                let indented = opens && !flush;
                 let within = TagCtx {
                     space_before: lead != Edge::Glued,
                     space_after: trail != Edge::Glued,
-                    ..inner
+                    ..if indented { ctx.deeper() } else { ctx }
                 };
                 let doc = self.tag_nodes(segment.nodes, within);
                 if !doc.is_empty() {
-                    let lines = if breaks(lead) {
+                    let lines = if opens {
                         vec![hardline(), doc]
                     } else {
                         vec![doc]
                     };
-                    parts.push(if flush {
-                        Doc::Concat(lines)
-                    } else {
+                    parts.push(if indented {
                         indent(lines)
+                    } else {
+                        Doc::Concat(lines)
                     });
                 }
                 if breaks(trail) {
@@ -710,10 +718,16 @@ impl Printer<'_> {
                 space_after: trail != Edge::Glued,
                 ..ctx
             };
-            // The body's lines sit where a broken body's would, indented
-            // once or at the tag's indent when `flush`; a body that stays on
-            // the tag's line reads nothing of that depth.
-            let inner = if flush { within } else { within.deeper() };
+            // The body's lines sit where a broken body's would: indented
+            // once, or at the tag's indent when `flush` or when the body is
+            // glued to the tag (`<a href="x">#f( … )#</a>`: no whitespace
+            // between `>` and the body, so it cannot open onto a line of its
+            // own without adding a space to the page, and is not indented as
+            // a body; what breaks inside it indents from the tag, `#f(` ⏎
+            // `'a'` ⏎ `)#</a>`, the closing `)#</a>` at the tag's column). A
+            // body that stays on the tag's line reads nothing of that depth.
+            let indented = !flush && lead != Edge::Glued;
+            let inner = if indented { within.deeper() } else { within };
             let doc = self.tag_nodes(body, inner);
             if body
                 .iter()
@@ -739,10 +753,10 @@ impl Printer<'_> {
                 };
                 let lines = vec![edge(lead), doc];
                 parts.push(group(vec![
-                    if flush {
-                        Doc::Concat(lines)
-                    } else {
+                    if indented {
                         indent(lines)
+                    } else {
+                        Doc::Concat(lines)
                     },
                     edge(trail),
                 ]));

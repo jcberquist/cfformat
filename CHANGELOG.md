@@ -7,31 +7,38 @@ stayed on one line however long the line was and whatever
 `function_call.multiline.element_count` asked, while the same call in a
 `<cfset>` broke one argument per line (GitHub issue 1). Between its
 delimiters an interpolation is code, which the page never sees, so it now
-breaks there as any expression does — when it does not fit `max_columns`,
-or when a threshold asks — with the delimiters hugging a call, struct, array
-or parenthesised expression, as Prettier hugs a JSX expression container.
+breaks there as any expression does — when it does not fit `max_columns`, or
+when a threshold asks — with the delimiters hugging a call, struct, array or
+parenthesised expression, as Prettier hugs a JSX expression container.
 `<cfoutput>` ⏎ `#doStuff('something', 'anothervalue', 'thirdvalue',
-'fourth_thingy', 'fiftharg', 'sixth_whatever_this_is_really_long_to_handle')#`
-⏎ `</cfoutput>` now prints `#doStuff(` ⏎ `'something',` ⏎ `'anothervalue',`
-⏎ … ⏎ `)#`, one argument per line at the configured indent, and
-`multiline.comma` applies as it does elsewhere. The delimiters hug a
-binary or a ternary too, as Prettier inlines a JSX child's container around
-one: the first operand stays on the opening line, the rest are indented
-under it and the closing `#` ends the last — `#first & ' ' & second & ' ' &
-third & … & ninth#` prints `#first &` ⏎ `' ' &` ⏎ `second &` ⏎ … ⏎ `ninth#`
-and `#isDefined('url.x') ? url.x : variables.default_fallback_value#`
-prints `#isDefined('url.x')` ⏎ `? url.x` ⏎ `: variables.default_fallback_value#`;
-the outermost expression decides the shape, so `#doStuff(…) & bar#` keeps
-`) & bar#` on the call's closing line. Any other expression that breaks — a
-chain ending in a member, `#foo(…).bar#` — is indented on lines of its own
-between `#` and `#`. A one-line tag
-body holding such a `#…#` goes onto lines of its own first, so
-`<cfoutput>#doStuff(…)#</cfoutput>` prints as the next run reads it. A line
-comment inside an interpolation's call used to be carried past the closing
-`#` into the page's text (`#doStuff('a', // note` ⏎ `'b')#` printed
-`#doStuff('a', 'b')# // note`); it stays inside now. The text around a
-`#…#` is laid out as before, and an interpolation in a string, an attribute
-value or a `<script>` / `<style>` block still prints on one line.
+'fourth_thingy', 'fiftharg',
+'sixth_whatever_this_is_really_long_to_handle')#` ⏎ `</cfoutput>` now prints
+`#doStuff(` ⏎ `'something',` ⏎ `'anothervalue',` ⏎ … ⏎ `)#`, one argument
+per line at the configured indent, and `multiline.comma` applies as it does
+elsewhere. The delimiters hug a binary or a ternary too, as Prettier inlines
+a JSX child's container around one: the first operand stays on the opening
+line, the rest are indented under it and the closing `#` ends the last —
+`#first & ' ' & second & ' ' & third & … & ninth#` prints `#first &` ⏎ `' '
+&` ⏎ `second &` ⏎ … ⏎ `ninth#` and `#isDefined('url.x') ? url.x :
+variables.default_fallback_value#` prints `#isDefined('url.x')` ⏎ `? url.x`
+⏎ `: variables.default_fallback_value#`; the outermost expression decides
+the shape, so `#doStuff(…) & bar#` keeps `) & bar#` on the call's closing
+line. Any other expression that breaks — a chain ending in a member,
+`#foo(…).bar#` — is indented on lines of its own between `#` and `#`. A
+one-line tag body holding such a `#…#` goes onto lines of its own first, so
+`<cfoutput>#doStuff(…)#</cfoutput>` prints as the next run reads it. A body
+glued to its tag cannot do that without adding a space to the page (`<a
+href="#url#">#doStuff(…)#</a>`), and is then not indented as a body: the
+arguments print one indent in from the tag rather than two, `<a
+href="#url#">#doStuff(` ⏎ `'something',` ⏎ `'anothervalue'` ⏎ `)#</a>` with
+`)#</a>` at the tag's column, and a glued body that already held a newline
+is laid out the same way, its later lines at the tag's indent (`<span>a` ⏎
+`b</span>`, which used to indent `b`). A line comment inside an
+interpolation's call used to be carried past the closing `#` into the page's
+text (`#doStuff('a', // note` ⏎ `'b')#` printed `#doStuff('a', 'b')# //
+note`); it stays inside now. The text around a `#…#` is laid out as before,
+and an interpolation in a string, an attribute value or a `<script>` /
+`<style>` block still prints on one line.
 
 ## 0.3.1 — 2026-10-05
 
