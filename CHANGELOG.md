@@ -62,6 +62,15 @@ JSON block holding a unary operator other than a sign before a number
 (`-"x"`, `!1`) is refused as not JSON and left as written with a warning,
 where it used to be formatted. Rust 1.97 is still the minimum.
 
+**Added.** The releases carry the third-party licence notices. The binaries
+are statically linked, and the licences of the crates in them (MIT,
+Unicode-3.0, Apache-2.0, BSL-1.0) ask for their copyright and permission
+notices to accompany every copy; `THIRD-PARTY-LICENSES.md` holds them,
+every crate with its licence and every licence text once, and ships next to
+`LICENSE` and `LICENSE-PRETTIER` in every release. It is generated from
+`Cargo.lock` by `cargo about`, and CI fails when the lock changed and it
+was not regenerated.
+
 ## 0.3.1 — 2026-10-05
 
 **Fixed.** A CF tag body glued to the text around it could gain a space on

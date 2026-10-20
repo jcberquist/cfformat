@@ -107,8 +107,8 @@ The assets:
 | `cfformat_macos`              | macOS, universal (arm64 and x86_64, 10.13 or newer) |
 
 The same six exist for `cfvet` (`cfvet_linux_x86_64`, `cfvet_macos`, …).
-Each release also carries `LICENSE` and `LICENSE-PRETTIER` (see
-[Licence](#licence)).
+Each release also carries the three licence files, `LICENSE`,
+`LICENSE-PRETTIER` and `THIRD-PARTY-LICENSES.md` (see [Licence](#licence)).
 
 You can also build and install it with Cargo. It requires Rust 1.97 or newer
 and what Rust itself needs on your platform to link a program: a C linker and
@@ -602,4 +602,9 @@ as a write and a declaration, where a `#…#` is live, the flags and the exit co
 
 MIT: [`LICENSE`](LICENSE). `crates/cfdoc` is a port of Prettier's document
 printer and keeps Prettier's MIT notice,
-[`crates/cfdoc/LICENSE-PRETTIER`](crates/cfdoc/LICENSE-PRETTIER).
+[`crates/cfdoc/LICENSE-PRETTIER`](crates/cfdoc/LICENSE-PRETTIER). The
+binaries are statically linked, and the crates in them ask for their own
+copyright notices to travel with every copy:
+[`THIRD-PARTY-LICENSES.md`](THIRD-PARTY-LICENSES.md) holds them, every
+crate with its licence and every licence text once, generated from
+`Cargo.lock`. Every release ships the three files next to the binaries.

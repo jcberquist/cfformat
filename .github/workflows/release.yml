@@ -157,9 +157,11 @@ jobs:
           path: macos/*
           if-no-files-found: error
 
-  # Assembles the assets — six per binary and the two licences — on every
-  # run; a dry run uploads them as one artifact and stops, a tag run (or a
-  # manual run with dry_run off) creates the release from them.
+  # Assembles the assets — six per binary and the three licence files: the
+  # project's, Prettier's for the cfdoc port, and the generated notices of
+  # every crate in the binaries — on every run; a dry run uploads them as
+  # one artifact and stops, a tag run (or a manual run with dry_run off)
+  # creates the release from them.
   release:
     runs-on: ubuntu-latest
     permissions:
@@ -196,6 +198,7 @@ jobs:
           done
           cp LICENSE assets/LICENSE
           cp crates/cfdoc/LICENSE-PRETTIER assets/LICENSE-PRETTIER
+          cp THIRD-PARTY-LICENSES.md assets/THIRD-PARTY-LICENSES.md
           ls -l assets
 
       - name: Upload the assets (dry run)
