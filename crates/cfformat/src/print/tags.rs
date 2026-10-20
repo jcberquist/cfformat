@@ -434,16 +434,21 @@ impl Printer<'_> {
     /// the page never sees, so the expression breaks there as it would in a
     /// `<cfset>`: when it does not fit `max_columns`, or when a threshold
     /// (`function_call.multiline.*`, …) asks. The shape is the one Prettier
-    /// gives a JSX expression container, `{…}` in JSX text: an expression
-    /// that ends on a bracket — a call, struct, array, function or
-    /// parenthesised group ([`closes_on_bracket`]) — is hugged, `#doStuff(`
-    /// ⏎ one argument per line ⏎ `)#`; any other (a concatenation, a
-    /// ternary) is indented on lines of its own between the two `#`, each
-    /// on a line of its own — a concatenation not indented again, every
-    /// operator breaking with the delimiters, as between the parentheses of
-    /// a `( … )` group ([`Printer::binary_in_group`]). One whose expression
-    /// has no line to break on (`#x#`, `#a.b.c#`) stays as it is: the text
-    /// around it does not re-wrap, so `#` ⏎ `x` ⏎ `#` would make the line no
+    /// gives a JSX expression container that is a child of an element,
+    /// `{…}` in JSX text: the delimiters hug an expression that ends on a
+    /// bracket — a call, struct, array, function or parenthesised group
+    /// ([`closes_on_bracket`]) — `#doStuff(` ⏎ one argument per line ⏎ `)#`,
+    /// and a binary or a ternary, whose own layout puts the first operand on
+    /// the opening line and the rest indented under it, the closing `#` on
+    /// the last operand's line: `#first &` ⏎ `second &` ⏎ `third#`, `#cond`
+    /// ⏎ `? a` ⏎ `: b#` ([`hugs_delimiters`]; the outermost expression
+    /// decides, so `#foo( … ) & bar#` is a binary, which keeps `& bar` on
+    /// the call's closing line as any two-operand binary does). Any other
+    /// expression that can break — a chain ending in a member, whose call
+    /// segments break inside it — is indented on lines of its own between
+    /// the two `#`, each on a line of its own. One whose expression has no
+    /// line to break on (`#x#`, `#a.b.c#`) stays as it is: the text around
+    /// it does not re-wrap, so `#` ⏎ `x` ⏎ `#` would make the line no
     /// narrower, only the file longer. A `#…#` without both delimiters, or
     /// holding a line comment, prints as [`Printer::template_expression`]
     /// prints it, which is also how every other `#…#` prints — in a string,
@@ -458,25 +463,10 @@ impl Printer<'_> {
         {
             return self.template_expression(e);
         }
-        let mut sig = e.children.iter().filter(|n| !n.is_trivia());
-        let binary = matches!(
-            (sig.next(), sig.next()),
-            (Some(Node::Element(c)), None) if matches!(c.kind, ElementKind::Binary { .. })
-        );
-        let inner = if binary {
-            self.sequence_by(&e.children, &|n| match n {
-                Node::Element(b) if matches!(b.kind, ElementKind::Binary { .. }) => {
-                    self.binary_in_group(b)
-                }
-                n => self.node(n),
-            })
-        } else {
-            self.sequence(&e.children)
-        };
-        let inner = Doc::Concat(inner);
+        let inner = Doc::Concat(self.sequence(&e.children));
         let nodes: Vec<&Node> = e.children.iter().collect();
         let (open, close) = (self.token(open), self.token(close));
-        if closes_on_bracket(&nodes) {
+        if hugs_delimiters(&nodes) {
             group(vec![open, inner, line_suffix_boundary(), close])
         } else if !can_break(&inner) {
             Doc::Concat(vec![open, inner, close])
@@ -1274,6 +1264,19 @@ fn body_span(nodes: &[Node]) -> std::ops::Range<u32> {
 /// interpolation puts its closing delimiter.
 fn closes_on_bracket(nodes: &[&Node]) -> bool {
     matches!(last_node(nodes), Some(Node::Element(e)) if ends_on_bracket(e))
+}
+
+/// Whether the `#` delimiters of a `#…#` in tag text hug its expression
+/// ([`Printer::tag_template_expression`]): one that ends on a bracket
+/// ([`closes_on_bracket`]), a binary (the elvis `?:` is one, as it is to the
+/// parser) or a ternary — the expressions Prettier inlines a JSX child's
+/// `{…}` around. A chain ending in a member (`a.b( … ).c`) is none of these.
+fn hugs_delimiters(nodes: &[&Node]) -> bool {
+    closes_on_bracket(nodes)
+        || matches!(
+            last_node(nodes),
+            Some(Node::Element(e)) if matches!(e.kind, ElementKind::Binary { .. } | ElementKind::Ternary)
+        )
 }
 
 /// Whether the last node of `nodes` that is not whitespace is an assignment.

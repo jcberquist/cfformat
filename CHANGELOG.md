@@ -14,8 +14,17 @@ or parenthesised expression, as Prettier hugs a JSX expression container.
 'fourth_thingy', 'fiftharg', 'sixth_whatever_this_is_really_long_to_handle')#`
 ⏎ `</cfoutput>` now prints `#doStuff(` ⏎ `'something',` ⏎ `'anothervalue',`
 ⏎ … ⏎ `)#`, one argument per line at the configured indent, and
-`multiline.comma` applies as it does elsewhere. Any other expression that
-breaks is indented on lines of its own between `#` and `#`. A one-line tag
+`multiline.comma` applies as it does elsewhere. The delimiters hug a
+binary or a ternary too, as Prettier inlines a JSX child's container around
+one: the first operand stays on the opening line, the rest are indented
+under it and the closing `#` ends the last — `#first & ' ' & second & ' ' &
+third & … & ninth#` prints `#first &` ⏎ `' ' &` ⏎ `second &` ⏎ … ⏎ `ninth#`
+and `#isDefined('url.x') ? url.x : variables.default_fallback_value#`
+prints `#isDefined('url.x')` ⏎ `? url.x` ⏎ `: variables.default_fallback_value#`;
+the outermost expression decides the shape, so `#doStuff(…) & bar#` keeps
+`) & bar#` on the call's closing line. Any other expression that breaks — a
+chain ending in a member, `#foo(…).bar#` — is indented on lines of its own
+between `#` and `#`. A one-line tag
 body holding such a `#…#` goes onto lines of its own first, so
 `<cfoutput>#doStuff(…)#</cfoutput>` prints as the next run reads it. A line
 comment inside an interpolation's call used to be carried past the closing
