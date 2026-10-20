@@ -168,7 +168,7 @@ its own root `Cargo.toml`:
 
 ```toml
 [patch.crates-io]
-oxc_allocator = { git = "https://github.com/oxc-project/oxc", rev = "2bd08ebe8f36fcf1954a675ffdeb4c6d0129f609" }
+oxc_allocator = { git = "https://github.com/oxc-project/oxc", rev = "07ed78f4abde4020ca7919381ffea4da8616b78a" }
 ```
 
 Without it the two allocators are two crates and the build fails in

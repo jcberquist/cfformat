@@ -564,7 +564,7 @@ only from the root of the build, and without it the build fails with
 
 ```toml
 [patch.crates-io]
-oxc_allocator = { git = "https://github.com/oxc-project/oxc", rev = "2bd08ebe8f36fcf1954a675ffdeb4c6d0129f609" }
+oxc_allocator = { git = "https://github.com/oxc-project/oxc", rev = "07ed78f4abde4020ca7919381ffea4da8616b78a" }
 ```
 
 The workspace's other crates are `cfformat-cli` (the `cfformat` command

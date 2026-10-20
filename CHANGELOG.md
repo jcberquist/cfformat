@@ -40,6 +40,28 @@ note`); it stays inside now. The text around a `#…#` is laid out as before,
 and an interpolation in a string, an attribute value or a `<script>` /
 `<style>` block still prints on one line.
 
+**Changed.** `<script>` and `<style>` blocks are formatted by the oxc
+formatter crates of oxfmt 0.74.0 (was 0.72.0). No block of the projects
+tried formats differently; what moves is rarer code. Three shapes the old
+version refused with an internal error (left as written, with a warning)
+now format: an array with holes and comments around them (`[a, /* c */,
+b]`), a statement that starts with a parenthesised literal (`({}).a++;`)
+and a JSON array holding holes and comments. A class static block holding
+only `;` prints `static {}`; it printed `static {` ⏎ `}` and moved its
+comment at every run. A comment in an empty slot of a `for` head is glued
+to the opener: `for ( /*s0*/;;)` is now `for (/*s0*/;;)`. A JSDoc type
+cast in a chain of one operator keeps its parentheses: `x = a && /** @type
+{T} */ (b && c);` printed `x = a && /** @type {T} */ b && c;`, the cast
+moved onto `b`, and `(a) => /** @type {T} */ ((b) => c)` lost them the same
+way. A `??`, `||` or `&&` chain whose right sides all fit on the line no
+longer indents the broken last one twice: `const x = a ?? [1, 2] ?? [` ⏎
+`    "long",` ⏎ … ⏎ `];` was one indent deeper. In a JSON block a comment
+on a value's line before it leads that value instead of trailing the one
+before: `"a": [1, /* lead 2 */ 2]` printed `"a": [1 /* lead 2 */, 2]`. A
+JSON block holding a unary operator other than a sign before a number
+(`-"x"`, `!1`) is refused as not JSON and left as written with a warning,
+where it used to be formatted. Rust 1.97 is still the minimum.
+
 ## 0.3.1 — 2026-10-05
 
 **Fixed.** A CF tag body glued to the text around it could gain a space on
