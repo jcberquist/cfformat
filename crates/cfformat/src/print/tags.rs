@@ -17,7 +17,7 @@ use cfdoc::builders::{
     group, hardline, hardline_without_break_parent, if_break_group, indent, line,
     line_suffix_boundary, softline,
 };
-use cfdoc::utils::{find_in_doc, remove_lines};
+use cfdoc::utils::{can_break, find_in_doc, remove_lines};
 use cfdoc::Doc;
 use cfparse::{
     CfKind, Delim, Element, ElementKind, Ident, IslandSite, Node, Punct, SegmentKind, TagShape,
@@ -393,7 +393,15 @@ impl Printer<'_> {
                         ),
                         ..ctx
                     };
-                    lines.doc(self.with_tag_ctx(at, || self.element(e)));
+                    // A `#…#` in the text breaks like any expression
+                    // ([`Printer::tag_template_expression`]); inside an
+                    // island the text is the island's and never comes here.
+                    lines.doc(self.with_tag_ctx(at, || match e.kind {
+                        ElementKind::TemplateExpression if !ctx.island => {
+                            self.guarded(e, || self.tag_template_expression(e))
+                        }
+                        _ => self.element(e),
+                    }));
                     // What follows a CF tag body with no whitespace between
                     // them (`</cfif>more`) is glued to it on the page, so it
                     // stays glued here: a break would add a space. Next to
@@ -418,6 +426,69 @@ impl Printer<'_> {
             }
         }
         lines.finish()
+    }
+
+    /// A `#…#` in tag text. The text around it is the page's, and a line
+    /// break in it is whitespace the browser shows, so [`Printer::tag_nodes`]
+    /// keeps the lines it was given; between the delimiters is code, which
+    /// the page never sees, so the expression breaks there as it would in a
+    /// `<cfset>`: when it does not fit `max_columns`, or when a threshold
+    /// (`function_call.multiline.*`, …) asks. The shape is the one Prettier
+    /// gives a JSX expression container, `{…}` in JSX text: an expression
+    /// that ends on a bracket — a call, struct, array, function or
+    /// parenthesised group ([`closes_on_bracket`]) — is hugged, `#doStuff(`
+    /// ⏎ one argument per line ⏎ `)#`; any other (a concatenation, a
+    /// ternary) is indented on lines of its own between the two `#`, each
+    /// on a line of its own — a concatenation not indented again, every
+    /// operator breaking with the delimiters, as between the parentheses of
+    /// a `( … )` group ([`Printer::binary_in_group`]). One whose expression
+    /// has no line to break on (`#x#`, `#a.b.c#`) stays as it is: the text
+    /// around it does not re-wrap, so `#` ⏎ `x` ⏎ `#` would make the line no
+    /// narrower, only the file longer. A `#…#` without both delimiters, or
+    /// holding a line comment, prints as [`Printer::template_expression`]
+    /// prints it, which is also how every other `#…#` prints — in a string,
+    /// an attribute value or an island, where it must stay on one line.
+    pub(crate) fn tag_template_expression(&self, e: &Element) -> Doc {
+        let (Some(open), Some(close)) = (&e.open, &e.close) else {
+            return self.template_expression(e);
+        };
+        if e.children
+            .iter()
+            .any(|n| matches!(n, Node::Element(c) if c.kind == ElementKind::LineComment))
+        {
+            return self.template_expression(e);
+        }
+        let mut sig = e.children.iter().filter(|n| !n.is_trivia());
+        let binary = matches!(
+            (sig.next(), sig.next()),
+            (Some(Node::Element(c)), None) if matches!(c.kind, ElementKind::Binary { .. })
+        );
+        let inner = if binary {
+            self.sequence_by(&e.children, &|n| match n {
+                Node::Element(b) if matches!(b.kind, ElementKind::Binary { .. }) => {
+                    self.binary_in_group(b)
+                }
+                n => self.node(n),
+            })
+        } else {
+            self.sequence(&e.children)
+        };
+        let inner = Doc::Concat(inner);
+        let nodes: Vec<&Node> = e.children.iter().collect();
+        let (open, close) = (self.token(open), self.token(close));
+        if closes_on_bracket(&nodes) {
+            group(vec![open, inner, line_suffix_boundary(), close])
+        } else if !can_break(&inner) {
+            Doc::Concat(vec![open, inner, close])
+        } else {
+            group(vec![
+                open,
+                indent(vec![softline(), inner]),
+                softline(),
+                line_suffix_boundary(),
+                close,
+            ])
+        }
     }
 
     /// Whether `n`, a node of a tag-mode node list, starts with whitespace
@@ -595,6 +666,11 @@ impl Printer<'_> {
         } else {
             vec![(Edge::Free, Edge::Free); segments.len()]
         };
+        // `tags.body.indent: "cfml"`: a CF tag body that starts with HTML
+        // stays at the tag's indent, `depth` included, so an island in it
+        // is raised to the flush column.
+        let flush =
+            self.opts.tags_body_indent == TagBodyIndent::Cfml && cf && starts_with_html(body);
         if broken {
             // A broken body has a line break at an end the source has
             // whitespace at, and at one where it would not show — unless
@@ -607,11 +683,6 @@ impl Printer<'_> {
                 .iter()
                 .any(|&(lead, trail)| lead == Edge::Glued || trail == Edge::Glued);
             let breaks = |edge: Edge| edge == Edge::Space || (edge == Edge::Free && !glued);
-            // `tags.body.indent: "cfml"`: a CF tag body that starts with HTML
-            // stays at the tag's indent, `depth` included, so an island in it
-            // is raised to the flush column.
-            let flush =
-                self.opts.tags_body_indent == TagBodyIndent::Cfml && cf && starts_with_html(body);
             let inner = if flush { ctx } else { ctx.deeper() };
             for (segment, &(lead, trail)) in segments.iter().zip(&edges) {
                 if let Some(tag) = segment.tag {
@@ -649,26 +720,43 @@ impl Printer<'_> {
                 space_after: trail != Edge::Glued,
                 ..ctx
             };
+            // The body's lines sit where a broken body's would, indented
+            // once or at the tag's indent when `flush`; a body that stays on
+            // the tag's line reads nothing of that depth.
+            let inner = if flush { within } else { within.deeper() };
+            let doc = self.tag_nodes(body, inner);
             if body
                 .iter()
                 .any(|n| n.as_element().is_some_and(is_tag_comment))
+                || can_break(&doc)
             {
-                // A one-line body holding a `<!--- --->` breaks like a body
-                // with a newline when it does not fit: the comment would
-                // otherwise break inside the line (`><!---` ⏎ text ⏎
-                // `---></cffunction>`), and the next run reads that newline
-                // and breaks the body. On one line an end's whitespace
-                // collapses to one space instead of disappearing; a glued
-                // end gets neither a space nor a break.
+                // A one-line body holding a `<!--- --->`, or a `#…#` that
+                // can break, breaks like a body with a newline when it does
+                // not fit: the comment would otherwise break inside the line
+                // (`><!---` ⏎ text ⏎ `---></cffunction>`), and the `#…#`
+                // inside itself (`<cfoutput>#doStuff(` ⏎ … ⏎ `)#</cfoutput>`,
+                // [`Printer::tag_template_expression`]), and the next run
+                // reads that newline and breaks the body. A `#…#` with no
+                // line to break on (`<cfoutput>#a#</cfoutput>`) leaves the
+                // body on the tag's line, as text does, whatever the width.
+                // On one line an end's whitespace collapses to one space
+                // instead of disappearing; a glued end gets neither a space
+                // nor a break.
                 let edge = |edge: Edge| match edge {
                     Edge::Space => line(),
                     Edge::Free => softline(),
                     Edge::Glued => Doc::Concat(Vec::new()),
                 };
-                let doc = self.tag_nodes(body, within.deeper());
-                parts.push(group(vec![indent(vec![edge(lead), doc]), edge(trail)]));
+                let lines = vec![edge(lead), doc];
+                parts.push(group(vec![
+                    if flush {
+                        Doc::Concat(lines)
+                    } else {
+                        indent(lines)
+                    },
+                    edge(trail),
+                ]));
             } else {
-                let doc = self.tag_nodes(body, within);
                 // On one line, that whitespace collapses to one space
                 // instead of disappearing; a block tag's is dropped.
                 let (lead, trail) = if keeps_edge_space(e, name) {

@@ -1,5 +1,29 @@
 # Changelog
 
+## Unreleased
+
+**Fixed.** A `#…#` in the text of a template never broke: a call inside it
+stayed on one line however long the line was and whatever
+`function_call.multiline.element_count` asked, while the same call in a
+`<cfset>` broke one argument per line (GitHub issue 1). Between its
+delimiters an interpolation is code, which the page never sees, so it now
+breaks there as any expression does — when it does not fit `max_columns`,
+or when a threshold asks — with the delimiters hugging a call, struct, array
+or parenthesised expression, as Prettier hugs a JSX expression container.
+`<cfoutput>` ⏎ `#doStuff('something', 'anothervalue', 'thirdvalue',
+'fourth_thingy', 'fiftharg', 'sixth_whatever_this_is_really_long_to_handle')#`
+⏎ `</cfoutput>` now prints `#doStuff(` ⏎ `'something',` ⏎ `'anothervalue',`
+⏎ … ⏎ `)#`, one argument per line at the configured indent, and
+`multiline.comma` applies as it does elsewhere. Any other expression that
+breaks is indented on lines of its own between `#` and `#`. A one-line tag
+body holding such a `#…#` goes onto lines of its own first, so
+`<cfoutput>#doStuff(…)#</cfoutput>` prints as the next run reads it. A line
+comment inside an interpolation's call used to be carried past the closing
+`#` into the page's text (`#doStuff('a', // note` ⏎ `'b')#` printed
+`#doStuff('a', 'b')# // note`); it stays inside now. The text around a
+`#…#` is laid out as before, and an interpolation in a string, an attribute
+value or a `<script>` / `<style>` block still prints on one line.
+
 ## 0.3.1 — 2026-10-05
 
 **Fixed.** A CF tag body glued to the text around it could gain a space on
