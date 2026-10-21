@@ -25,6 +25,17 @@ own line still ends that line (`if (a) { // c`). A comment before `else`,
 `do` does too, and the `while` now starts a new line instead of being glued
 to it.
 
+**Fixed.** A comment between a keyword and its first attribute swallowed
+the attribute: `property` ⏎ `// c` ⏎ `name="x";` printed `property` ⏎
+`// c name="x";`, and `component` ⏎ `// c` ⏎ `extends="a"` ⏎ `{` printed
+`// c extends="a" {`, neither of which parsed back. Such a comment now ends
+the keyword's line and the attributes go one per line, as a comment between
+two attributes already did: `property // c` ⏎ `name="x";`. The parser had
+its share: `http // c` ⏎ `url="x";` was read as a variable and an
+assignment where `http` ⏎ `// c` ⏎ `url="x";` was the tag, so the formatter
+read its own output differently; a comment after a script tag's name is
+whitespace now, as one between the attributes always was.
+
 **Fixed.** A `#…#` in the text of a template never broke: a call inside it
 stayed on one line however long the line was and whatever
 `function_call.multiline.element_count` asked, while the same call in a

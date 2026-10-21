@@ -33,8 +33,17 @@ impl Printer<'_> {
         let Some(first) = nodes.iter().position(Self::is_attribute) else {
             return (Doc::Concat(self.sequence(nodes)), None);
         };
-        let mut parts = self.sequence(&nodes[..first]);
-        let rest: Vec<&Node> = nodes[first..].iter().collect();
+        // The comments after the last word go with the attributes, where a
+        // comment ends its line and breaks the group (`component // c` ⏎
+        // `extends="a"`), as one between two attributes does. Printed as
+        // the words' last node, a line comment would end nothing: the first
+        // attribute, after the group's `line`, printed inside it.
+        let end = nodes[..first]
+            .iter()
+            .rposition(|n| !n.is_trivia())
+            .map_or(0, |i| i + 1);
+        let mut parts = self.sequence(&nodes[..end]);
+        let rest: Vec<&Node> = nodes[end..].iter().collect();
         let (attrs, id) = self
             .attributes(&rest, threshold, columns)
             .expect("an attribute");

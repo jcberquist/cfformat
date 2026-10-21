@@ -38,8 +38,10 @@ impl Parser<'_> {
             return None;
         }
         // The bare-name branch point: a tag name alone at the end of its line
-        // is a variable when the next line starts with `.`.
-        let after = skip_spaces(self.src, name_end);
+        // is a variable when the next line starts with `.`. A comment after
+        // the name is whitespace, as one between the attributes is: `http
+        // // c` newline `url="x";` is the tag `http` newline `url="x";` is.
+        let after = skip_trivia(self.src, name_end, Comments::All);
         let bare = self.src[name_end..after].contains('\n') || after == self.src.len();
         if bare {
             if self.src[after..].starts_with('.') {
@@ -54,11 +56,12 @@ impl Parser<'_> {
 
     /// Whether a generic script tag follows the tag name:
     /// `(?=\s+NAME\s*[=;{\n]|\s*[{\n])`, NAME an attribute name
-    /// ([`lexer::attribute_name`]), with comments between the attribute name and what follows it read as
-    /// whitespace (`lock name // c` newline `="a"`): the attributes that
+    /// ([`lexer::attribute_name`]), with comments after the tag name and
+    /// between the attribute name and what follows it read as whitespace
+    /// (`lock /* c */ name // d` newline `="a"`): the attributes that
     /// follow are read with their comments.
     fn generic_tag_ahead(&self, name_end: usize) -> bool {
-        let after = skip_spaces(self.src, name_end);
+        let after = skip_trivia(self.src, name_end, Comments::All);
         if self.src[after..].starts_with('{') {
             return true;
         }
@@ -84,7 +87,7 @@ impl Parser<'_> {
             return false;
         }
         let end = self.at() + "property".len();
-        let after = skip_spaces(self.src, end);
+        let after = skip_trivia(self.src, end, Comments::All);
         if after > end && lexer::dot_path(self.src, after).is_some() {
             return true;
         }
@@ -96,7 +99,7 @@ impl Parser<'_> {
             return false;
         }
         let end = self.at() + "param".len();
-        let after = skip_spaces(self.src, end);
+        let after = skip_trivia(self.src, end, Comments::All);
         if after > end && lexer::identifier(self.src, after).is_some() {
             return true;
         }

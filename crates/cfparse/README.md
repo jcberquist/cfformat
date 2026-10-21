@@ -300,7 +300,10 @@ Deliberate lexical rules: keywords and `true` / `false` / `null` are
 case-insensitive (`IF`, `Var`), text printed as written; `$` is a word
 character for every `\b` (`var$foo` is one identifier); a number takes an
 exponent when a digit follows the `e` (`1.2e-3`); custom-tag names take digits
-(`<cf_foo2>`, `<ns:foo2>`); a line starting with any binary operator of the
+(`<cf_foo2>`, `<ns:foo2>`); a comment after a script tag's name is
+whitespace, as one between its attributes is (`http // c` ⏎ `url="x";` and
+`property /* c */ name="x";` are the tags, with the comment among their
+children); a line starting with any binary operator of the
 expression tables continues the statement (`lte`, `does not contain`, …), and
 the tables add `equal` / `not equal`.
 
