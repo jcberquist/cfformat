@@ -376,24 +376,45 @@ impl Printer<'_> {
     /// line after `{` and before `}`; an empty one gets one blank line, not
     /// two: never more than one in a row.
     pub(crate) fn block(&self, e: &Element) -> Doc {
+        self.block_with(e, &[])
+    }
+
+    /// [`Printer::block`] with `leading`, the comments the source has on
+    /// lines of their own between the block's header and its `{`
+    /// ([`own_line_comment_tail`]), as the first lines of the body, each on
+    /// a line of its own at the body's indent (Prettier's
+    /// `addBlockStatementFirstComment`). The `{` stays on the header's line,
+    /// where every block's is: printed before it, an own-line comment would
+    /// leave the `{` on its own line, or — a line comment — swallow it.
+    pub(crate) fn block_with(&self, e: &Element, leading: &[&Element]) -> Doc {
         let padded = matches!(
             e.kind,
             ElementKind::Block(BlockKind::Class | BlockKind::Interface)
         );
         let (suffix, rest) = self.leading_same_line_comments(&e.children);
-        let body = self.indented(|| self.statements(rest));
+        let (lead, body) = self.indented(|| {
+            let lead: Vec<Doc> = leading
+                .iter()
+                .flat_map(|c| [hardline(), self.comment(c)])
+                .collect();
+            (lead, self.statements(rest))
+        });
         let mut parts = vec![self.token(e.open.as_ref().expect("braced block")), suffix];
-        if body.is_empty() {
+        if body.is_empty() && lead.is_empty() {
             parts.push(hardline());
             if padded {
                 parts.push(hardline());
             }
         } else {
-            let mut inner = vec![hardline()];
+            let mut inner = Vec::new();
             if padded {
                 inner.push(hardline());
             }
-            inner.push(body);
+            inner.extend(lead);
+            if !body.is_empty() {
+                inner.push(hardline());
+                inner.push(body);
+            }
             parts.push(indent(inner));
             parts.push(hardline());
             if padded {
@@ -456,10 +477,35 @@ impl Printer<'_> {
         let returns = e.kind == ElementKind::Statement(StatementKind::Flow)
             && matches!(significant().next(), Some(Node::Token(t))
                 if matches!(t.kind, TokenKind::Keyword(Keyword::Return | Keyword::Throw)));
+        // A script tag with a block (`lock name="x" { … }`): the own-line
+        // comments ending the tag are the block's first lines
+        // ([`Printer::block_with`]), so the tag prints without them.
+        let tag_block = match (
+            significant().next(),
+            significant().nth(1),
+            significant().nth(2),
+        ) {
+            (Some(Node::Element(t)), Some(Node::Element(b)), None)
+                if t.kind == (ElementKind::ScriptTag { acf: false })
+                    && matches!(b.kind, ElementKind::Block(_))
+                    && b.open.is_some() =>
+            {
+                Some((&**t, own_line_comment_tail(&t.children)))
+            }
+            _ => None,
+        };
         let mut parts = self.sequence_by(children, &|n| {
             let padded = |a: &Element| self.assignment_with(a, pad.cloned());
             let mut doc = match n.as_element() {
                 Some(c) if chain.is_some_and(|f| std::ptr::eq(f, n)) => self.chain_with(c, true),
+                Some(t) if tag_block.is_some_and(|(tag, _)| std::ptr::eq(tag, t)) => {
+                    let (_, end) = tag_block.expect("the tag");
+                    self.tag_statement_to(t, end, columns)
+                }
+                Some(b) if tag_block.is_some() && matches!(b.kind, ElementKind::Block(_)) => {
+                    let (tag, end) = tag_block.expect("the tag");
+                    self.block_with(b, &own_line_comments(&tag.children[end..]))
+                }
                 Some(b) if returns && matches!(b.kind, ElementKind::Binary { .. }) => {
                     self.binary_return(b)
                 }
@@ -626,14 +672,36 @@ impl Printer<'_> {
     /// `do`) follows `}` after one space. An unbraced body goes on the same
     /// line when it fits, else indented on the next
     /// (`group([header, indent([line, body])])`). A clause after an unbraced
-    /// body starts a new line. A comment between a body and the next clause
-    /// stays where it was: on the `}` line when it was there in the source,
-    /// else on its own line, and the clause then starts a new line.
+    /// body starts a new line. A comment on the line of the part before it
+    /// stays there (a line comment as a line suffix: `if (a) // c` ⏎ `{`
+    /// prints `if (a) { // c`), and a clause after it starts a new line. A
+    /// comment on a line of its own belongs to what follows it: before a
+    /// braced body it is the body's first line ([`Printer::block_with`]),
+    /// before an unbraced one it is indented with the body on the lines
+    /// before it, and before anything else — a clause, the `while` of a
+    /// `do`, the group — it stays on its own line and that part starts a
+    /// new line. An ignore region always starts its own line, and so does
+    /// what follows it.
     pub(crate) fn keyword(&self, e: &Element) -> Doc {
         let mut head: Vec<Doc> = Vec::new();
-        let mut unbraced_body = false;
-        let mut comment_before_clause = false;
+        let mut end = HeadEnd::Nothing;
+        // Own-line comments not printed yet: the next part takes them.
+        let mut own_line: Vec<&Element> = Vec::new();
         let mut newlines = 0usize;
+        // The own-line comments onto lines of their own, before a part that
+        // does not take them inside itself.
+        let flush = |head: &mut Vec<Doc>, own_line: &mut Vec<&Element>| {
+            for c in own_line.drain(..) {
+                head.push(hardline());
+                head.push(self.comment(c));
+            }
+        };
+        // What separates the next part from the head.
+        let join = |head: &mut Vec<Doc>, end: HeadEnd| match end {
+            HeadEnd::Nothing => {}
+            HeadEnd::Part | HeadEnd::SameLineComment => head.push(Doc::from(" ")),
+            HeadEnd::OwnLine | HeadEnd::UnbracedBody => head.push(hardline()),
+        };
         for n in &e.children {
             match n {
                 Node::Token(t) if t.kind == TokenKind::Whitespace => continue,
@@ -641,70 +709,93 @@ impl Printer<'_> {
                     newlines += 1;
                     continue;
                 }
-                // The keyword, or the `while` of a `do`.
-                Node::Token(t) => {
-                    if unbraced_body {
-                        head.push(hardline());
-                    } else if !head.is_empty() {
-                        head.push(Doc::from(" "));
-                    }
-                    head.push(self.token(t));
-                }
                 Node::Element(c) if c.kind.is_comment() => {
-                    if newlines == 0 && !head.is_empty() {
+                    if newlines == 0 && end != HeadEnd::Nothing && own_line.is_empty() {
                         head.push(self.same_line_comment(c));
+                        // After an unbraced body the clause still starts a
+                        // new line.
+                        if end != HeadEnd::UnbracedBody {
+                            end = HeadEnd::SameLineComment;
+                        }
                     } else {
-                        head.push(hardline());
-                        head.push(self.comment(c));
+                        own_line.push(c);
+                        end = HeadEnd::OwnLine;
                     }
-                    comment_before_clause = true;
                 }
-                // An ignore region between a body and the next clause (or
-                // after the last body) always starts its own line.
                 Node::Element(i) if i.kind == ElementKind::Ignore => {
+                    flush(&mut head, &mut own_line);
                     head.push(hardline());
                     head.push(self.node(n));
-                    comment_before_clause = true;
+                    end = HeadEnd::OwnLine;
+                }
+                // The keyword, or the `while` of a `do`.
+                Node::Token(t) => {
+                    flush(&mut head, &mut own_line);
+                    join(&mut head, end);
+                    head.push(self.token(t));
+                    end = HeadEnd::Part;
                 }
                 Node::Element(g) if g.kind == ElementKind::Group => {
-                    head.push(Doc::from(" "));
+                    flush(&mut head, &mut own_line);
+                    join(&mut head, end);
                     head.push(if e.kind == ElementKind::For {
                         self.for_header(g)
                     } else {
                         self.group(g)
                     });
+                    end = HeadEnd::Part;
                 }
                 Node::Element(b) if matches!(b.kind, ElementKind::Block(_)) => {
-                    head.push(Doc::from(" "));
-                    head.push(self.node(n));
-                    unbraced_body = false;
-                    comment_before_clause = false;
+                    if own_line.is_empty() {
+                        join(&mut head, end);
+                        head.push(self.node(n));
+                    } else {
+                        head.push(Doc::from(" "));
+                        head.push(self.block_with(b, &own_line));
+                        own_line.clear();
+                    }
+                    end = HeadEnd::Part;
                 }
                 Node::Element(s) if s.kind.is_statement() => {
                     let header = Doc::Concat(std::mem::take(&mut head));
-                    head.push(group(vec![header, indent(vec![line(), self.node(n)])]));
-                    unbraced_body = true;
-                    comment_before_clause = false;
+                    if own_line.is_empty() && end != HeadEnd::OwnLine {
+                        head.push(group(vec![header, indent(vec![line(), self.node(n)])]));
+                    } else {
+                        let mut body: Vec<Doc> = own_line
+                            .drain(..)
+                            .flat_map(|c| [hardline(), self.comment(c)])
+                            .collect();
+                        body.push(hardline());
+                        body.push(self.node(n));
+                        head.push(Doc::Concat(vec![header, indent(body)]));
+                    }
+                    end = HeadEnd::UnbracedBody;
                 }
                 // The next clause: `else`, `else if`, `catch`, `finally`.
                 Node::Element(clause) => {
-                    if unbraced_body || comment_before_clause {
-                        head.push(hardline());
-                    } else if !head.is_empty() {
-                        head.push(Doc::from(" "));
+                    flush(&mut head, &mut own_line);
+                    match end {
+                        HeadEnd::Nothing => {}
+                        HeadEnd::Part => head.push(Doc::from(" ")),
+                        _ => head.push(hardline()),
                     }
                     head.push(self.node(n));
-                    unbraced_body = clause
+                    let unbraced = clause
                         .children
                         .iter()
                         .rfind(|c| !c.is_trivia())
                         .and_then(Node::as_element)
                         .is_some_and(|b| b.kind.is_statement());
-                    comment_before_clause = false;
+                    end = if unbraced {
+                        HeadEnd::UnbracedBody
+                    } else {
+                        HeadEnd::Part
+                    };
                 }
             }
             newlines = 0;
         }
+        flush(&mut head, &mut own_line);
         Doc::Concat(head)
     }
 
@@ -848,6 +939,59 @@ fn is_plain_target(target: &Node) -> bool {
             _ => false,
         },
     }
+}
+
+/// What the head of a keyword statement ends with, as [`Printer::keyword`]
+/// builds it: nothing yet; a part (the keyword, a group, a braced body, a
+/// clause); a comment on that part's line; a line of its own (an own-line
+/// comment, an ignore region); an unbraced body.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum HeadEnd {
+    Nothing,
+    Part,
+    SameLineComment,
+    OwnLine,
+    UnbracedBody,
+}
+
+/// Where the own-line comments at the end of `nodes` start: the longest run
+/// of comments ending `nodes` (whitespace between them aside) each with a
+/// line break before it, as `nodes.len()` when there is none. A header
+/// printer prints `nodes[..tail]` and hands the comments after it to the
+/// block that follows ([`Printer::block_with`]); a comment on the line of
+/// the header's last part is not in the tail and stays the header's
+/// (`function f() // c` ⏎ `{` keeps `{ // c`).
+pub(crate) fn own_line_comment_tail(nodes: &[Node]) -> usize {
+    let mut tail = nodes.len();
+    let mut i = nodes.len();
+    while i > 0 {
+        i -= 1;
+        match &nodes[i] {
+            Node::Token(t) if t.kind == TokenKind::Whitespace || t.kind == TokenKind::Newline => {}
+            Node::Element(c) if c.kind.is_comment() => {
+                let own_line = nodes[..i]
+                    .iter()
+                    .rev()
+                    .take_while(|n| matches!(n, Node::Token(t) if t.kind == TokenKind::Whitespace || t.kind == TokenKind::Newline))
+                    .any(|n| matches!(n, Node::Token(t) if t.kind == TokenKind::Newline));
+                if !own_line {
+                    break;
+                }
+                tail = i;
+            }
+            _ => break,
+        }
+    }
+    tail
+}
+
+/// The comments of `nodes[tail..]` ([`own_line_comment_tail`]).
+pub(crate) fn own_line_comments(nodes: &[Node]) -> Vec<&Element> {
+    nodes
+        .iter()
+        .filter_map(Node::as_element)
+        .filter(|c| c.kind.is_comment())
+        .collect()
 }
 
 fn comment_prev(c: &Element) -> Prev {

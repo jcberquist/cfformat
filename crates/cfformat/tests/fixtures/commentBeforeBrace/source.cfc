@@ -1,0 +1,193 @@
+// A comment on a line of its own between a header and its `{` is the
+// block's first line; one on the header's line stays a line suffix.
+
+if ( param.isAssignableFrom( class ) ) {
+	found = true;
+} else if ( param.isPrimitive() )
+	// if it's a primitive, it can be mapped to object primitive classes
+{
+	found = param.getName() eq "boolean";
+}
+else {
+	found = false;
+}
+
+if (a) // on the header's line
+{
+	x = 1;
+}
+
+if (a) // on the header's line
+// and one on a line of its own
+{
+	x = 1;
+}
+
+if (a)
+	/* a block comment */
+{
+	x = 1;
+}
+
+if (a)
+	/* two */ /* on one line */
+{
+	x = 1;
+}
+
+if (a)
+	// an empty block
+{
+}
+
+if (a)
+
+	// blank lines around it
+
+{
+	x = 1;
+}
+
+if (a)
+	// before an unbraced body
+	x = 1;
+else
+	// before an unbraced else body
+	y = 2;
+
+if (a)
+	// before an unbraced if
+	if (b) {
+		y = 1;
+	}
+
+if
+	// before the group
+(a) {
+	x = 1;
+}
+
+if (a) {
+	x = 1;
+}
+// before the clause: stays where it was
+else {
+	y = 1;
+}
+
+if (a) {
+	x = 1;
+} // on the brace line: stays there
+else {
+	y = 1;
+}
+
+if (a) x = 1; // on the body's line
+else x = 2;
+
+for (i = 1; i <= 2; i++)
+	// for
+{
+	x = 1;
+}
+
+while (a)
+	// while
+{
+	x = 1;
+}
+
+do
+	// do
+{
+	x = 1;
+}
+	// before the while
+while (a);
+
+switch (x)
+	// switch
+{
+	case 1:
+		break;
+}
+
+try
+	// try
+{
+	x = 1;
+}
+catch (any e)
+	// catch
+{
+	y = 1;
+}
+finally
+	// finally
+{
+	z = 1;
+}
+
+function f()
+	// a function
+{
+	x = 1;
+}
+
+function g() // on the header's line
+{
+	x = 1;
+}
+
+function h()
+	// two comments
+	// before the body
+{
+	x = 1;
+}
+
+function k() output="false"
+	// after the attributes
+{
+	x = 1;
+}
+
+x = function()
+	// a closure
+{
+	return 1;
+};
+
+x = () =>
+	// an arrow
+	// with two
+{
+	return 1;
+};
+
+x = () => // on the arrow's line
+{
+	return 1;
+};
+
+lock name="x"
+	// a script tag's block
+	// with two
+{
+	x = 1;
+}
+
+thread name="x" // on the tag's line
+{
+	x = 1;
+}
+
+component extends="Base"
+	// a component
+{
+	function f()
+		// a method
+	{
+		return 1;
+	}
+}

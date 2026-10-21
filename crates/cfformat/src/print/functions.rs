@@ -23,32 +23,56 @@ use super::delimited::{
     has_comments, is_pattern_assignment, is_printable, printable_items, DelimitedStyle,
 };
 use super::expressions::is_parenthesised_literal;
+use super::statements::{own_line_comment_tail, own_line_comments};
 use super::Printer;
 
 impl Printer<'_> {
     /// A `Function` (declaration, anonymous function or arrow) with its body.
+    /// A comment on a line of its own before a braced body — at the end of
+    /// the header, or between `=>` and the `{` — is the body's first line
+    /// ([`Printer::block_with`]); one on the header's line stays a line
+    /// suffix there (`function f() { // c`).
     pub(crate) fn function(&self, e: &Element) -> Doc {
         let Some(decl) = e.as_decl() else {
             return self.as_written(e);
         };
         let body = decl.body();
+        let braced = body.open.is_some() && body.kind != ElementKind::Block(BlockKind::Java);
         // Taken first: nothing printed below is the hugged arrow.
         let hugged = self.hug_arrow.take();
         let breaks_after_arrow = arrow_breaks_after(body);
         let mut parts = Vec::new();
         let mut attributes: Option<GroupId> = None;
         let mut arrow = false;
+        let mut leading: Vec<&Element> = Vec::new();
+        let mut newlines = 0usize;
         for n in &e.children {
             match n {
-                Node::Element(c) if c.kind.is_comment() => parts.push(self.same_line_comment(c)),
-                n if n.is_trivia() => {}
+                Node::Token(t) if t.kind == TokenKind::Newline => {
+                    newlines += 1;
+                    continue;
+                }
+                Node::Token(t) if t.kind == TokenKind::Whitespace => continue,
+                Node::Element(c) if c.kind.is_comment() => {
+                    if braced && (newlines > 0 || !leading.is_empty()) {
+                        leading.push(c);
+                    } else {
+                        parts.push(self.same_line_comment(c));
+                    }
+                }
                 Node::Element(h)
                     if matches!(
                         h.kind,
                         ElementKind::FunctionDecl | ElementKind::ArrowFunction
                     ) =>
                 {
-                    let (doc, id) = self.function_header(h);
+                    let end = if braced {
+                        own_line_comment_tail(&h.children)
+                    } else {
+                        h.children.len()
+                    };
+                    leading.extend(own_line_comments(&h.children[end..]));
+                    let (doc, id) = self.function_header_to(h, end);
                     // Prettier's `expandLastArg`: a hugged arrow's
                     // parameters never break.
                     parts.push(if hugged.is_some() {
@@ -73,12 +97,16 @@ impl Printer<'_> {
                     }
                     if arrow && breaks_after_arrow {
                         parts.push(self.arrow_tail(b, hugged));
+                    } else if braced {
+                        parts.push(self.block_with(b, &leading));
+                        leading.clear();
                     } else {
                         parts.push(self.element(b));
                     }
                 }
                 n => parts.push(self.node(n)),
             }
+            newlines = 0;
         }
         Doc::Concat(parts)
     }
@@ -87,15 +115,22 @@ impl Printer<'_> {
     /// attribute group when it has attributes. A body-less declaration
     /// (interface, abstract component) is just this.
     pub(crate) fn function_header(&self, h: &Element) -> (Doc, Option<GroupId>) {
-        let Some(params_at) = h
-            .children
+        self.function_header_to(h, h.children.len())
+    }
+
+    /// [`Printer::function_header`] over the header's first `end` children:
+    /// [`Printer::function`] leaves out the own-line comments that end the
+    /// header, which its body takes ([`own_line_comment_tail`]).
+    fn function_header_to(&self, h: &Element, end: usize) -> (Doc, Option<GroupId>) {
+        let children = &h.children[..end];
+        let Some(params_at) = children
             .iter()
             .position(|n| matches!(n, Node::Element(p) if p.kind == ElementKind::Parameters))
         else {
             // No parameter list (a misparse): the parts in order.
-            return (Doc::Concat(self.sequence(&h.children)), None);
+            return (Doc::Concat(self.sequence(children)), None);
         };
-        let named = h.children[..params_at].iter().any(
+        let named = children[..params_at].iter().any(
             |n| matches!(n, Node::Token(t) if t.kind == TokenKind::Ident(Ident::FunctionName)),
         );
         let style = if named && h.kind == ElementKind::FunctionDecl {
@@ -107,7 +142,7 @@ impl Printer<'_> {
         // The words before the parameters. Comments after the last word are
         // followed by the parameters, not by a line break: a line comment
         // there ends the line the header ends on.
-        let words = &h.children[..params_at];
+        let words = &children[..params_at];
         let end = words
             .iter()
             .rposition(|n| !n.is_trivia())
@@ -122,14 +157,14 @@ impl Printer<'_> {
         );
         // A block comment keeps a space on both sides; a line comment is a
         // line suffix, and `(` follows the name as it does without one.
-        if h.children[..params_at]
+        if children[..params_at]
             .iter()
             .rfind(|n| !matches!(n, Node::Token(t) if t.kind == TokenKind::Whitespace || t.kind == TokenKind::Newline))
             .is_some_and(|n| matches!(n, Node::Element(c) if c.kind.is_comment() && c.kind != ElementKind::LineComment))
         {
             parts.push(Doc::from(" "));
         }
-        let params = h.children[params_at].as_element().expect("parameters");
+        let params = children[params_at].as_element().expect("parameters");
         parts.push(if let Some(only) = hugged_parameter(params) {
             // Prettier's `shouldHugTheOnlyFunctionParameter`: the
             // parentheses hug a sole pattern, which breaks inside itself
@@ -156,7 +191,7 @@ impl Printer<'_> {
             )
         });
 
-        let rest: Vec<&Node> = h.children[params_at + 1..].iter().collect();
+        let rest: Vec<&Node> = children[params_at + 1..].iter().collect();
         let threshold = Some((
             self.opts.metadata_multiline_element_count,
             self.opts.metadata_multiline_min_item_length,

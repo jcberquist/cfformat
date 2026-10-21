@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+**Fixed.** A comment on a line of its own between a header and its `{` was
+printed with the `{` appended to the comment's line, so a `//` comment
+swallowed the brace: `} else if ( param.isPrimitive() )` ⏎ `// if it's a
+primitive, it can be mapped to object primitive classes` ⏎ `{` printed
+`} else if (param.isPrimitive())` ⏎ `// if it's a primitive, … classes {`,
+which no longer parsed (the `}` closing the block was reported as not
+formatted) and which a second run laid out differently. Such a comment is
+now the block's first line, where Prettier puts it: `} else if
+(param.isPrimitive()) {` ⏎ `// if it's a primitive, … classes` ⏎ `if (…`,
+each line at the body's indent. The same holds after every `if`, `else`,
+`for`, `while`, `do`, `switch`, `try`, `catch` and `finally` header, before
+an unbraced body (the comment is indented with it; it used to print at
+column 0), after a function's, closure's or arrow's header, after a
+component's or interface's (`component extends="a"` ⏎ `// c` ⏎ `{` no
+longer breaks the attributes one per line over the comment) and after a
+`lock`, `thread` or `transaction` tag's; two own-line comments before a
+function body, which used to collide and leave the `{` on a line of its own
+behind a space, print one per line inside it. A comment on the header's
+own line still ends that line (`if (a) { // c`). A comment before `else`,
+`catch` or `finally` keeps its line as before; one before the `while` of a
+`do` does too, and the `while` now starts a new line instead of being glued
+to it.
+
 **Fixed.** A `#…#` in the text of a template never broke: a call inside it
 stayed on one line however long the line was and whatever
 `function_call.multiline.element_count` asked, while the same call in a

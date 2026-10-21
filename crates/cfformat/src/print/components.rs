@@ -11,12 +11,13 @@
 //! The attributes come already structured from the tree, as `KeyValue` and
 //! `ScriptTagAttributes` elements, so nothing here regroups tokens.
 
-use cfdoc::builders::{hardline_without_break_parent, if_break_group};
+use cfdoc::builders::{hardline, hardline_without_break_parent, if_break_group};
 use cfdoc::{Doc, GroupId};
 use cfparse::{Element, ElementKind, Node, TokenKind};
 
 use super::attributes::AttributeThreshold;
 use super::delimited::DelimitedStyle;
+use super::statements::{own_line_comment_tail, own_line_comments};
 use super::Printer;
 
 impl Printer<'_> {
@@ -43,7 +44,10 @@ impl Printer<'_> {
 
     /// `component … { }` / `interface … { }`: the header with the metadata
     /// thresholds, then the class block (a blank line inside each brace), on
-    /// the header's line or, when the attributes break, on the next.
+    /// the header's line or, when the attributes break, on the next. A
+    /// comment on a line of its own at the end of the header is the body's
+    /// first line ([`Printer::block_with`]), not an attribute to break the
+    /// group over; one on the header's line stays there.
     pub(crate) fn class(&self, e: &Element) -> Doc {
         let Some(decl) = e.as_decl() else {
             return self.as_written(e);
@@ -51,6 +55,7 @@ impl Printer<'_> {
         let body = decl.body();
         let mut parts = Vec::new();
         let mut attributes = None;
+        let mut leading: Vec<&Element> = Vec::new();
         for n in &e.children {
             match n {
                 Node::Element(c) if c.kind.is_comment() => parts.push(self.same_line_comment(c)),
@@ -58,7 +63,9 @@ impl Printer<'_> {
                 Node::Element(h)
                     if matches!(h.kind, ElementKind::ClassDecl | ElementKind::InterfaceDecl) =>
                 {
-                    let (doc, id) = self.class_header(h);
+                    let end = own_line_comment_tail(&h.children);
+                    leading.extend(own_line_comments(&h.children[end..]));
+                    let (doc, id) = self.class_header_to(h, end);
                     parts.push(doc);
                     attributes = id;
                 }
@@ -67,7 +74,17 @@ impl Printer<'_> {
                         Some(id) => if_break_group(hardline_without_break_parent(), " ", id),
                         None => Doc::from(" "),
                     });
-                    parts.push(self.element(b));
+                    if b.open.is_some() {
+                        parts.push(self.block_with(b, &leading));
+                        leading.clear();
+                    } else {
+                        parts.extend(
+                            leading
+                                .drain(..)
+                                .flat_map(|c| [hardline(), self.comment(c)]),
+                        );
+                        parts.push(self.element(b));
+                    }
                 }
                 n => parts.push(self.node(n)),
             }
@@ -77,8 +94,14 @@ impl Printer<'_> {
 
     /// A `ClassDecl` / `InterfaceDecl`: modifiers, keyword, metadata.
     pub(crate) fn class_header(&self, h: &Element) -> (Doc, Option<GroupId>) {
+        self.class_header_to(h, h.children.len())
+    }
+
+    /// [`Printer::class_header`] over the header's first `end` children
+    /// ([`Printer::class`] leaves out the own-line comments its body takes).
+    fn class_header_to(&self, h: &Element, end: usize) -> (Doc, Option<GroupId>) {
         self.words_and_attributes(
-            &h.children,
+            &h.children[..end],
             Some((
                 self.opts.metadata_multiline_element_count,
                 self.opts.metadata_multiline_min_item_length,
@@ -144,6 +167,18 @@ impl Printer<'_> {
     /// [`Printer::tag_statement`] with the attribute alignment padding of
     /// its run (see [`Printer::attribute_group`]).
     pub(crate) fn tag_statement_with(&self, e: &Element, columns: Option<&[usize]>) -> Doc {
+        self.tag_statement_to(e, e.children.len(), columns)
+    }
+
+    /// [`Printer::tag_statement_with`] over the statement's first `end`
+    /// children: a script tag with a block (`lock name="x" { … }`) leaves
+    /// out the own-line comments its block takes ([`Printer::block_with`]).
+    pub(crate) fn tag_statement_to(
+        &self,
+        e: &Element,
+        end: usize,
+        columns: Option<&[usize]>,
+    ) -> Doc {
         let threshold = match e.kind {
             ElementKind::Property => Some((
                 self.opts.property_multiline_element_count,
@@ -159,12 +194,12 @@ impl Printer<'_> {
         // not by a line break: a line comment there ends the statement's
         // line, outside the attribute group, which it would otherwise break
         // for nothing.
-        let end = e
-            .children
+        let children = &e.children[..end];
+        let end = children
             .iter()
             .rposition(|n| !n.is_trivia())
             .map_or(0, |i| i + 1);
-        let (nodes, trailing) = e.children.split_at(end);
+        let (nodes, trailing) = children.split_at(end);
         let mut parts = vec![self.words_and_attributes(nodes, threshold, columns).0];
         parts.extend(
             trailing
