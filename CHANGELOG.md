@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 — 2026-10-21
 
 **Fixed.** A comment on a line of its own between a header and its `{` was
 printed with the `{` appended to the comment's line, so a `//` comment

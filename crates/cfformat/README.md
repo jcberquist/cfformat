@@ -462,7 +462,7 @@ cfformat arrange [PATHS...] [-w|--write] [--check] [--diff] [--stdin]
          [--stdin-filepath PATH] [--files-from FILE|-]
          [--git staged|unstaged|all] [-j N] [--quiet]
          [--script|--tags] [--properties] [--first NAMES]
-cfformat --version                   # cfformat 0.3.1
+cfformat --version                   # cfformat 0.4.0
 cfformat --licenses                  # the licence notices, exit 0
 ```
 
