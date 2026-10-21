@@ -5,9 +5,13 @@ crates they are built from ask for their copyright and permission notices
 to travel with every copy. This file holds them: every crate that goes into
 the release binaries, those linked in and the few (procedural macros and
 what they need) that run at compile time. It is generated from `Cargo.lock`,
-never edited by hand. `cfformat`'s own licence is [`LICENSE`](LICENSE), and
+never edited by hand. `cfformat`'s own licence is [`LICENSE`](LICENSE);
 the notice of the Prettier source that `crates/cfdoc` is a port of is
-[`crates/cfdoc/LICENSE-PRETTIER`](crates/cfdoc/LICENSE-PRETTIER).
+[`crates/cfdoc/LICENSE-PRETTIER`](crates/cfdoc/LICENSE-PRETTIER), and the
+notices the oxc repository passes on for the code it ports (Biome's and
+Prettier's formatters among it) are
+[`LICENSE-OXC-THIRD-PARTY`](LICENSE-OXC-THIRD-PARTY), its
+`THIRD-PARTY-LICENSE` at the pinned revision.
 
 The crates come first, each with the licence expression its manifest
 declares and where it comes from; then every distinct licence text follows

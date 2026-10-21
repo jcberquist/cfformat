@@ -107,8 +107,9 @@ The assets:
 | `cfformat_macos`              | macOS, universal (arm64 and x86_64, 10.13 or newer) |
 
 The same six exist for `cfvet` (`cfvet_linux_x86_64`, `cfvet_macos`, …).
-Each release also carries the three licence files, `LICENSE`,
-`LICENSE-PRETTIER` and `THIRD-PARTY-LICENSES.md` (see [Licence](#licence)).
+Each release also carries the four licence files, `LICENSE`,
+`LICENSE-PRETTIER`, `LICENSE-OXC-THIRD-PARTY` and `THIRD-PARTY-LICENSES.md`
+(see [Licence](#licence)).
 
 You can also build and install it with Cargo. It requires Rust 1.97 or newer
 and what Rust itself needs on your platform to link a program: a C linker and
@@ -607,4 +608,9 @@ binaries are statically linked, and the crates in them ask for their own
 copyright notices to travel with every copy:
 [`THIRD-PARTY-LICENSES.md`](THIRD-PARTY-LICENSES.md) holds them, every
 crate with its licence and every licence text once, generated from
-`Cargo.lock`. Every release ships the three files next to the binaries.
+`Cargo.lock`. The oxc formatter crates among them are themselves ported
+from Biome's and Prettier's formatters, and the oxc repository passes
+those notices on in a file of its own;
+[`LICENSE-OXC-THIRD-PARTY`](LICENSE-OXC-THIRD-PARTY) is that file, copied
+from the pinned revision. Every release ships the four files next to the
+binaries.

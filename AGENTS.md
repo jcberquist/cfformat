@@ -37,7 +37,9 @@ cargo test --release -p cfformat --locked --test islands_deep -- every_chain_at_
 `Cargo.lock` is committed and must not change under `--locked`. The oxc
 formatter crates are a git dependency pinned to one revision, written in
 several places in the root `Cargo.toml` and in the two READMEs that quote it;
-bump them together.
+bump them together, and copy the revision's `THIRD-PARTY-LICENSE` over
+`LICENSE-OXC-THIRD-PARTY` (`crates/cfformat/tests/oxc_notices.rs` compares
+the two).
 
 ## Tests and their expectations
 

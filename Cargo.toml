@@ -21,7 +21,9 @@ serde_json = { version = "1.0", features = ["preserve_order"] }
 # The oxc formatter crates, which format the `<script>` and `<style>` islands in
 # process: unpublished, so a git dependency pinned to one release tag's commit,
 # oxfmt_v0.74.0. Bump the one rev, every entry below and in [patch.crates-io]
-# together.
+# together, and copy the revision's THIRD-PARTY-LICENSE (the notices of the
+# code oxc ports: Biome, Prettier, …) over LICENSE-OXC-THIRD-PARTY at the
+# root; crates/cfformat/tests/oxc_notices.rs fails until the copy matches.
 oxc_allocator      = { git = "https://github.com/oxc-project/oxc", rev = "07ed78f4abde4020ca7919381ffea4da8616b78a" }
 oxc_span           = { git = "https://github.com/oxc-project/oxc", rev = "07ed78f4abde4020ca7919381ffea4da8616b78a" }
 # oxc_ast and oxc_ast_visit: the walk that finds the literal lines of oxc's

@@ -69,7 +69,11 @@ notices to accompany every copy; `THIRD-PARTY-LICENSES.md` holds them,
 every crate with its licence and every licence text once, and ships next to
 `LICENSE` and `LICENSE-PRETTIER` in every release. It is generated from
 `Cargo.lock` by `cargo about`, and CI fails when the lock changed and it
-was not regenerated.
+was not regenerated. The oxc formatter crates are themselves ported from
+Biome's and Prettier's formatters, and the notices oxc passes on for that
+code ship too, as `LICENSE-OXC-THIRD-PARTY`, the oxc repository's
+`THIRD-PARTY-LICENSE` at the pinned revision; a test keeps the copy at the
+pin.
 
 ## 0.3.1 — 2026-10-05
 

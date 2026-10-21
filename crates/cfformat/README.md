@@ -174,7 +174,11 @@ oxc_allocator = { git = "https://github.com/oxc-project/oxc", rev = "07ed78f4abd
 Without it the two allocators are two crates and the build fails in
 `oxc_formatter_css` with `error[E0308]: mismatched types … expected
 oxc_css_parser::Allocator, found oxc_allocator::Allocator`. The rev is the
-one in this workspace's `Cargo.toml`; keep the two in step.
+one in this workspace's `Cargo.toml`; keep the two in step. The root
+`LICENSE-OXC-THIRD-PARTY` is the oxc repository's `THIRD-PARTY-LICENSE` at
+that rev (the notices of the code oxc ports, Biome's and Prettier's
+formatters among it), copied, and moves with the pin:
+`tests/oxc_notices.rs` compares it with the checkout cargo built from.
 
 ## What prints
 
@@ -298,6 +302,7 @@ cargo bench -p cfformat --bench format                    # parse / to_doc / pri
 cargo test -p cfformat-cli                               # the command line through the built binary (crates/cfformat-cli/tests/cli.rs)
 cargo test -p cfformat --test arrange                    # arrange: the fixtures under tests/arrange and the invariants
 UPDATE_ARRANGE=1 cargo test -p cfformat --test arrange   # rewrite their expected files
+cargo test -p cfformat --test oxc_notices               # LICENSE-OXC-THIRD-PARTY is the pinned oxc checkout's THIRD-PARTY-LICENSE (cargo metadata finds it)
 cargo test --release -p cfformat --test arrange_corpus -- --ignored --nocapture   # the arrange soak (CFFORMAT_CORPUS, CFFORMAT_CORPUS_OPTIONS, CFFORMAT_ARRANGE_LIST=1, CFFORMAT_ARRANGE_STRICT=1)
 ```
 
