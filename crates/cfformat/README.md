@@ -462,6 +462,7 @@ cfformat arrange [PATHS...] [-w|--write] [--check] [--diff] [--stdin]
          [--git staged|unstaged|all] [-j N] [--quiet]
          [--script|--tags] [--properties] [--first NAMES]
 cfformat --version                   # cfformat 0.3.1
+cfformat --licenses                  # the licence notices, exit 0
 ```
 
 **Inputs.** A PATH is a file (taken as given, any extension, ignored or
@@ -541,6 +542,17 @@ the order the files were given whatever N is.
 `--diff` found a change; 2 a usage error (git failing under `--git`
 included), an unreadable, non-UTF-8 or unwritable file, a failed write to
 stdout, a settings error, an internal error — 2 wins over 1. There is no parse error: both front ends are total.
+
+**Licences.** `cfformat --licenses` prints, on stdout, the four licence
+files every release ships — `LICENSE`, `LICENSE-PRETTIER`,
+`LICENSE-OXC-THIRD-PARTY` and `THIRD-PARTY-LICENSES.md`, in that order —
+each after a line `==== <file> ====` naming it as the release asset is
+named and a blank line, and exits 0. They are embedded at build time
+(`cfcli::LICENSES`), so every copy of the binary carries them. It takes no
+input, reads no settings file and prints nothing else; any other argument
+or a subcommand with it is a usage error (exit 2). A reader that stops
+(`cfformat --licenses | head`) ends it quietly, as one file's text; any
+other failed write to stdout is `error: stdout: …`, exit 2.
 
 **Arrange.** `cfformat arrange` runs `arrange` through the same driver
 (`run_files` over a `Task`): the same inputs, output modes, messages and

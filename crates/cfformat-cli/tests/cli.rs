@@ -452,7 +452,14 @@ fn help_lists_every_subcommand_and_flag() {
         "{top}"
     );
     assert!(top.contains("cfformat <COMMAND>"), "{top}");
-    for word in ["--check", "doc", "settings", "--version", "Exit codes:"] {
+    for word in [
+        "--check",
+        "doc",
+        "settings",
+        "--version",
+        "--licenses",
+        "Exit codes:",
+    ] {
         assert!(top.contains(word), "--help lacks {word}:\n{top}");
     }
     assert!(
@@ -513,6 +520,52 @@ fn help_lists_every_subcommand_and_flag() {
     let out = s.run(&s.0, &["--bogus"]);
     assert_eq!(out.status.code(), Some(2));
     assert!(stderr(&out).starts_with("error: unexpected argument '--bogus'"));
+}
+
+/// `--licenses` prints the four licence files, each after its heading, in
+/// order, before any settings file is read, and nothing else.
+#[test]
+fn licenses_prints_the_notices_and_nothing_else() {
+    let s = Scratch::new("licenses");
+    s.write(".cfformat.json", "{ not json");
+    let out = s.run(&s.0, &["--licenses"]);
+    assert_eq!(out.status.code(), Some(0));
+    assert_eq!(stderr(&out), "");
+    let text = String::from_utf8(out.stdout).unwrap();
+    assert!(
+        text.starts_with(
+            "==== LICENSE ====\n\nThe MIT License (MIT)\n\nCopyright (c) 2019\u{2013}2026 John \
+             Berquist\n\nPermission is hereby granted, free of charge,"
+        ),
+        "{}",
+        &text[..120]
+    );
+    let mut at = 0;
+    for heading in [
+        "==== LICENSE ====\n\n",
+        "\n==== LICENSE-PRETTIER ====\n\n",
+        "\n==== LICENSE-OXC-THIRD-PARTY ====\n\n",
+        "\n==== THIRD-PARTY-LICENSES.md ====\n\n",
+    ] {
+        let i = text[at..]
+            .find(heading)
+            .unwrap_or_else(|| panic!("{heading:?} missing or out of order"));
+        at += i + heading.len();
+    }
+    assert!(text.contains("Copyright \u{a9} James Long and contributors"));
+    assert!(text.contains("\nBiome\n"));
+    assert!(text.contains("# Third-party licences\n"));
+    assert_eq!(text, cfcli::LICENSES);
+    // It stands alone: with any other argument it is a usage error.
+    for args in [
+        &["--licenses", "--check", "."][..],
+        &["--licenses", "settings"],
+        &["--licenses", "a.cfc"],
+    ] {
+        let out = s.run(&s.0, args);
+        assert_eq!(out.status.code(), Some(2), "{args:?}");
+        assert!(stderr(&out).starts_with("error: "), "{}", stderr(&out));
+    }
 }
 
 /// A component the formatter changes, and its formatted text.

@@ -73,7 +73,9 @@ was not regenerated. The oxc formatter crates are themselves ported from
 Biome's and Prettier's formatters, and the notices oxc passes on for that
 code ship too, as `LICENSE-OXC-THIRD-PARTY`, the oxc repository's
 `THIRD-PARTY-LICENSE` at the pinned revision; a test keeps the copy at the
-pin.
+pin. Both binaries gain `--licenses`, which prints the four files on
+stdout, each after a line naming it, and exits 0, so a copy of a binary
+that travelled without its archive still carries the notices.
 
 ## 0.3.1 — 2026-10-05
 

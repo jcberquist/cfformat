@@ -1,11 +1,12 @@
 //! The file plumbing shared by the `cfformat` and `cfvet` binaries: the
 //! directory walk, the files git reports as changed (`--git`), the dedupe
 //! of files named twice, reading a source as UTF-8 and the message of an
-//! IO error. Each binary chooses which walked or listed files it keeps and
-//! prints its own messages.
+//! IO error, and the licence notices both print under `--licenses`. Each
+//! binary chooses which walked or listed files it keeps and prints its own
+//! messages.
 
 use std::collections::HashSet;
-use std::io::{self, Read};
+use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 
 mod git;
@@ -62,6 +63,34 @@ impl<'a> Input<'a> {
         String::from_utf8(self.bytes()?)
             .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "not valid UTF-8"))
     }
+}
+
+/// The licence notices every release ships, for `--licenses`: the root
+/// `LICENSE`, `crates/cfdoc/LICENSE-PRETTIER`, `LICENSE-OXC-THIRD-PARTY`
+/// and `THIRD-PARTY-LICENSES.md`, in that order, each after a line `====
+/// <file> ====` naming it as the release asset is named and a blank line.
+/// Embedded at compile time, so every copy of a binary carries them, not
+/// only the release archive (and a stale `THIRD-PARTY-LICENSES.md` would be
+/// built in: CI regenerates and compares it). The paths climb to the
+/// repository root: the workspace is built from a checkout (`cargo install
+/// --git` or `--path`), never packaged for crates.io.
+pub const LICENSES: &str = concat!(
+    "==== LICENSE ====\n\n",
+    include_str!("../../../LICENSE"),
+    "\n==== LICENSE-PRETTIER ====\n\n",
+    include_str!("../../../crates/cfdoc/LICENSE-PRETTIER"),
+    "\n==== LICENSE-OXC-THIRD-PARTY ====\n\n",
+    include_str!("../../../LICENSE-OXC-THIRD-PARTY"),
+    "\n==== THIRD-PARTY-LICENSES.md ====\n\n",
+    include_str!("../../../THIRD-PARTY-LICENSES.md"),
+);
+
+/// Writes [`LICENSES`] to stdout, nothing else; the caller reports a
+/// failure its own way.
+pub fn print_licenses() -> io::Result<()> {
+    let mut out = io::stdout().lock();
+    out.write_all(LICENSES.as_bytes())?;
+    out.flush()
 }
 
 /// An `io::Error`'s message without the `(os error N)` suffix.

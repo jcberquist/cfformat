@@ -38,6 +38,7 @@ cfformat Foo.cfc                 # one file: the formatted text on stdout
 cfformat 'views/**/*.cfm' -w     # a glob (quoted, so the shell leaves it alone)
 cfformat --git staged -w         # the staged .cfc/.cfs files (see "Git")
 cfformat arrange -w src          # order each component's functions (see "Arranging members")
+cfformat --licenses              # the licence notices every copy carries (see "Licence")
 ```
 
 A directory is walked for `.cfc` and `.cfs` files, and `.cfm` files when
@@ -613,4 +614,6 @@ from Biome's and Prettier's formatters, and the oxc repository passes
 those notices on in a file of its own;
 [`LICENSE-OXC-THIRD-PARTY`](LICENSE-OXC-THIRD-PARTY) is that file, copied
 from the pinned revision. Every release ships the four files next to the
-binaries.
+binaries, and `cfformat --licenses` and `cfvet --licenses` print them, each
+after a heading naming it, so a copy of a binary that travelled without
+its archive still carries them.

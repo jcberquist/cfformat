@@ -195,6 +195,7 @@ cfvet Foo.cfc views/a.cfm  # files, whatever their extension
 cat Foo.cfc | cfvet -      # stdin, reported as <stdin>
 cfvet -q src               # the reports only
 cfvet --git staged         # the staged .cfc, .cfs and .cfm files
+cfvet --licenses           # the licence notices, exit 0
 ```
 
 A directory is walked for `.cfc`, `.cfs` and `.cfm` files (a template can
@@ -225,6 +226,16 @@ missing path (`error: nope.cfc: No such file or directory`), a file that
 cannot be read or is not UTF-8 (`error: a.cfc: not valid UTF-8`, the rest
 still linted), or a failed write to stdout (`error: stdout: Broken pipe`,
 which ends the run without the summary).
+
+`cfvet --licenses` prints, on stdout, the four licence files every release
+ships — `LICENSE`, `LICENSE-PRETTIER`, `LICENSE-OXC-THIRD-PARTY` and
+`THIRD-PARTY-LICENSES.md`, in that order — each after a line `==== <file>
+====` naming it as the release asset is named and a blank line, and exits
+0: the same text `cfformat --licenses` prints (`cfcli::LICENSES`, embedded
+at build time, so every copy of the binary carries it). It takes no input
+and prints nothing else; any other argument with it is a usage error (exit
+2). A reader that stops (`cfvet --licenses | head`) ends it quietly; any
+other failed write to stdout is `error: stdout: …`, exit 2.
 
 ## Exit codes
 

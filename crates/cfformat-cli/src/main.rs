@@ -12,6 +12,7 @@
 //!          [--stdin-filepath PATH] [--files-from FILE|-]
 //!          [--git staged|unstaged|all] [-j N] [--quiet]
 //!          [--script|--tags] [--properties]
+//! cfformat --licenses
 //! ```
 //!
 //! The `cfformat-cli` package: file IO, walking, diffs, parallelism and

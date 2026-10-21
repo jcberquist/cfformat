@@ -188,6 +188,46 @@ fn a_failed_stdout_write_is_an_error() {
     assert_eq!(stderr(&o), "error: stdout: Broken pipe\n");
 }
 
+/// `--licenses` prints the four licence files, each after its heading, in
+/// order, and nothing else.
+#[test]
+fn licenses_prints_the_notices_and_nothing_else() {
+    let s = Scratch::new("licenses");
+    let o = s.run(&["--licenses"]);
+    assert_eq!(o.status.code(), Some(0));
+    assert_eq!(stderr(&o), "");
+    let text = String::from_utf8(o.stdout).unwrap();
+    assert!(
+        text.starts_with(
+            "==== LICENSE ====\n\nThe MIT License (MIT)\n\nCopyright (c) 2019\u{2013}2026 John \
+             Berquist\n\nPermission is hereby granted, free of charge,"
+        ),
+        "{}",
+        &text[..120]
+    );
+    let mut at = 0;
+    for heading in [
+        "==== LICENSE ====\n\n",
+        "\n==== LICENSE-PRETTIER ====\n\n",
+        "\n==== LICENSE-OXC-THIRD-PARTY ====\n\n",
+        "\n==== THIRD-PARTY-LICENSES.md ====\n\n",
+    ] {
+        let i = text[at..]
+            .find(heading)
+            .unwrap_or_else(|| panic!("{heading:?} missing or out of order"));
+        at += i + heading.len();
+    }
+    assert!(text.contains("# Third-party licences\n"));
+    assert_eq!(text, cfcli::LICENSES);
+    // It stands alone: with any other argument it is a usage error.
+    let o = s.run(&["--licenses", "a.cfc"]);
+    assert_eq!(o.status.code(), Some(2));
+    assert!(stderr(&o).starts_with("error: "), "{}", stderr(&o));
+    // And `--help` lists it.
+    let o = s.run(&["--help"]);
+    assert!(stdout(&o).contains("--licenses"), "{}", stdout(&o));
+}
+
 /// Runs `git args` (or `cfvet`, with `cfvet` as the program) in `cwd` with
 /// an empty global configuration, no system one, and the repository
 /// discovery stopped at the scratch directory.

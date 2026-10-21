@@ -25,11 +25,25 @@ use super::{inputs, schema};
 /// Runs the command line.
 pub fn main() -> ExitCode {
     let cli = args::parse();
+    if cli.licenses {
+        return licenses();
+    }
     match cli.command {
         None => fmt(&cli.format),
         Some(Command::Arrange(a)) => arrange(&a),
         Some(Command::Doc(a)) => doc(&a),
         Some(Command::Settings(a)) => settings(&a),
+    }
+}
+
+/// `cfformat --licenses`: the notices on stdout, before any settings file
+/// or input is read; a reader that stops (`| head`) ends it quietly, as
+/// it ends one file's text.
+fn licenses() -> ExitCode {
+    match cfcli::print_licenses() {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(e) if stdout_failed(&e, true) => ExitCode::SUCCESS,
+        Err(_) => ExitCode::from(2),
     }
 }
 

@@ -62,7 +62,8 @@ the two).
   cargo about generate --locked --workspace --fail -o THIRD-PARTY-LICENSES.md about.hbs
   ```
 
-  and review the diff. A warning from the tool is a problem to fix in
+  and review the diff (`cfcli` embeds the file for `--licenses`, so a stale
+  one is built into the binaries). A warning from the tool is a problem to fix in
   `about.toml`, not noise; CI regenerates the file, fails on any warning and
   on any difference. A new dependency under a licence that `accepted` does
   not list fails the generation: that is a decision to take, in the file's

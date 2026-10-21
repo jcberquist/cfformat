@@ -2,6 +2,7 @@
 //!
 //! ```text
 //! cfvet [PATHS...] [--git staged|unstaged|all] [--script|--tags] [-q|--quiet]
+//! cfvet --licenses
 //! ```
 //!
 //! File IO, walking and printing live here, in `cli`; the library lints a

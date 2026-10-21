@@ -12,8 +12,12 @@ the root otherwise; git's message, or the IO error of running it, as the
 error), `Dedupe` (a file named
 twice, by absolute path, is taken once), `Input` (a file or stdin, its name
 in messages, `read_utf8`: bytes that are not UTF-8 are an error, never
-replaced) and `io_message` (an IO error without its `(os error N)`
-suffix). It is used by `cfformat-cli` (the `cfformat` binary) and `cfvet`,
+replaced), `io_message` (an IO error without its `(os error N)`
+suffix) and `LICENSES` with `print_licenses` (what `--licenses` prints: the
+root `LICENSE`, `crates/cfdoc/LICENSE-PRETTIER`, `LICENSE-OXC-THIRD-PARTY`
+and `THIRD-PARTY-LICENSES.md`, embedded at compile time with `include_str!`
+from the repository root, each after a `==== <file> ====` line and a blank
+line). It is used by `cfformat-cli` (the `cfformat` binary) and `cfvet`,
 which choose the files they keep and print their own messages; it depends
 on `ignore` alone, so `cfvet` shares the walk without pulling in the
 formatter; `git_changes` runs git as a process (`std::process::Command`),

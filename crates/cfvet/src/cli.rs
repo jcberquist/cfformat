@@ -59,10 +59,26 @@ struct Cli {
     /// Print the reports only: no notes, no summary
     #[arg(short, long)]
     quiet: bool,
+    /// Print the licence notices every copy carries (the project's,
+    /// Prettier's, oxc's and every crate's) and exit
+    #[arg(long, exclusive = true)]
+    licenses: bool,
 }
 
 pub fn main() -> ExitCode {
     let cli = Cli::parse();
+    if cli.licenses {
+        // The notices on stdout, nothing read; a reader that stops
+        // (`| head`) ends it quietly, any other failed write is an error.
+        return match cfcli::print_licenses() {
+            Ok(()) => ExitCode::SUCCESS,
+            Err(e) if e.kind() == std::io::ErrorKind::BrokenPipe => ExitCode::SUCCESS,
+            Err(e) => {
+                eprintln!("error: stdout: {}", io_message(&e));
+                ExitCode::from(2)
+            }
+        };
+    }
     let mode = if cli.script {
         Mode::Script
     } else if cli.tags {

@@ -36,7 +36,9 @@ steps, and commit each on its own.";
 // subcommands, and a subcommand takes none of the formatting flags
 // (`args_conflicts_with_subcommands`). A path that happens to be called
 // `doc`, `settings` or `arrange` is written `./doc`. Nothing at all prints the help
-// and exits 2 (`arg_required_else_help`). The doc comment is one line on
+// and exits 2 (`arg_required_else_help`). `--licenses` stands alone
+// (`exclusive`): with any other argument or a subcommand it is a usage
+// error. The doc comment is one line on
 // purpose: a second paragraph would print as `--help`'s long description.
 #[derive(Debug, Parser)]
 #[command(
@@ -52,6 +54,10 @@ pub struct Cli {
     /// `doc`, `settings` or `arrange`; `None` formats.
     #[command(subcommand)]
     pub command: Option<Command>,
+    /// Print the licence notices every copy carries (the project's,
+    /// Prettier's, oxc's and every crate's) and exit
+    #[arg(long, exclusive = true)]
+    pub licenses: bool,
 }
 
 /// The subcommands.
