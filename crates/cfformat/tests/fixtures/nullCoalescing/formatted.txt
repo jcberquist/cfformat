@@ -1,0 +1,25 @@
+attributes.description = attributes.description ?? '';
+attributes.title = attributes.title ?? '';
+attributes.keywords = attributes.keywords ?? '';
+attributes.author = attributes.author ?? 'anonymous';
+attributes.layout = attributes.layout ?? 'default';
+attributes.cache = attributes.cache ?? false;
+attributes.ttl = attributes.ttl ?? 0;
+chain = a ?? b ?? c;
+inTernary = cond ? a ?? 'x' : b ?? 'y';
+aroundTernary = a ?? b ? 'T' : 'F';
+withElvis = a ?? b ?: c;
+afterElvis = a ?: b ?? c;
+member = config.settings.values.first ?? config.settings.defaults.first;
+safe = order?.customer?.address?.city ?? 'unknown';
+call = getSetting('timeout') ?? 30;
+noSpaces = sct.a ?? 2;
+argument = foo(a ?? b, c ?? d);
+key = {name: args.name ?? 'none', count: args.count ?? 0};
+negated = !(a ?? true);
+split = a ?? b;
+splitLines = a ?? b;
+subject =
+    variables.messages.notifications.welcome.subjectLineForNewUsers ??
+    variables.messages.defaults.subjectLineForEveryone;
+label = (settings.labels.primary ?? settings.labels.secondary ?? settings.labels.fallback) & ' (' & count ?? 0 & ')';

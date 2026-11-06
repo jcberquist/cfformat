@@ -1282,9 +1282,10 @@ fn closes_on_bracket(nodes: &[&Node]) -> bool {
 
 /// Whether the `#` delimiters of a `#…#` in tag text hug its expression
 /// ([`Printer::tag_template_expression`]): one that ends on a bracket
-/// ([`closes_on_bracket`]), a binary (the elvis `?:` is one, as it is to the
-/// parser) or a ternary — the expressions Prettier inlines a JSX child's
-/// `{…}` around. A chain ending in a member (`a.b( … ).c`) is none of these.
+/// ([`closes_on_bracket`]), a binary (the elvis `?:` and `??` are one, as
+/// they are to the parser) or a ternary — the expressions Prettier inlines
+/// a JSX child's `{…}` around. A chain ending in a member (`a.b( … ).c`) is
+/// none of these.
 fn hugs_delimiters(nodes: &[&Node]) -> bool {
     closes_on_bracket(nodes)
         || matches!(

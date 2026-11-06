@@ -111,11 +111,13 @@ statement assignment terminator=";"
 
 `cfparse::nodes` has a view per kind (`Element::as_assignment`,
 `as_binary`, `as_chain`, …) that names the parts and skips trivia. The
-tokenizer merges `?:` into `op.elvis` and keeps whitespace out of struct key
-tokens. No token spans whitespace between words: a multi-word operator
-(`less than`, `is not`, `does not contain`) is a `phrase` element of word
-tokens and the whitespace between them, read as one operator, and `else if`
-is the tokens `kw.else` and `kw.if`. A call's arguments are a `call` element; what is called is its
+tokenizer merges `?:` and `??` into `op.elvis` (also `? ?`, the null
+coalescing operator written with whitespace between its question marks: one
+token spanning that whitespace, whose spelling is `??`) and keeps whitespace
+out of struct key tokens. No other token spans whitespace: a multi-word
+operator (`less than`, `is not`, `does not contain`) is a `phrase` element of
+word tokens and the whitespace between them, read as one operator, and `else
+if` is the tokens `kw.else` and `kw.if`. A call's arguments are a `call` element; what is called is its
 callee's kind: `ident.builtin` for a built-in function, `ident.call` for
 a user-defined function or a method.
 

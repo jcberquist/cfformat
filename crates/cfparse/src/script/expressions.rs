@@ -349,10 +349,26 @@ impl Parser<'_> {
     }
 
     /// `? a : b`; a `:` right after the `?` (`a ?: b`) merges with it into one
-    /// `Operator::Binary(Prec::Elvis)` token.
+    /// `Operator::Binary(Prec::Elvis)` token, and so does a second `?` (`a ??
+    /// b`, the null coalescing operator, which binds like `?:`): directly
+    /// after the first, or after whitespace alone (`a ? ? b`, `a ?` ⏎ `? b`),
+    /// since a ternary with nothing between its `?` and its second operator
+    /// is valid nowhere while Adobe ColdFusion 2025 runs the split form as
+    /// `??`. The merged token then spans the whitespace, which a printer
+    /// leaves out: the operator's spelling is `??`. A comment between the two
+    /// question marks keeps them apart.
     fn ternary(&mut self, out: &mut Vec<Node>) {
         let q = self.at();
         self.emit_len(out, 1, TokenKind::Operator(Operator::TernaryQ));
+        let second = lexer::skip_whitespace(self.src, q + 1);
+        if self.src[second..].starts_with('?') {
+            let last = out.last_mut().unwrap();
+            let Node::Token(t) = last else { unreachable!() };
+            t.span.end = (second + 1) as u32;
+            t.kind = TokenKind::Operator(Operator::Binary(Prec::Elvis));
+            self.pos = (second + 1) as u32;
+            return self.expression(out, Stop::NO_COMMA);
+        }
         let before = out.len();
         self.expression(out, Stop::NO_COMMA);
         self.trivia(out);

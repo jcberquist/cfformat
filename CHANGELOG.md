@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+**Fixed.** The null coalescing operator `??` was printed as two question
+marks: `attributes.description = attributes.description ?? "";` came out
+`attributes.description = attributes.description ? ? '';` (GitHub issue 2),
+with no warning. The parser read the two `?` as two ternaries without their
+`:`, so the expression was left unparsed and its tokens laid out one space
+apart. `??` is now one operator at the level of `?:`, which is where Adobe
+ColdFusion 2025 and Lucee 8.0.0.271 (the engines that have it) parse it:
+right-associative, `a ?? b ?: c` one chain, `a ?? b ? c : d` nesting the
+ternary on its right. It prints with a space on each side like `?:`, in
+script, in `<cfset>` and in `#…#` alike, and a right side that does not fit
+breaks under the operator as `||`'s does. Whitespace between the two
+question marks (`a ? ? b`, which Adobe 2025 runs as `??`, and which is what
+every earlier release wrote for `??`) is read as `??` too, so a file
+formatted by 0.1–0.4 is repaired by the next run; `a ? : b` stays a
+ternary, and a comment between the two keeps them apart.
+
 ## 0.4.0 — 2026-10-21
 
 **Fixed.** A comment on a line of its own between a header and its `{` was

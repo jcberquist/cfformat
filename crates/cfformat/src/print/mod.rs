@@ -19,7 +19,7 @@ use std::path::Path;
 use cfdoc::builders::{hardline, literalline};
 use cfdoc::utils::replace_end_of_line;
 use cfdoc::{Doc, GroupId, GroupIdGen};
-use cfparse::{Element, ElementKind, Mode, Node, Token, TokenKind, Tree};
+use cfparse::{Element, ElementKind, Mode, Node, Operator, Prec, Token, TokenKind, Tree};
 
 use crate::islands::{IslandStats, Islands};
 use crate::Warning;
@@ -301,7 +301,18 @@ impl<'a> Printer<'a> {
     /// A token's text (copied: a `Doc`'s text is owned). Text containing a
     /// newline keeps its lines through `literalline`.
     pub(crate) fn token(&self, t: &Token) -> Doc {
-        self.text(self.tree.text(t))
+        self.text(self.token_text(t))
+    }
+
+    /// What a token prints as: its text, except for a null coalescing
+    /// operator written with whitespace between its question marks (`a ? ?
+    /// b`, one token spanning the whitespace), which prints `??`.
+    pub(crate) fn token_text(&self, t: &Token) -> &str {
+        let text = self.tree.text(t);
+        if t.kind == TokenKind::Operator(Operator::Binary(Prec::Elvis)) && text.len() > 2 {
+            return "??";
+        }
+        text
     }
 
     /// `s` as a doc; multi-line text keeps its lines through `literalline`.

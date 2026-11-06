@@ -5,8 +5,8 @@ use std::path::{Path, PathBuf};
 
 use cfformat::Options;
 use cfparse::{
-    BlockKind, Element, ElementKind, Ident, IslandSite, Lang, Mode, Node, Punct, Token, TokenKind,
-    Tree,
+    BlockKind, Element, ElementKind, Ident, IslandSite, Lang, Mode, Node, Operator, Prec, Punct,
+    Token, TokenKind, Tree,
 };
 use serde_json::{Map, Value};
 
@@ -622,6 +622,11 @@ fn stream_token(tree: &Tree, opts: &Options, t: &Token, out: &mut Vec<Tok>) {
         TokenKind::Ident(Ident::Builtin | Ident::Call) => ("call".to_string(), text.to_lowercase()),
         TokenKind::Ident(Ident::TagName) if opts.tags_lowercase => {
             (t.kind.name(), text.to_lowercase())
+        }
+        // A `??` written `? ?` is one operator token spanning the whitespace,
+        // which the printer leaves out.
+        TokenKind::Operator(Operator::Binary(Prec::Elvis)) => {
+            (t.kind.name(), text.split_whitespace().collect())
         }
         // An HTML comment (`<!-- … -->`) is loose tokens, not an element, and
         // the tag printer re-indents its lines exactly as it re-indents text;

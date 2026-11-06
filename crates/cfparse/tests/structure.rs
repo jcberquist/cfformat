@@ -483,6 +483,29 @@ fn ternary_and_elvis() {
             "a ?: b ? c : d;",
             "statement(binary:elvis(a ?: ternary(b ? c : d)) ;)",
         ),
+        // The null coalescing operator shares the level: right-associative,
+        // one node with any elvis operators in the chain, the ternary on
+        // its right nested inside it.
+        ("a ?? b ?? c;", "statement(binary:elvis(a ?? b ?? c) ;)"),
+        (
+            "a ?? b ? c : d;",
+            "statement(binary:elvis(a ?? ternary(b ? c : d)) ;)",
+        ),
+        ("a ?: b ?? c;", "statement(binary:elvis(a ?: b ?? c) ;)"),
+        ("a ?? b ?: c;", "statement(binary:elvis(a ?? b ?: c) ;)"),
+        (
+            "sct.a??2;",
+            "statement(binary:elvis(chain(sct segment:property(. a)) ?? 2) ;)",
+        ),
+        (
+            "a?.b ?? c;",
+            "statement(binary:elvis(chain(a segment:property:safe(?. b)) ?? c) ;)",
+        ),
+        ("a ? ? b;", "statement(binary:elvis(a ? ? b) ;)"),
+        (
+            "cond ? a ?? 'x' : b;",
+            "statement(ternary(cond ? binary:elvis(a ?? string(' x ')) : b) ;)",
+        ),
         (
             "x = a or b ? c : d;",
             "statement(assignment(x = ternary(binary:or(a or b) ? c : d)) ;)",

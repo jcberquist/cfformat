@@ -76,7 +76,7 @@ fn a_line_comment_in_a_tag_expression_runs_past_a_gt() {
 /// recovered region ends before it.
 const SYMBOL_OPERATORS: &[&str] = &[
     "&&", "||", "%=", "&=", "*=", "+=", "-=", "/=", "===", "!==", "==", "!=", "<>", "<=", ">=",
-    "--", "++", "...", "=>", "?:", "?.", "::",
+    "--", "++", "...", "=>", "?:", "??", "?.", "::",
 ];
 
 /// After a stray `)` each symbol operator is one token, never a shorter

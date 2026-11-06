@@ -1326,6 +1326,75 @@ fn a_question_mark_directly_followed_by_a_colon_is_the_elvis_operator() {
         .any(|t| t.kind == TokenKind::Operator(Operator::Binary(Prec::Elvis)) && t.span == (6..8)));
 }
 
+/// `??` is one `elvis` token, as `?:` is; so is `? ?` with whitespace (a
+/// newline too) between the question marks, which then spans the whitespace.
+/// A split `? :` stays a ternary's two tokens, and a comment keeps two `?`
+/// apart.
+#[test]
+fn two_question_marks_are_the_null_coalescing_operator() {
+    let ops = |src: &str, mode: Mode| -> Vec<(String, String)> {
+        let tree = parse(src, mode);
+        common::flatten(&tree.root)
+            .into_iter()
+            .filter(|t| matches!(t.kind, TokenKind::Operator(_)))
+            .map(|t| (t.kind.name(), tree.text(t).to_string()))
+            .collect()
+    };
+    let op = |k: &str, t: &str| (format!("op.{k}"), t.to_string());
+    assert_eq!(
+        ops("x = a ?? b;", Mode::Script),
+        [op("assign", "="), op("elvis", "??")]
+    );
+    assert_eq!(
+        ops("x = a??b;", Mode::Script),
+        [op("assign", "="), op("elvis", "??")]
+    );
+    assert_eq!(
+        ops("x = a ? ? b;", Mode::Script),
+        [op("assign", "="), op("elvis", "? ?")]
+    );
+    assert_eq!(
+        ops("x = a ?\n    ? b;", Mode::Script),
+        [op("assign", "="), op("elvis", "?\n    ?")]
+    );
+    assert_eq!(
+        ops("x = a ? /* c */ ? b;", Mode::Script),
+        [
+            op("assign", "="),
+            op("ternary-q", "?"),
+            op("ternary-q", "?")
+        ]
+    );
+    assert_eq!(
+        ops("x = a ? : b;", Mode::Script),
+        [
+            op("assign", "="),
+            op("ternary-q", "?"),
+            op("ternary-colon", ":")
+        ]
+    );
+    // `?.` stays the safe accessor on either side of the operator.
+    assert_eq!(
+        ops("x = a?.b ?? .5;", Mode::Script),
+        [op("assign", "="), op("elvis", "??")]
+    );
+    assert_eq!(
+        ops("<cfset y = a ?? b>", Mode::Tags),
+        [op("assign", "="), op("elvis", "??")]
+    );
+    let elvis_span = |src: &str| {
+        parse_source(src, Mode::Script)
+            .root
+            .tokens()
+            .iter()
+            .find(|t| t.kind == TokenKind::Operator(Operator::Binary(Prec::Elvis)))
+            .map(|t| t.span.clone())
+    };
+    assert_eq!(elvis_span("z = a ?? b;"), Some(6..8));
+    assert_eq!(elvis_span("z = a ? ? b;"), Some(6..9));
+    assert_eq!(elvis_span("z = a??b;"), Some(5..7));
+}
+
 #[test]
 fn import_is_a_statement() {
     let tree = parse("import a.b.c;\nimport a.b.*;\n", Mode::Script);

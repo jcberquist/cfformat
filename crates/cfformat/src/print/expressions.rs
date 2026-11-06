@@ -227,7 +227,7 @@ impl Printer<'_> {
     /// space apart (`is  not` → `is not`).
     fn operator(&self, n: &Node) -> Doc {
         match n {
-            Node::Token(t) => Doc::from(self.tree.text(t).to_owned()),
+            Node::Token(t) => Doc::from(self.token_text(t).to_owned()),
             Node::Element(phrase) => {
                 let mut words = phrase
                     .children
@@ -1078,7 +1078,7 @@ struct Run {
 
 /// A `New` holding a component body: Lucee's inline component.
 /// Prettier's `LogicalExpression` against its `BinaryExpression`: the
-/// boolean connectives (`&&`, `||`, `?:`, `xor`, `eqv`, `imp`).
+/// boolean connectives (`&&`, `||`, `?:` and `??`, `xor`, `eqv`, `imp`).
 fn is_logical(prec: Prec) -> bool {
     matches!(
         prec,

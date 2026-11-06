@@ -565,9 +565,10 @@ pub enum Keyword {
 pub enum Operator {
     /// An infix operator at its precedence level: arithmetic, `&`, the
     /// comparisons (each word of a [`Phrase`](ElementKind::Phrase) too),
-    /// `and` / `or` / `xor` / `eqv` / `imp` and their symbols, and `?:`
-    /// ([`Prec::Elvis`]: a ternary `?` immediately followed by `:`, merged
-    /// into one token).
+    /// `and` / `or` / `xor` / `eqv` / `imp` and their symbols, and `?:` and
+    /// `??` ([`Prec::Elvis`]: a ternary `?` immediately followed by `:`, or
+    /// followed by a second `?`, merged into one token; the second `?` may
+    /// also come after whitespace, which the token then spans).
     Binary(Prec),
     /// `in`: a comparison, with a kind of its own because `for (k in s)` is
     /// read by it.
@@ -857,7 +858,8 @@ pub enum StatementKind {
 /// `postpass::expressions` for the full table.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Prec {
-    /// `?:`
+    /// `?:` and `??` (the null coalescing operator, which Adobe ColdFusion
+    /// 2025 and Lucee 8 parse at the elvis operator's level).
     Elvis,
     /// `imp`
     Imp,

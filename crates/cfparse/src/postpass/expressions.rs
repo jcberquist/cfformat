@@ -40,7 +40,7 @@
 //! | level | operators | assoc |
 //! |---|---|---|
 //! | assignment | `=`; `+= -= *= /= %= &=` (see below) | right |
-//! | conditional | `? :`, `?:` | right |
+//! | conditional | `? :`, `?:`, `??` | right |
 //! | `imp` | `imp` | left |
 //! | `eqv` | `eqv` | left |
 //! | `xor` | `xor` | left |
@@ -62,9 +62,13 @@
 //! `^` (`-a ^ 2` is `(-a) ^ 2`) and `NOT` between the comparisons and `AND`.
 //! Lucee parses the elvis operator and the ternary at one level whose
 //! right-hand sides are full assignment expressions (`a ?: b ? c : d` is
-//! `a ?: (b ? c : d)`), and an augmented assignment at the level of its
-//! arithmetic operator with an assignment expression on its right
-//! (`a && b += 1` is `a && (b += 1)`); both are reproduced. `in` is not a
+//! `a ?: (b ? c : d)`); the null coalescing operator `??` (Adobe ColdFusion
+//! 2025, Lucee 8) sits at that level too, on both engines, and shares the
+//! elvis operator's `Prec`, so `a ?? b ?: c` is one n-ary node and `a ?? b ?
+//! c : d` is `a ?? (b ? c : d)`. Lucee parses an augmented assignment at
+//! the level of its arithmetic operator with an assignment expression on
+//! its right (`a && b += 1` is `a && (b += 1)`); all of this is reproduced.
+//! `in` is not a
 //! Lucee expression operator (`for (k in s)` is statement syntax); it sits
 //! with the comparisons. Same-precedence runs are one n-ary `Binary` (the
 //! elvis operator included, although it is right-associative).

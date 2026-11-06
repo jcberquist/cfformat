@@ -1,0 +1,15 @@
+<cfset x = a ?? 'd'>
+<cfset y = a ?? 'd'>
+<cfset z = attributes.description ?? ''>
+<cfoutput>#a ?? 'd'#</cfoutput>
+<cfoutput>#attributes.description ?? ''#</cfoutput>
+<cfif (a ?? false)>
+    <cfset found = true>
+</cfif>
+<cfif structKeyExists(url, 'id') && (url.id ?? 0) gt 0>
+    <cfset id = url.id>
+</cfif>
+<cfoutput>
+    #variables.messages.notifications.welcome.subjectLineForNewUsers ??
+        variables.messages.defaults.subjectLineForEveryone#
+</cfoutput>

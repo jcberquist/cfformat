@@ -266,6 +266,15 @@ pub(crate) fn keyword_at(src: &str, at: usize, word: &str) -> bool {
         && !src[at + word.len()..].starts_with(is_ident_part)
 }
 
+/// The end of the whitespace at `at`, newlines included; `at` itself when
+/// there is none. Comments are not skipped ([`skip_trivia`] does that).
+pub(crate) fn skip_whitespace(src: &str, mut at: usize) -> usize {
+    while src.as_bytes().get(at).is_some_and(u8::is_ascii_whitespace) {
+        at += 1;
+    }
+    at
+}
+
 /// The end of one whitespace token: a run of whitespace up to and including
 /// the first newline, or to the end of the run: a whitespace token never
 /// continues past a `\n`.
@@ -452,8 +461,9 @@ pub(crate) const PREFIX_OPERATORS: &[Op] = &[
 ];
 
 /// Symbol operators the parser matches by hand rather than from a table: the
-/// arrow, the Elvis operator, safe navigation and the static member access.
-const PARSER_OPERATORS: &[&str] = &["=>", "?:", "?.", "::"];
+/// arrow, the Elvis and null coalescing operators, safe navigation and the
+/// static member access.
+const PARSER_OPERATORS: &[&str] = &["=>", "?:", "??", "?.", "::"];
 
 /// The length of the longest symbol operator starting at `at`: every symbol
 /// row of [`BINARY_OPERATORS`] and [`PREFIX_OPERATORS`], and
