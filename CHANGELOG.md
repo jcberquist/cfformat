@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.0 — 2026-11-09
 
 **Fixed.** The null coalescing operator `??` was printed as two question
 marks: `attributes.description = attributes.description ?? "";` came out
