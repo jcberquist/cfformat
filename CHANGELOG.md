@@ -18,6 +18,18 @@ every earlier release wrote for `??`) is read as `??` too, so a file
 formatted by 0.1–0.4 is repaired by the next run; `a ? : b` stays a
 ternary, and a comment between the two keeps them apart.
 
+**Changed.** With `alignment.consecutive.assignments`, a tag in tag mode
+whose attributes broke one per line had their names padded to the widest,
+with the value still glued to the bare `=`: `name     ="username"` beside
+`maxlength="7"` (GitHub issue 3). CommandBox cfformat aligned by regex, any
+line shaped `name = value`, so attributes on lines of their own were caught
+in a run, and the port kept that. No markup formatter aligns attribute
+values. Every attribute of a tag in tag mode, CF or HTML, now prints
+`name="value"`, broken or flat, whatever the option says; the attributes of
+script declarations and statements (`property`, `param`, function metadata,
+`http …;`) still align. A file padded by 0.1–0.4 is normalised by the next
+run.
+
 ## 0.4.0 — 2026-10-21
 
 **Fixed.** A comment on a line of its own between a header and its `{` was

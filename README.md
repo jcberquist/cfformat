@@ -278,6 +278,11 @@ the first three.
   `"tags.islands.indent": false` keeps that.
 - **A run of blank lines prints as one**, in script as in tags; CommandBox
   kept every blank line between statements.
+- **The attributes of a CF or HTML tag are never aligned.** With
+  `alignment.consecutive.assignments`, CommandBox padded the names of a
+  tag's attributes written on lines of their own (`name     ="x"`); each
+  now prints `name="x"`. The attributes of `property`, `param` and other
+  script statements still align.
 - **Templates are formatted in full.** `cfformat` formats the CF and HTML tags
   of any template, and the `<script>` and `<style>` blocks in it with
   Prettier's rules, those inside `<cfoutput>` holding `#expr#` included.

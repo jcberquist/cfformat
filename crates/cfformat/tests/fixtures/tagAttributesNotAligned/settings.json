@@ -1,0 +1,9 @@
+[
+    {
+        "alignment.consecutive.assignments": true
+    },
+    {
+        "alignment.consecutive.assignments": true,
+        "attributes.key_value.padding": true
+    }
+]

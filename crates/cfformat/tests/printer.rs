@@ -1749,6 +1749,35 @@ fn tag_attributes_break_one_per_line_with_the_delimiter_on_its_own() {
 }
 
 #[test]
+fn tag_attributes_are_never_aligned() {
+    let narrow =
+        r#"{"newline": "\n", "alignment.consecutive.assignments": true, "max_columns": 16}"#;
+    // A tag in tag mode, CF or HTML, prints `name="value"` one per line when
+    // it breaks: no padding, whatever the alignment says.
+    assert_eq!(
+        tag_with("<cf_x aa=\"1\" bbbb=\"2\">\n", narrow),
+        "<cf_x\n    aa=\"1\"\n    bbbb=\"2\"\n>\n"
+    );
+    assert_eq!(
+        tag_with("<p class=\"a\" id=\"b\">x</p>\n", narrow),
+        "<p\n    class=\"a\"\n    id=\"b\"\n>x</p>\n"
+    );
+    // A tag padded by an earlier version is normalised.
+    assert_eq!(
+        tag_with("<cf_x\n    aa  =\"1\"\n    bbbb=\"2\"\n>\n", narrow),
+        "<cf_x\n    aa=\"1\"\n    bbbb=\"2\"\n>\n"
+    );
+    // Script attributes in the same file still align when they break.
+    assert_eq!(
+        tag_with(
+            "<cfscript>\nproperty name=\"a\" default=\"x\";\n</cfscript>\n",
+            narrow
+        ),
+        "<cfscript>\n    property\n        name   =\"a\"\n        default=\"x\";\n</cfscript>\n"
+    );
+}
+
+#[test]
 fn script_tag_delimiter_on_its_own_unless_a_bracket_closes() {
     let narrow = r#"{"newline": "\n", "max_columns": 40}"#;
     // A broken binary, ternary or string value: `>` on its own line.

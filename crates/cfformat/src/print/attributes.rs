@@ -58,11 +58,16 @@ impl Printer<'_> {
     /// (`<td<cfif x> class="a"</cfif>>`): a space there would print on the
     /// page beside the one the CF body already holds. The threshold measures
     /// the attributes joined by one space, without the space before the first
-    /// one. With `alignment.consecutive.assignments`,
-    /// consecutive `KeyValue` attributes pad their keys to the widest when the
-    /// group breaks (`name     ="name"`); a bare attribute or glued text ends a
-    /// run, a comment does not. `any` returns a group even when there is no
-    /// attribute at all, which is what an HTML tag needs.
+    /// one. With `alignment.consecutive.assignments`, consecutive `KeyValue`
+    /// attributes of a script group (`style` [`KeyValueStyle::Attribute`]:
+    /// a declaration, `property`, `param`, `http …;`) pad their keys to the
+    /// widest when the group breaks (`name   ="name"`); a bare attribute or
+    /// glued text ends a run, a comment does not. The attributes of a tag in
+    /// tag mode ([`KeyValueStyle::TagAttribute`],
+    /// [`KeyValueStyle::HtmlAttribute`]) are never padded: broken or flat,
+    /// each prints `name="value"`. `require_attribute` false returns a group
+    /// even when there is no attribute at all, which is what an HTML tag
+    /// needs.
     ///
     /// `columns` is a statement's share of an attribute run
     /// (`alignment.consecutive.properties` / `.params`): the spaces after
@@ -98,7 +103,15 @@ impl Printer<'_> {
             n.as_token()
                 .is_some_and(|t| matches!(t.kind, TokenKind::Other | TokenKind::Invalid))
         };
-        let pads = if self.opts.alignment_consecutive_assignments {
+        // The attributes of a tag in tag mode, CF or HTML, are never
+        // aligned: markup is written `name="value"` one per line when a tag
+        // breaks, and the bare `=` would leave a padded name glued to its
+        // value (`name     ="x"`).
+        let tag_mode = matches!(
+            style,
+            KeyValueStyle::TagAttribute | KeyValueStyle::HtmlAttribute
+        );
+        let pads = if self.opts.alignment_consecutive_assignments && !tag_mode {
             alignment::runs(nodes, |n| match n {
                 n if n.is_trivia() => RunPart::Neutral,
                 Node::Element(kv)

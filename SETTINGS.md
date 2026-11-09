@@ -12,7 +12,7 @@ Type: _boolean_
 
 Default: **`false`**
 
-When true, consecutive variable assignments (`var`, `param`, and assignments to a variable, member or index), named function call arguments, parameter defaults, struct members and attributes are aligned: the `=` or key-value separator of each is padded to the widest left side in the run. A run ends at a blank line or at a line that is not an assignment; comments do not end it. A struct, argument list or attribute list is only aligned when it is printed on multiple lines.
+When true, consecutive variable assignments (`var`, `param`, and assignments to a variable, member or index), named function call arguments, parameter defaults, struct members and the attributes of script declarations and script tag statements (`property`, `param`, `http …;`) are aligned: the `=` or key-value separator of each is padded to the widest left side in the run. A run ends at a blank line or at a line that is not an assignment; comments do not end it. A struct, argument list or attribute list is only aligned when it is printed on multiple lines. The attributes of a tag in tag mode (CF or HTML) are never aligned: each prints `name="value"`.
 
 With `struct.multiline.element_count: 2`, `struct.multiline.min_item_length: 0`:
 
