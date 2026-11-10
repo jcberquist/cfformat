@@ -151,6 +151,19 @@ pub(crate) fn identifier(src: &str, at: usize) -> Option<usize> {
     Some(end)
 }
 
+/// A member name after `.`, `?.` or `::`, and an unquoted struct key: the
+/// longest run of [`is_ident_part`]s, whether it starts with a letter or a
+/// digit. Every engine reads the name after the accessor as that run of
+/// text and never as a number, so `foo.0bar`, `foo.1e5` and `foo.0x1F` reach
+/// the keys `0bar`, `1e5` and `0x1F`; a `.` or a sign ends the run, so
+/// `foo.1.2` is two keys and `foo.1e+5` is `foo.1e + 5`.
+pub(crate) fn member_name(src: &str, at: usize) -> Option<usize> {
+    let len = src[at..]
+        .find(|c: char| !is_ident_part(c))
+        .unwrap_or(src.len() - at);
+    (len > 0).then_some(at + len)
+}
+
 /// An attribute name: a letter or `_`, then letters, digits, `_`, `-` and
 /// `:`, ending on its last [`is_ident_part`] (a trailing `-` or `:` is not
 /// part of the name, so `access:"remote"` names the attribute `access`).
@@ -598,6 +611,17 @@ mod tests {
         assert_eq!(identifier("1abc", 0), None);
         assert_eq!(dot_path("foo.bar baz", 0), Some(7));
         assert_eq!(dot_path("1foo.bar", 0), Some(8));
+        for (src, end) in [
+            ("0bar = 1", 4),
+            ("1e+5", 2),
+            ("1.2", 1),
+            ("0x1F;", 4),
+            ("1_a$b-c", 5),
+            ("bar()", 3),
+        ] {
+            assert_eq!(member_name(src, 0), Some(end), "{src}");
+        }
+        assert_eq!(member_name(" 0bar", 0), None);
     }
 
     #[test]

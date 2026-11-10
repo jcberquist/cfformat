@@ -339,13 +339,41 @@ impl Parser<'_> {
         self.finish_into(out, el);
     }
 
-    /// Whether the `?` here is a ternary: not when it starts a `?.` accessor,
-    /// though `?.5` is a ternary over a number.
+    /// Whether the `?` here is a ternary: not when it starts a `?.` accessor.
+    /// A digit after `?.` starts a member name when its run
+    /// ([`lexer::member_name`]) is longer than the number read at the `.`
+    /// (`foo?.0bar`, `?.5d`, `?.1_000`, `?.0x1F`, `?.1e`): no engine reads
+    /// that as a ternary. When the run is the whole number (`?.5`, `?.1e5`)
+    /// the engines disagree: Adobe ColdFusion 2021 and 2023 read a ternary
+    /// over `.5`, Lucee safe navigation, Adobe ColdFusion 2025 a ternary when
+    /// a `:` closes it. What follows the number decides, a lookahead of one
+    /// character past its whitespace: where a ternary could not go on to its
+    /// `:` (the end, `;`, `,`, a closer, `.`, `[`, `(`, `#`, `=`, `?.`, `?:`
+    /// or `??`: `foo?.5;`, `foo?.1.bar`) it is safe navigation, and anywhere
+    /// else (`c ?.5 : 2`, `c ?.5 + 1 : 2`) a ternary.
     fn ternary_ahead(&self) -> bool {
-        match self.rest()[1..].chars().next() {
-            Some('.') => self.rest()[2..].starts_with(|c: char| c.is_ascii_digit()),
-            _ => true,
+        let dot = self.at() + 1;
+        if !self.src[dot..].starts_with('.') {
+            return true;
         }
+        if !self.src[dot + 1..].starts_with(|c: char| c.is_ascii_digit()) {
+            return false;
+        }
+        let (Some(number), Some(name)) = (
+            lexer::number(self.src, dot),
+            lexer::member_name(self.src, dot + 1),
+        ) else {
+            return true;
+        };
+        if number < name {
+            return false;
+        }
+        let rest = &self.src[skip_spaces(self.src, number)..];
+        let ends = rest.is_empty()
+            || rest.starts_with([';', ',', ')', ']', '}', '.', '[', '(', '#'])
+            || (rest.starts_with('?') && rest[1..].starts_with(['.', ':', '?']))
+            || (rest.starts_with('=') && !rest.starts_with("=="));
+        !ends
     }
 
     /// `? a : b`; a `:` right after the `?` (`a ?: b`) merges with it into one
@@ -505,11 +533,13 @@ impl Parser<'_> {
         )
     }
 
-    /// A named argument's name and separator: an identifier, then `=` (not
-    /// `==`, not `=>`) or `:` (not `::`).
+    /// A named argument's name and separator: an identifier or a word that
+    /// starts with a digit ([`lexer::member_name`]: Adobe ColdFusion takes
+    /// `f(0bar = 1)`, Lucee `f(1 = 1)`), then `=` (not `==`, not `=>`) or
+    /// `:` (not `::`).
     fn named_argument(&mut self, out: &mut Vec<Node>) {
         let at = self.at();
-        let Some(end) = lexer::identifier(self.src, at) else {
+        let Some(end) = lexer::member_name(self.src, at) else {
             return;
         };
         // The name starts a word; `$` is a word character, so `$name` is a
@@ -644,7 +674,9 @@ impl Parser<'_> {
     }
 
     /// A member access: `[…]`, or `.`, `?.` or `::` and a name (a method
-    /// call when `(` follows).
+    /// call when `(` follows). The name is [`lexer::member_name`]'s run, so
+    /// one that starts with a digit is whole (`foo.0bar`, `a.b.1234`), as
+    /// the engines read it, and never a number followed by a word.
     pub(super) fn property_access(&mut self, out: &mut Vec<Node>) -> bool {
         if self.peek() == Some('[') {
             let b = self.brackets();
@@ -663,20 +695,10 @@ impl Parser<'_> {
         self.emit_len(out, len, kind);
         self.trivia(out);
         let at = self.at();
-        let Some(end) = lexer::identifier(self.src, at) else {
-            // A numeric member (`a.b.1234`) is a property name.
-            let mut digits = at;
-            while self
-                .src
-                .as_bytes()
-                .get(digits)
-                .is_some_and(u8::is_ascii_digit)
-            {
-                digits += 1;
-            }
-            if digits > at {
-                self.emit(out, digits, TokenKind::Ident(Ident::PropertyName));
-            }
+        // A name that starts with a digit (`foo.0bar`, `a.b.1234`) has the
+        // kinds of any other: a call before `(`, a variable before `=
+        // function`, a property name otherwise.
+        let Some(end) = lexer::member_name(self.src, at) else {
             return true;
         };
         if function_assignment_ahead(self.src, end, self.depth) {
@@ -923,19 +945,9 @@ impl Parser<'_> {
                 return;
             }
             // An unquoted key is identifier characters only, not a dot path:
-            // `a.b: 1` keys on `a` alone.
-            let mut key = self.at();
-            while self.src[key..]
-                .chars()
-                .next()
-                .is_some_and(lexer::is_ident_part)
-            {
-                key += self.src[key..].chars().next().unwrap().len_utf8();
-            }
-            if key > self.at() {
-                self.emit(out, key, TokenKind::Ident(Ident::StructKey));
-                return;
-            }
+            // `a.b: 1` keys on `a` alone, and `0bar: 1` on `0bar`.
+            self.emit(out, end, TokenKind::Ident(Ident::StructKey));
+            return;
         }
         if self.peek() == Some(':') || self.peek() == Some('=') {
             self.emit_len(out, 1, TokenKind::Punct(Punct::KeyValue));
@@ -1788,8 +1800,10 @@ impl Parser<'_> {
 // Lookaheads
 // ---------------------------------------------------------------------------
 
-/// A struct key: an identifier, digits or a quoted string (a `\` escapes the
-/// next character). The flag says whether it was quoted.
+/// A struct key: an identifier, a word that starts with a digit
+/// ([`lexer::member_name`]: `1`, `0bar`, `0x1F`, as Adobe ColdFusion reads
+/// them) or a quoted string (a `\` escapes the next character). The flag
+/// says whether it was quoted.
 fn property_name(src: &str, at: usize) -> Option<(usize, bool)> {
     match src[at..].chars().next()? {
         q @ ('\'' | '"') => {
@@ -1806,13 +1820,7 @@ fn property_name(src: &str, at: usize) -> Option<(usize, bool)> {
             }
             None
         }
-        c if c.is_ascii_digit() => {
-            let mut i = at;
-            while src.as_bytes().get(i).is_some_and(u8::is_ascii_digit) {
-                i += 1;
-            }
-            Some((i, false))
-        }
+        c if c.is_ascii_digit() => lexer::member_name(src, at).map(|e| (e, false)),
         _ => lexer::identifier(src, at).map(|e| (e, false)),
     }
 }

@@ -301,7 +301,15 @@ a `<!--- --->` comment, so `style="a;<cfif x eq "b">c</cfif>"` is one value.
 Deliberate lexical rules: keywords and `true` / `false` / `null` are
 case-insensitive (`IF`, `Var`), text printed as written; `$` is a word
 character for every `\b` (`var$foo` is one identifier); a number takes an
-exponent when a digit follows the `e` (`1.2e-3`); custom-tag names take digits
+exponent when a digit follows the `e` (`1.2e-3`); a member name after `.`,
+`?.` or `::` is the whole run of identifier characters (`lexer::member_name`),
+so it may start with a digit and is never a number (`foo.0bar`, `a.b.1234`,
+`foo.1e5` the key `1e5`; `foo.1e+5` is `foo.1e + 5`), and so are an unquoted
+struct key and a named argument's name (`{0bar: 1}`, `[0bar: 1]`, `f(0bar =
+1)`); `?.` and a digit is safe navigation (`foo?.0bar`, `foo?.5`) unless
+the run is a number followed by what could carry a ternary on to its `:`,
+which reads as a ternary over that number (`c ?.5 : 2`, `c ?.5 + 1 : 2`);
+custom-tag names take digits
 (`<cf_foo2>`, `<ns:foo2>`); a comment after a script tag's name is
 whitespace, as one between its attributes is (`http // c` ⏎ `url="x";` and
 `property /* c */ name="x";` are the tags, with the comment among their

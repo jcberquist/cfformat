@@ -963,6 +963,41 @@ fn var_bindings_keep_member_access_and_new_is_case_insensitive() {
     assert_eq!(statement_kinds("a.b.1234 = 2;"), ["assignment"]);
 }
 
+/// A member name that starts with a digit is the whole run of identifier
+/// characters, one token, as every engine reads it: `foo.0bar = 123;` is one
+/// assignment, not `foo.0` and a statement `bar = 123;`.
+#[test]
+fn a_member_name_may_start_with_a_digit() {
+    check(&[
+        (
+            "foo.0bar = 123;",
+            "statement(assignment(chain(foo segment:property(. 0bar)) = 123) ;)",
+        ),
+        (
+            "x = foo?.0bar;",
+            "statement(assignment(x = chain(foo segment:property:safe(?. 0bar))) ;)",
+        ),
+        (
+            "x = c ?.5 : 2;",
+            "statement(assignment(x = ternary(c ? .5 : 2)) ;)",
+        ),
+        (
+            "x = foo.1e+5;",
+            "statement(assignment(x = binary:additive(chain(foo segment:property(. 1e)) + 5)) ;)",
+        ),
+    ]);
+    assert_eq!(statement_kinds("foo.0bar = 123;"), ["assignment"]);
+    let tree = parse("foo.0bar = 123;", Mode::Script);
+    let members: Vec<_> = common::flatten(&tree.root)
+        .into_iter()
+        .filter(|t| t.kind == cfparse::TokenKind::Ident(cfparse::Ident::PropertyName))
+        .map(|t| tree.text(t))
+        .collect();
+    assert_eq!(members, ["0bar"]);
+    let tree = parse("x = foo?.0bar;", Mode::Script);
+    assert!(find(&tree, ElementKind::Ternary).is_empty());
+}
+
 #[test]
 fn a_tag_island_is_not_inside_a_statement() {
     // A ```` ``` ```` fence is a node of the statement list, never a

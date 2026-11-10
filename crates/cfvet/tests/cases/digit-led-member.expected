@@ -1,0 +1,1 @@
+cases/digit-led-member.cfc:9:9: missing-var: `other` is written without `var` or a scope in function `f`; it lands in the variables scope

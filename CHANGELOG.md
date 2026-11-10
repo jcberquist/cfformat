@@ -1,5 +1,25 @@
 # Changelog
 
+## Unreleased
+
+**Fixed.** A member name that starts with a digit was cut after its
+digits: `foo.0bar = 123;` printed `foo.0` ⏎ `bar = 123;`, and `#foo.0bar#`
+printed `#foo.0 bar#`, with no warning (GitHub issue 5). The name after a
+`.` was read as an identifier or a run of digits, so a name that starts
+with a digit ended at its digits and the rest became a statement of its
+own. The name after `.`, `?.` and `::` is now the whole run of letters,
+digits, `_` and `$`, as every engine reads it, in script, `<cfset>`,
+`<cfif>`, `#…#` and attribute values alike: `foo.1e5`, `foo.0x1F` and
+`a.1b.2c.3` print as written, and a sign still ends the name (`foo.1e+5` is
+`foo.1e + 5`). `foo?.0bar` is safe navigation, not a ternary over `.0`;
+so is `foo?.5` and `foo?.1.bar`, while `c ?.5 : 2` stays a ternary. An
+ordered struct with such a key (`[0bar: 1]`) and a named argument with such
+a name (`f(0bar = 1)`) were left unformatted with a warning and now format.
+`cfvet` read the same cut, so `variables.0bar = 1` was reported as a write
+of `bar` without `var`; it is now the scoped write it is. A file already
+cut by an earlier release is not repaired, since `foo.0` ⏎ `bar = 123;` is
+two valid statements.
+
 ## 0.5.0 — 2026-11-09
 
 **Fixed.** The null coalescing operator `??` was printed as two question

@@ -1096,6 +1096,58 @@ fn chain_segments() {
 }
 
 #[test]
+fn a_member_name_that_starts_with_a_digit_is_one_name() {
+    // After `.`, `?.` and `::` the name is the whole run of letters, digits,
+    // `_` and `$`; a `.`, a sign or a space ends it.
+    for (src, expected) in [
+        ("x = foo.0bar;", "x = foo.0bar;\n"),
+        ("foo.0bar = 123;", "foo.0bar = 123;\n"),
+        ("foo.0bar++;", "foo.0bar++;\n"),
+        ("foo.0bar += 1;", "foo.0bar += 1;\n"),
+        ("x = foo.0bar[1];", "x = foo.0bar[1];\n"),
+        ("x = foo.0bar ?: 1;", "x = foo.0bar ?: 1;\n"),
+        ("foo.0bar();", "foo.0bar();\n"),
+        (
+            "foo.0bar = function() { return 1; };",
+            "foo.0bar = function() {\n    return 1;\n};\n",
+        ),
+        ("x = a.1b.2c.3;", "x = a.1b.2c.3;\n"),
+        ("x = arr[1].0bar;", "x = arr[1].0bar;\n"),
+        ("x = mk().0bar.baz;", "x = mk().0bar.baz;\n"),
+        ("x = Comp::0bar;", "x = Comp::0bar;\n"),
+        ("x = foo?.0bar;", "x = foo?.0bar;\n"),
+        ("x = foo?.0bar?.1baz;", "x = foo?.0bar?.1baz;\n"),
+        ("x = foo.1e5;", "x = foo.1e5;\n"),
+        ("x = foo.0x1F;", "x = foo.0x1F;\n"),
+        ("x = foo.1e+5;", "x = foo.1e + 5;\n"),
+        ("x = foo.0-bar;", "x = foo.0 - bar;\n"),
+        ("x = c ?.5 : 2;", "x = c ? .5 : 2;\n"),
+        ("x = foo?.5;", "x = foo?.5;\n"),
+        ("x = foo?.1.bar;", "x = foo?.1.bar;\n"),
+        ("x = foo.1.2;", "x = foo.1.2;\n"),
+    ] {
+        assert_eq!(fmt(src), expected, "{src}");
+    }
+    for (src, expected) in [
+        ("<cfset foo.0bar = 1>", "<cfset foo.0bar = 1>\n"),
+        (
+            "<cfif foo.0bar eq 1>x</cfif>",
+            "<cfif foo.0bar eq 1>x</cfif>\n",
+        ),
+        (
+            "<cfoutput>#foo.0bar.baz# #foo.1# #foo?.0bar#</cfoutput>",
+            "<cfoutput>#foo.0bar.baz# #foo.1# #foo?.0bar#</cfoutput>\n",
+        ),
+        (
+            "<cfloop collection=\"#foo.0bar#\" item=\"k\"></cfloop>",
+            "<cfloop collection=\"#foo.0bar#\" item=\"k\"></cfloop>\n",
+        ),
+    ] {
+        assert_eq!(tag(src), expected, "{src}");
+    }
+}
+
+#[test]
 fn chains_inside_expressions() {
     // The first method joins line 0 only when the chain starts an expression
     // statement: after `return`, `x = `, `(` the head stands alone. A
