@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.1 — 2026-11-10
 
 **Fixed.** A member name that starts with a digit was cut after its
 digits: `foo.0bar = 123;` printed `foo.0` ⏎ `bar = 123;`, and `#foo.0bar#`
